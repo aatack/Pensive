@@ -201,3 +201,8 @@ export const mapTabs = (
     tabs: tabGroup.tabs.map(tabFunction),
   })),
 });
+
+export const getTab = (tabs: TabsState, tabUuid: string) =>
+  tabs.tabGroups
+    .flatMap((group) => group.tabs)
+    .find((tab) => tab.uuid === tabUuid) ?? null;
