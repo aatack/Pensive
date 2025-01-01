@@ -206,3 +206,19 @@ export const getTab = (tabs: TabsState, tabUuid: string) =>
   tabs.tabGroups
     .flatMap((group) => group.tabs)
     .find((tab) => tab.uuid === tabUuid) ?? null;
+
+export const duplicateTab = (tabs: TabsState, tabUuid: string): TabsState => ({
+  ...tabs,
+  tabGroups: tabs.tabGroups.map((tabGroup) => ({
+    ...tabGroup,
+    tabs: tabGroup.tabs.map((tab) => tab.uuid).includes(tabUuid)
+      ? [
+          ...tabGroup.tabs,
+          {
+            ...tabGroup.tabs.find((tab) => tab.uuid === tabUuid),
+            uuid: uuid(),
+          },
+        ]
+      : tabGroup.tabs,
+  })),
+});
