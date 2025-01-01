@@ -215,7 +215,7 @@ export const duplicateTab = (tabs: TabsState, tabUuid: string): TabsState => ({
       ? [
           ...tabGroup.tabs,
           {
-            ...tabGroup.tabs.find((tab) => tab.uuid === tabUuid),
+            ...tabGroup.tabs.find((tab) => tab.uuid === tabUuid)!,
             uuid: uuid(),
           },
         ]
