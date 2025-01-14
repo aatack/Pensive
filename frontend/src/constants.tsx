@@ -29,6 +29,6 @@ export const colours = {
 
 export const font = {
   fontWeight: 400,
-  fontFamily: "Segoe UI",
+  fontFamily: "SourceSans3",
   fontSize: 14,
 };

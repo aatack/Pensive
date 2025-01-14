@@ -1,6 +1,4 @@
 @font-face {
-    font-family: 'LibreCaslonText';
-    src: url('./LibreCaslonText-Regular.ttf') format('truetype'),
-        url('./LibreCaslonText-Bold.ttf') format('truetype'),
-        url('./LibreCaslonText-Italic.ttf') format('truetype');
+    font-family: 'SourceSans3';
+    src: url('./SourceSans3-VariableFont_wght.ttf') format('truetype');
 }
