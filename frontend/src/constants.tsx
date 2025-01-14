@@ -28,7 +28,7 @@ export const colours = {
 };
 
 export const font = {
-  fontWeight: 450,
+  fontWeight: 400,
   fontFamily: "SourceSans3",
   fontSize: 14.5,
 };
