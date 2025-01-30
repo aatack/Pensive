@@ -3,7 +3,6 @@ import equal from "fast-deep-equal";
 import { memo } from "react";
 import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
-import { EntityIndent } from "./indent";
 import { EntityContent } from "./content";
 import { headTail } from "../../helpers/arrays";
 import { Entity } from "./entity";
@@ -40,23 +39,19 @@ export const TableEntity = memo(
     );
 
     return resolvedQuery.highlight ? (
-      <EntityIndent entity={resolvedQuery.entity}>
-        <Stack>
-          <EntityContent
-            entity={resolvedQuery.entity}
-            entityId={resolvedQuery.entityId}
-            selected={selected}
-            editing={
-              editEntityPointer != null && editEntityPointer.length === 0
-            }
-            path={resolvedQuery.path}
-            collapsed={resolvedQuery.collapsed}
-            hasHiddenChildren={resolvedQuery.hasHiddenChildren}
-          />
+      <Stack>
+        <EntityContent
+          entity={resolvedQuery.entity}
+          entityId={resolvedQuery.entityId}
+          selected={selected}
+          editing={editEntityPointer != null && editEntityPointer.length === 0}
+          path={resolvedQuery.path}
+          collapsed={resolvedQuery.collapsed}
+          hasHiddenChildren={resolvedQuery.hasHiddenChildren}
+        />
 
-          {children}
-        </Stack>
-      </EntityIndent>
+        {children}
+      </Stack>
     ) : (
       <Stack>{children}</Stack>
     );

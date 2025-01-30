@@ -4,6 +4,7 @@ import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
 import { headTail } from "../../helpers/arrays";
 import { Entity } from "./entity";
+import { EntityContent } from "./content";
 
 export const RowEntity = memo(
   ({
@@ -21,6 +22,20 @@ export const RowEntity = memo(
 
     return (
       <>
+        <tr>
+          <EntityContent
+            entity={resolvedQuery.entity}
+            entityId={resolvedQuery.entityId}
+            selected={selected}
+            editing={
+              editEntityPointer != null && editEntityPointer.length === 0
+            }
+            path={resolvedQuery.path}
+            collapsed={resolvedQuery.collapsed}
+            hasHiddenChildren={resolvedQuery.hasHiddenChildren}
+          />
+        </tr>
+
         <Children
           resolvedQueryChildren={resolvedQuery.children}
           selectionPointer={selectionPointer}
@@ -59,7 +74,6 @@ export const Children = ({
       {resolvedQueryChildren.map((child) => (
         <td>
           <Entity
-            row
             resolvedQuery={child.value}
             key={child.key}
             selectionPointer={
