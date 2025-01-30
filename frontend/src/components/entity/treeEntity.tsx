@@ -3,9 +3,10 @@ import equal from "fast-deep-equal";
 import { memo } from "react";
 import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
-import { EntityChildren } from "./children";
 import { EntityIndent } from "./indent";
 import { EntityContent } from "./content";
+import { headTail } from "../../helpers/arrays";
+import { Entity } from "./entity";
 
 /**
  * Lay out an entity, with all its dependencies loaded in advance.
@@ -15,7 +16,7 @@ import { EntityContent } from "./content";
  * occurring on every entity every time the selection changes, or every time a
  * new entity is loaded from the backend.
  */
-export const EntityLayout = memo(
+export const TreeEntity = memo(
   ({
     resolvedQuery,
     selectionPointer,
@@ -29,9 +30,9 @@ export const EntityLayout = memo(
   }) => {
     const selected = selectionPointer != null && selectionPointer.length === 0;
 
-    const permanentContent = (
+    const children = (
       <>
-        <EntityChildren
+        <Children
           resolvedQueryChildren={resolvedQuery.children}
           selectionPointer={selectionPointer}
           createEntityPointer={createEntityPointer}
@@ -59,12 +60,54 @@ export const EntityLayout = memo(
             hasHiddenChildren={resolvedQuery.hasHiddenChildren}
           />
 
-          {permanentContent}
+          {children}
         </Stack>
       </EntityIndent>
     ) : (
-      <Stack>{permanentContent}</Stack>
+      <Stack>{children}</Stack>
     );
   },
   (oldProps, newProps) => equal(oldProps, newProps)
 );
+
+export const Children = ({
+  resolvedQueryChildren,
+  selectionPointer,
+  createEntityPointer,
+  editEntityPointer,
+}: {
+  resolvedQueryChildren: { key: string; value: ResolvedQuery }[];
+  selectionPointer: string[] | null;
+  createEntityPointer: string[] | null;
+  editEntityPointer: string[] | null;
+}) => {
+  const selectionPointerParts = headTail(selectionPointer ?? []);
+  const createEntityPointerParts = headTail(createEntityPointer ?? []);
+  const editEntityPointerParts = headTail(editEntityPointer ?? []);
+
+  return (
+    <>
+      {resolvedQueryChildren.map((child) => (
+        <Entity
+          resolvedQuery={child.value}
+          key={child.key}
+          selectionPointer={
+            child.key === selectionPointerParts.head
+              ? selectionPointerParts.tail
+              : null
+          }
+          createEntityPointer={
+            child.key === createEntityPointerParts.head
+              ? createEntityPointerParts.tail
+              : null
+          }
+          editEntityPointer={
+            child.key === editEntityPointerParts.head
+              ? editEntityPointerParts.tail
+              : null
+          }
+        />
+      ))}
+    </>
+  );
+};
