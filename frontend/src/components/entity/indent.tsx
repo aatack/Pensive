@@ -3,9 +3,9 @@ import { ReactNode } from "react";
 import { font } from "../../constants";
 import { EntityState } from "./entity";
 
-
 export const EntityIndent = ({
-  children, entity,
+  children,
+  entity,
 }: {
   children: ReactNode;
   entity: EntityState;
@@ -17,10 +17,10 @@ export const EntityIndent = ({
           {entity.open === true
             ? "[ ]"
             : entity.open === false
-              ? "[x]"
-              : entity.section
-                ? null
-                : ">"}
+            ? "[x]"
+            : entity.section
+            ? null
+            : ">"}
         </Typography>
       </Stack>
       {children}
