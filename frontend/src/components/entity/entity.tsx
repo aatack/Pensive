@@ -1,5 +1,7 @@
 import { useEntity } from "../../context/hooks";
 import { ResolvedQuery } from "../pensive";
+import { RowEntity } from "./rowEntity";
+import { TableEntity } from "./tableEntity";
 import { TreeEntity } from "./treeEntity";
 
 export type EntityState = {
@@ -36,7 +38,23 @@ export const Entity = ({
   const _ = useEntity(resolvedQuery.entityId, null);
 
   if (row) {
+    return (
+      <RowEntity
+        resolvedQuery={resolvedQuery}
+        selectionPointer={selectionPointer}
+        createEntityPointer={createEntityPointer}
+        editEntityPointer={editEntityPointer}
+      />
+    );
   } else if (resolvedQuery.entity.text === "TABLE") {
+    return (
+      <TableEntity
+        resolvedQuery={resolvedQuery}
+        selectionPointer={selectionPointer}
+        createEntityPointer={createEntityPointer}
+        editEntityPointer={editEntityPointer}
+      />
+    );
   } else {
     return (
       <TreeEntity
