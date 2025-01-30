@@ -1,15 +1,15 @@
 import { Stack, Typography } from "@mui/material";
 import equal from "fast-deep-equal";
 import { memo, ReactNode, useEffect, useRef, useState } from "react";
-import { useEntity } from "../context/hooks";
-import { cursor } from "../helpers/atoms";
-import { useTabState } from "./tab";
-import { CreateEntity } from "./tool/create-entity";
-import { EditEntity } from "./tool/edit-entity";
-import { colours, font } from "../constants";
-import { RenderImage } from "./common/image";
-import { headTail } from "../helpers/arrays";
-import { ResolvedQuery } from "./pensive";
+import { useEntity } from "../../context/hooks";
+import { cursor } from "../../helpers/atoms";
+import { useTabState } from "../tab";
+import { CreateEntity } from "../tool/create-entity";
+import { EditEntity } from "../tool/edit-entity";
+import { colours, font } from "../../constants";
+import { RenderImage } from "../common/image";
+import { headTail } from "../../helpers/arrays";
+import { ResolvedQuery } from "../pensive";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
 export type EntityState = {

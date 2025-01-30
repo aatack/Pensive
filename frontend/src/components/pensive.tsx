@@ -3,7 +3,7 @@ import { Metadata, pensiveMetadata, pensiveSave } from "../api/endpoints";
 import { Atom, useAtom } from "../helpers/atoms";
 import { Mapping, mappingGet } from "../helpers/mapping";
 import { Provide, useProvided } from "../providers/provider";
-import { EntityState } from "./entity";
+import { EntityState } from "./entity/entity";
 
 export type PensiveState = {
   /**

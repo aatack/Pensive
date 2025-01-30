@@ -1,4 +1,4 @@
-import { EntityState } from "../components/entity";
+import { EntityState } from "../components/entity/entity";
 import { server } from "../constants";
 import { sort } from "../helpers/sorting";
 

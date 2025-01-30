@@ -3,7 +3,7 @@ import { useWrite } from "../../context/hooks";
 import { last } from "../../helpers/arrays";
 import { Atom, cursor } from "../../helpers/atoms";
 import { TextInput } from "../common/text";
-import { EntityIndent, EntityState } from "../entity";
+import { EntityIndent, EntityState } from "../entity/entity";
 import { TabState, useTabState } from "../tab";
 import { useToolState } from "./tool";
 

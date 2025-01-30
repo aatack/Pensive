@@ -5,7 +5,7 @@ import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
 import { Provide, useProvided } from "../providers/provider";
 import { useToolState } from "./tool/tool";
-import { Entity, EntityContent, EntityIndent } from "./entity";
+import { Entity, EntityContent, EntityIndent } from "./entity/entity";
 import { useEffect, useMemo, useRef } from "react";
 import {
   findQueryResolutionLimit,

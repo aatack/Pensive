@@ -8,7 +8,7 @@ import { cursor, mappingCursor } from "../helpers/atoms";
 import { mappingUpdate } from "../helpers/mapping";
 import { deserialiseSnapshot, serialiseSnapshot } from "../models/snapshot";
 import { usePensive } from "../components/pensive";
-import { EntityState } from "../components/entity";
+import { EntityState } from "../components/entity/entity";
 import { useDeepMemo } from "../helpers/state";
 
 const useNextSnapshot = (): (() => string) => {
