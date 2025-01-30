@@ -30,24 +30,9 @@ export const TreeEntity = memo(
   }) => {
     const selected = selectionPointer != null && selectionPointer.length === 0;
 
-    const children = (
-      <>
-        <Children
-          resolvedQueryChildren={resolvedQuery.children}
-          selectionPointer={selectionPointer}
-          createEntityPointer={createEntityPointer}
-          editEntityPointer={editEntityPointer}
-        />
-
-        {createEntityPointer != null && createEntityPointer.length === 0 ? (
-          <CreateEntity />
-        ) : null}
-      </>
-    );
-
-    return resolvedQuery.highlight ? (
-      <EntityIndent entity={resolvedQuery.entity}>
-        <Stack>
+    return (
+      <Stack>
+        {resolvedQuery.highlight ? (
           <EntityContent
             entity={resolvedQuery.entity}
             entityId={resolvedQuery.entityId}
@@ -59,12 +44,19 @@ export const TreeEntity = memo(
             collapsed={resolvedQuery.collapsed}
             hasHiddenChildren={resolvedQuery.hasHiddenChildren}
           />
+        ) : null}
 
-          {children}
-        </Stack>
-      </EntityIndent>
-    ) : (
-      <Stack>{children}</Stack>
+        <Children
+          resolvedQueryChildren={resolvedQuery.children}
+          selectionPointer={selectionPointer}
+          createEntityPointer={createEntityPointer}
+          editEntityPointer={editEntityPointer}
+        />
+
+        {createEntityPointer != null && createEntityPointer.length === 0 ? (
+          <CreateEntity />
+        ) : null}
+      </Stack>
     );
   },
   (oldProps, newProps) => equal(oldProps, newProps)
@@ -85,29 +77,42 @@ export const Children = ({
   const createEntityPointerParts = headTail(createEntityPointer ?? []);
   const editEntityPointerParts = headTail(editEntityPointer ?? []);
 
+  const wrap = (
+    resolvedQuery: ResolvedQuery,
+    element: JSX.Element
+  ): JSX.Element =>
+    resolvedQuery.highlight ? (
+      <EntityIndent entity={resolvedQuery.entity}>{element}</EntityIndent>
+    ) : (
+      element
+    );
+
   return (
     <>
-      {resolvedQueryChildren.map((child) => (
-        <Entity
-          resolvedQuery={child.value}
-          key={child.key}
-          selectionPointer={
-            child.key === selectionPointerParts.head
-              ? selectionPointerParts.tail
-              : null
-          }
-          createEntityPointer={
-            child.key === createEntityPointerParts.head
-              ? createEntityPointerParts.tail
-              : null
-          }
-          editEntityPointer={
-            child.key === editEntityPointerParts.head
-              ? editEntityPointerParts.tail
-              : null
-          }
-        />
-      ))}
+      {resolvedQueryChildren.map((child) =>
+        wrap(
+          child.value,
+          <Entity
+            resolvedQuery={child.value}
+            key={child.key}
+            selectionPointer={
+              child.key === selectionPointerParts.head
+                ? selectionPointerParts.tail
+                : null
+            }
+            createEntityPointer={
+              child.key === createEntityPointerParts.head
+                ? createEntityPointerParts.tail
+                : null
+            }
+            editEntityPointer={
+              child.key === editEntityPointerParts.head
+                ? editEntityPointerParts.tail
+                : null
+            }
+          />
+        )
+      )}
     </>
   );
 };
