@@ -16,7 +16,7 @@ export const TableEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {
     const children = (
       <TableContainer>
-        <Table>
+        <Table sx={{ my: 0.5, borderRadius: 5 }}>
           <TableBody>
             {resolvedQuery.children.map(({ key, value }) => (
               <TableRow key={key}>
