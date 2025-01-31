@@ -28,23 +28,11 @@ export const TreeEntity = memo(
     createEntityPointer: string[] | null;
     editEntityPointer: string[] | null;
   }) => {
-    const selected = selectionPointer != null && selectionPointer.length === 0;
-
     return (
       <Stack>
-        {resolvedQuery.highlight ? (
-          <EntityContent
-            entity={resolvedQuery.entity}
-            entityId={resolvedQuery.entityId}
-            selected={selected}
-            editing={
-              editEntityPointer != null && editEntityPointer.length === 0
-            }
-            path={resolvedQuery.path}
-            collapsed={resolvedQuery.collapsed}
-            hasHiddenChildren={resolvedQuery.hasHiddenChildren}
-          />
-        ) : null}
+        {resolvedQuery.highlight
+          ? buildContent(resolvedQuery, selectionPointer, editEntityPointer)
+          : null}
 
         {buildChildren(
           resolvedQuery.children,
@@ -61,6 +49,22 @@ export const TreeEntity = memo(
     );
   },
   (oldProps, newProps) => equal(oldProps, newProps)
+);
+
+export const buildContent = (
+  resolvedQuery: ResolvedQuery,
+  selectionPointer: string[] | null,
+  editEntityPointer: string[] | null
+): JSX.Element => (
+  <EntityContent
+    entity={resolvedQuery.entity}
+    entityId={resolvedQuery.entityId}
+    selected={selectionPointer != null && selectionPointer.length === 0}
+    editing={editEntityPointer != null && editEntityPointer.length === 0}
+    path={resolvedQuery.path}
+    collapsed={resolvedQuery.collapsed}
+    hasHiddenChildren={resolvedQuery.hasHiddenChildren}
+  />
 );
 
 export const buildChildren = (
