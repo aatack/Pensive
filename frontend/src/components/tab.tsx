@@ -279,6 +279,7 @@ const useFrameNavigation = (
     pensive.value.entities,
     frame.value.entityId,
     frame.value.highlight,
+    frame.value.selection,
     collapsed,
     expanded,
     tool,

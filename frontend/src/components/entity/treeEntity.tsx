@@ -15,12 +15,9 @@ export const TreeEntity = memo(
           <EntityContent resolvedQuery={resolvedQuery} />
         ) : null}
 
-        {resolvedQuery.children.map((child) =>
-          wrapChild(
-            child.value,
-            <Entity resolvedQuery={child.value} key={child.key} />
-          )
-        )}
+        {resolvedQuery.children.map(({ key, value }) => (
+          <WrappedChild key={key} resolvedQuery={value} />
+        ))}
 
         {resolvedQuery.createEntity ? <CreateEntity /> : null}
       </Stack>
@@ -29,12 +26,11 @@ export const TreeEntity = memo(
   (oldProps, newProps) => equal(oldProps, newProps)
 );
 
-const wrapChild = (
-  resolvedQuery: ResolvedQuery,
-  element: JSX.Element
-): JSX.Element =>
+const WrappedChild = ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) =>
   resolvedQuery.highlight ? (
-    <EntityIndent entity={resolvedQuery.entity}>{element}</EntityIndent>
+    <EntityIndent entity={resolvedQuery.entity}>
+      <Entity resolvedQuery={resolvedQuery} />
+    </EntityIndent>
   ) : (
-    element
+    <Entity resolvedQuery={resolvedQuery} />
   );

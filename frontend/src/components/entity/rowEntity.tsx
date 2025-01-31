@@ -13,13 +13,11 @@ export const RowEntity = memo(
           <EntityContent resolvedQuery={resolvedQuery} />
         </tr>
 
-        <>
-          {resolvedQuery.children.map(({ value, key }) => (
-            <td>
-              <Entity resolvedQuery={value} key={key} />
-            </td>
-          ))}
-        </>
+        {resolvedQuery.children.map(({ value, key }) => (
+          <td key={key}>
+            <Entity resolvedQuery={value} />
+          </td>
+        ))}
 
         {resolvedQuery.createEntity ? (
           <tr>

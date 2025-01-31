@@ -10,17 +10,19 @@ export const TableEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {
     const children = (
       <table>
-        {resolvedQuery.children.map((child) => (
-          <tr>
-            <Entity row resolvedQuery={child.value} key={child.key} />
-          </tr>
-        ))}
+        <tbody>
+          {resolvedQuery.children.map(({ key, value }) => (
+            <tr key={key}>
+              <Entity row resolvedQuery={value} />
+            </tr>
+          ))}
 
-        {resolvedQuery.createEntity ? (
-          <tr>
-            <CreateEntity />
-          </tr>
-        ) : null}
+          {resolvedQuery.createEntity ? (
+            <tr>
+              <CreateEntity />
+            </tr>
+          ) : null}
+        </tbody>
       </table>
     );
 
