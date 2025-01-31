@@ -124,7 +124,8 @@ export const resolveQuery = (
 ): ResolvedQuery => {
   const entity = mappingGet(entities, entityId + ":");
 
-  const entityCollapsed = collapsed.includes(entityId);
+  // The root entity is never collapsed
+  const entityCollapsed = collapsed.includes(entityId) && path.length > 0;
   const entityExpanded = expanded.includes(entityId);
 
   const children = entity.children ?? [];
