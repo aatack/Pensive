@@ -193,20 +193,7 @@ export const Tab = ({
       >
         <TabContext tab={tab.value} />
 
-        <Entity
-          resolvedQuery={tabData.resolvedQuery}
-          selectionPointer={frame.selection}
-          createEntityPointer={
-            tool?.type === "createEntity" && tool.tabUuid === tab.value.uuid
-              ? tool.path
-              : null
-          }
-          editEntityPointer={
-            tool?.type === "editEntity" && tool.tabUuid === tab.value.uuid
-              ? tool.path
-              : null
-          }
-        />
+        <Entity resolvedQuery={tabData.resolvedQuery} />
       </Box>
     </Provide>
   );
@@ -232,7 +219,20 @@ const TabContextEntity = ({ entityId }: { entityId: string }) => {
   const entity = useEntity(entityId, null);
   return (
     <EntityIndent entity={entity}>
-      <EntityContent entityId={entityId} entity={entity} selected={false} />
+      <EntityContent
+        resolvedQuery={{
+          entity,
+          entityId,
+          path: [],
+          children: [],
+          highlight: true,
+          collapsed: false,
+          hasHiddenChildren: false,
+          selected: false,
+          createEntity: false,
+          editEntity: false,
+        }}
+      />
     </EntityIndent>
   );
 };

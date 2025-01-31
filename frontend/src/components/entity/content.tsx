@@ -4,26 +4,22 @@ import { EditEntity } from "../tool/edit-entity";
 import { colours, font } from "../../constants";
 import { RenderImage } from "../common/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { EntityState } from "./entity";
 import { cursor } from "../../helpers/atoms";
 import { useTabState } from "../tab";
+import { ResolvedQuery } from "../pensive";
 
 export const EntityContent = ({
-  entityId,
-  entity,
-  selected,
-  path,
-  editing,
-  collapsed,
-  hasHiddenChildren,
+  resolvedQuery: {
+    selected,
+    path,
+    collapsed,
+    entity,
+    entityId,
+    hasHiddenChildren,
+    editEntity,
+  },
 }: {
-  entityId: string;
-  entity: EntityState;
-  selected: boolean;
-  path?: string[];
-  editing?: boolean;
-  collapsed?: boolean;
-  hasHiddenChildren?: boolean;
+  resolvedQuery: ResolvedQuery;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -80,7 +76,7 @@ export const EntityContent = ({
       )}
 
       <Stack direction="row" alignItems="flex-end" sx={{ width: 1 }}>
-        {editing ? (
+        {editEntity ? (
           <EditEntity />
         ) : (
           <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
@@ -110,6 +106,7 @@ export const EntityContent = ({
     </Stack>
   );
 };
+
 export const EntityContentClicked = ({
   path,
   then,

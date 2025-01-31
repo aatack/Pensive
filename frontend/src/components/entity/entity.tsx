@@ -23,46 +23,19 @@ export type EntityId = string;
 
 export const Entity = ({
   resolvedQuery,
-  selectionPointer,
-  createEntityPointer,
-  editEntityPointer,
   row,
 }: {
   resolvedQuery: ResolvedQuery;
-  selectionPointer: string[] | null;
-  createEntityPointer: string[] | null;
-  editEntityPointer: string[] | null;
   row?: boolean;
 }) => {
   // Make sure the entity stays loaded
   const _ = useEntity(resolvedQuery.entityId, null);
 
   if (row) {
-    return (
-      <RowEntity
-        resolvedQuery={resolvedQuery}
-        selectionPointer={selectionPointer}
-        createEntityPointer={createEntityPointer}
-        editEntityPointer={editEntityPointer}
-      />
-    );
+    return <RowEntity resolvedQuery={resolvedQuery} />;
   } else if (resolvedQuery.entity.text === "TABLE") {
-    return (
-      <TableEntity
-        resolvedQuery={resolvedQuery}
-        selectionPointer={selectionPointer}
-        createEntityPointer={createEntityPointer}
-        editEntityPointer={editEntityPointer}
-      />
-    );
+    return <TableEntity resolvedQuery={resolvedQuery} />;
   } else {
-    return (
-      <TreeEntity
-        resolvedQuery={resolvedQuery}
-        selectionPointer={selectionPointer}
-        createEntityPointer={createEntityPointer}
-        editEntityPointer={editEntityPointer}
-      />
-    );
+    return <TreeEntity resolvedQuery={resolvedQuery} />;
   }
 };
