@@ -162,7 +162,6 @@ export const Tab = ({
   tab: Atom<TabState>;
   selected: boolean;
 }) => {
-  const frame = tab.value.frame;
   const ref = useRef<HTMLDivElement>();
 
   const tabData = useTabActions(tab, selected);
@@ -173,8 +172,6 @@ export const Tab = ({
       ref.current.scrollTop = tab.value.scrollPosition;
     }
   }, [ref]);
-
-  const tool = useToolState().value;
 
   return (
     <Provide values={{ tab: { ...tab, selected } }}>
