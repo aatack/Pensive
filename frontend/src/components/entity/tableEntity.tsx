@@ -1,4 +1,10 @@
-import { Stack } from "@mui/material";
+import {
+  Stack,
+  Table,
+  TableBody,
+  TableContainer,
+  TableRow,
+} from "@mui/material";
 import equal from "fast-deep-equal";
 import { memo } from "react";
 import { CreateEntity } from "../tool/create-entity";
@@ -9,21 +15,23 @@ import { Entity } from "./entity";
 export const TableEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {
     const children = (
-      <table>
-        <tbody>
-          {resolvedQuery.children.map(({ key, value }) => (
-            <tr key={key}>
-              <Entity row resolvedQuery={value} />
-            </tr>
-          ))}
+      <TableContainer>
+        <Table>
+          <TableBody>
+            {resolvedQuery.children.map(({ key, value }) => (
+              <TableRow key={key}>
+                <Entity row resolvedQuery={value} />
+              </TableRow>
+            ))}
 
-          {resolvedQuery.createEntity ? (
-            <tr>
-              <CreateEntity />
-            </tr>
-          ) : null}
-        </tbody>
-      </table>
+            {resolvedQuery.createEntity ? (
+              <tr>
+                <CreateEntity />
+              </tr>
+            ) : null}
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
 
     return resolvedQuery.highlight ? (

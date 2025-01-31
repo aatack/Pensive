@@ -4,25 +4,26 @@ import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
 import { Entity } from "./entity";
 import { EntityContent } from "./content";
+import { TableCell } from "@mui/material";
 
 export const RowEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {
     return (
       <>
-        <tr>
+        <TableCell>
           <EntityContent resolvedQuery={resolvedQuery} />
-        </tr>
+        </TableCell>
 
         {resolvedQuery.children.map(({ value, key }) => (
-          <td key={key}>
+          <TableCell key={key}>
             <Entity resolvedQuery={value} />
-          </td>
+          </TableCell>
         ))}
 
         {resolvedQuery.createEntity ? (
-          <tr>
+          <TableCell>
             <CreateEntity />
-          </tr>
+          </TableCell>
         ) : null}
       </>
     );
