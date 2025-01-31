@@ -4,6 +4,8 @@ import { Atom, useAtom } from "../helpers/atoms";
 import { Mapping, mappingGet } from "../helpers/mapping";
 import { Provide, useProvided } from "../providers/provider";
 import { EntityState } from "./entity/entity";
+import { ToolState } from "./tool/tool";
+import { headTail, isEmptyArray } from "../helpers/arrays";
 
 export type PensiveState = {
   /**
@@ -102,6 +104,10 @@ export type ResolvedQuery = {
   highlight: boolean;
   collapsed: boolean;
   hasHiddenChildren: boolean;
+
+  selected: boolean;
+  createEntity: boolean;
+  editEntity: boolean;
 };
 
 export const resolveQuery = (
@@ -111,7 +117,10 @@ export const resolveQuery = (
   collapsed: string[],
   expanded: string[],
   limit: Set<string>,
-  path?: string[]
+  path: string[],
+  selectionPath: string[] | null,
+  createEntityPath: string[] | null,
+  editEntityPath: string[] | null
 ): ResolvedQuery => {
   const entity = mappingGet(entities, entityId + ":");
 
@@ -120,6 +129,10 @@ export const resolveQuery = (
 
   const children = entity.children ?? [];
   const includedChildren = children.filter((child) => limit.has(child));
+
+  const selectionPathParts = headTail(selectionPath ?? []);
+  const createEntityPathParts = headTail(createEntityPath ?? []);
+  const editEntityPathParts = headTail(editEntityPath ?? []);
 
   return {
     entityId,
@@ -136,13 +149,21 @@ export const resolveQuery = (
             collapsed,
             expanded,
             limit,
-            [...(path ?? []), child]
+            [...(path ?? []), child],
+            child === selectionPathParts.head ? selectionPathParts.tail : null,
+            child === createEntityPathParts.head
+              ? createEntityPathParts.tail
+              : null,
+            child === editEntityPathParts.head ? editEntityPathParts.tail : null
           ),
         })),
     highlight: entityExpanded || highlight(entity),
     collapsed: entityCollapsed,
     hasHiddenChildren:
       !entityCollapsed && children.length > includedChildren.length,
+    selected: isEmptyArray(selectionPath),
+    createEntity: isEmptyArray(createEntityPath),
+    editEntity: isEmptyArray(editEntityPath),
   };
 };
 

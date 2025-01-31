@@ -68,7 +68,12 @@ const useTabData = (tab: Atom<TabState>): TabData => {
     }));
 
   const { selectParent, selectFollowing, selectPreceding, resolvedQuery } =
-    useFrameNavigation(frame, tab.value.collapsed, tab.value.expanded);
+    useFrameNavigation(
+      frame,
+      tab.value.collapsed,
+      tab.value.expanded,
+      tab.value.uuid
+    );
 
   return {
     resolvedQuery,
@@ -238,9 +243,11 @@ export const getFocusedEntityId = (tab: TabState) =>
 const useFrameNavigation = (
   frame: Atom<FrameState>,
   collapsed: string[],
-  expanded: string[]
+  expanded: string[],
+  tabUuid: string
 ) => {
   const pensive = usePensive();
+  const tool = useToolState().value;
 
   const [resolvedQuery, flattenedQuery] = useMemo(() => {
     const limit = findQueryResolutionLimit(
@@ -259,7 +266,13 @@ const useFrameNavigation = (
         Boolean(!frame.value.highlight.section || entity.section),
       collapsed,
       expanded,
-      limit
+      limit,
+      [],
+      frame.value.selection,
+      tool?.type === "createEntity" && tool.tabUuid === tabUuid
+        ? tool.path
+        : null,
+      tool?.type === "editEntity" && tool.tabUuid === tabUuid ? tool.path : null
     );
     return [resolvedQuery, flattenResolvedQuery(resolvedQuery)];
   }, [
@@ -268,6 +281,7 @@ const useFrameNavigation = (
     frame.value.highlight,
     collapsed,
     expanded,
+    tool,
   ]);
 
   // Everything is joined with double underscores because you can't use arrays

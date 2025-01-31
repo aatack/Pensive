@@ -22,3 +22,6 @@ export const headTail = <T,>(
   head: items.length > 0 ? items[0]! : null,
   tail: items.length > 0 ? items.slice(1) : null,
 });
+
+export const isEmptyArray = <T,>(items: T[] | null) =>
+  items !== null && items.length === 0;
