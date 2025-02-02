@@ -22,11 +22,11 @@ impl Store {
             // Set up the entities table
             connection
                 .execute(
-                    "create table if not exist entities (
+                    "create table if not exists entities (
                         timestamp text not null,
                         entity text not null,
                         key text not null,
-                        value text not null,
+                        value text not null
                     );",
                     [],
                 )
