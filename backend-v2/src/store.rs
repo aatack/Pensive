@@ -19,12 +19,34 @@ impl Store {
             let connection = Connection::open(self.path.clone())
                 .expect("Failed to open connection to database file");
 
+            // Set up the entities table
             connection
                 .execute(
-                    "",
+                    "create table if not exist entities (
+                        timestamp text not null,
+                        entity text not null,
+                        key text not null,
+                        value text not null,
+                    );",
                     [],
                 )
                 .expect("Failed to create entity table");
+
+            connection
+                .execute(
+                    "create index if not exists idx_entities_timestamp
+                        on entities (timestamp)",
+                    [],
+                )
+                .expect("Failed to create index on timestamp");
+
+            connection
+                .execute(
+                    "create index if not exists idx_entities_entity
+                        on entities (entity)",
+                    [],
+                )
+                .expect("Failed to create index on entity");
 
             connection
         })
