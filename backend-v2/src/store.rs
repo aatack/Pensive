@@ -16,8 +16,20 @@ impl Store {
 
     pub fn connection(&self) -> &Connection {
         self.connection_cell.get_or_init(|| {
-            Connection::open(self.path.clone())
-                .expect("Failed to open connection to database file")
+            let connection = Connection::open(self.path.clone())
+                .expect("Failed to open connection to database file");
+
+            connection
+                .execute(
+                    "create table if not exists timestamp (
+                        note_id text primary key,
+                        timestamp text not null    
+                    )",
+                    [],
+                )
+                .expect("Failed to create timestamp table");
+
+            connection
         })
     }
 }
