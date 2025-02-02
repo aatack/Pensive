@@ -48,6 +48,34 @@ impl Store {
                 )
                 .expect("Failed to create index on entity");
 
+            // Set up the resources table
+            connection
+                .execute(
+                    "create table if not exists resources (
+                        timestamp text not null,
+                        resource text not null,
+                        data blob not null
+                    );",
+                    [],
+                )
+                .expect("Failed to create entity table");
+
+            connection
+                .execute(
+                    "create index if not exists idx_resources_timestamp
+                            on resources (timestamp)",
+                    [],
+                )
+                .expect("Failed to create index on timestamp");
+
+            connection
+                .execute(
+                    "create index if not exists idx_resources_resource
+                            on resources (resource)",
+                    [],
+                )
+                .expect("Failed to create index on entity");
+
             connection
         })
     }
