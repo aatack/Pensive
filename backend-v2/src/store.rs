@@ -21,13 +21,10 @@ impl Store {
 
             connection
                 .execute(
-                    "create table if not exists timestamp (
-                        note_id text primary key,
-                        timestamp text not null    
-                    )",
+                    "",
                     [],
                 )
-                .expect("Failed to create timestamp table");
+                .expect("Failed to create entity table");
 
             connection
         })
