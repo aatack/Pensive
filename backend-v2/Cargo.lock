@@ -6,7 +6,9 @@ version = 4
 name = "backend"
 version = "0.1.0"
 dependencies = [
+ "json",
  "rusqlite",
+ "uuid",
 ]
 
 [[package]]
@@ -61,6 +63,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "json"
+version = "0.12.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "078e285eafdfb6c4b434e0d31e8cfcb5115b651496faca5749b88fafd4f23bfd"
+
+[[package]]
 name = "libsqlite3-sys"
 version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -102,6 +110,12 @@ name = "smallvec"
 version = "1.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
+
+[[package]]
+name = "uuid"
+version = "1.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3758f5e68192bb96cc8f9b7e2c2cfdabb435499a28499a42f8f984092adad4b"
 
 [[package]]
 name = "vcpkg"

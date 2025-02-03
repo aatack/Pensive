@@ -1,9 +1,24 @@
+use json::JsonValue;
 use rusqlite::Connection;
-use std::cell::OnceCell;
+use std::{cell::OnceCell, time::Instant};
+use uuid::Uuid;
 
 pub struct Store {
     path: String,
     connection_cell: OnceCell<Connection>,
+}
+
+pub struct StoreEntity {
+    timestamp: Instant,
+    entity: Uuid,
+    key: String,
+    value: JsonValue,
+}
+
+pub struct StoreResource {
+    timestamp: Instant,
+    resource: Uuid,
+    data: Vec<u8>,
 }
 
 impl Store {
