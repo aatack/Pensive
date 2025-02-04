@@ -2,7 +2,7 @@ use std::time::SystemTime;
 
 use helpers::timestamp_to_integer;
 use json::parse;
-use store::Store;
+use store::{Store, StoreEntity};
 use uuid::Uuid;
 
 mod helpers;
@@ -15,4 +15,11 @@ fn main() {
     println!("{}", Uuid::new_v4().to_string());
 
     println!("{}", (parse("[123, 456, {}]").unwrap()).dump());
+
+    store.write_entities(&[StoreEntity {
+        timestamp: SystemTime::now(),
+        entity: Uuid::new_v4(),
+        key: "text".to_string(),
+        value: parse("null").unwrap(),
+    }]);
 }

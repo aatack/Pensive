@@ -14,10 +14,10 @@ pub struct Store {
 }
 
 pub struct StoreEntity {
-    timestamp: SystemTime,
-    entity: Uuid,
-    key: String,
-    value: JsonValue,
+    pub timestamp: SystemTime,
+    pub entity: Uuid,
+    pub key: String,
+    pub value: JsonValue,
 }
 
 pub struct StoreResource {
@@ -37,7 +37,7 @@ impl Store {
     pub fn write_entities(&self, entities: &[StoreEntity]) -> () {
         let mut connection = self.connection();
         let transaction = connection.transaction().unwrap();
-        
+
         {
             let mut statement = transaction
                 .prepare(
