@@ -1,6 +1,6 @@
 use json::JsonValue;
 use rusqlite::Connection;
-use std::{cell::OnceCell, time::Instant};
+use std::{cell::OnceCell, time::SystemTime};
 use uuid::Uuid;
 
 pub struct Store {
@@ -9,14 +9,14 @@ pub struct Store {
 }
 
 pub struct StoreEntity {
-    timestamp: Instant,
+    timestamp: SystemTime,
     entity: Uuid,
     key: String,
     value: JsonValue,
 }
 
 pub struct StoreResource {
-    timestamp: Instant,
+    timestamp: SystemTime,
     resource: Uuid,
     data: Vec<u8>,
 }
@@ -31,21 +31,20 @@ impl Store {
 
     pub fn connection(&self) -> &Connection {
         self.connection_cell.get_or_init(|| {
-            let connection = Connection::open(self.path.clone())
-                .expect("Failed to open connection to database file");
+            let connection = Connection::open(self.path.clone()).unwrap();
 
             // Set up the entities table
             connection
                 .execute(
                     "create table if not exists entities (
-                        timestamp text not null,
+                        timestamp integer not null,
                         entity text not null,
                         key text not null,
                         value text not null
                     );",
                     [],
                 )
-                .expect("Failed to create entity table");
+                .unwrap();
 
             connection
                 .execute(
@@ -53,7 +52,7 @@ impl Store {
                         on entities (timestamp)",
                     [],
                 )
-                .expect("Failed to create index on timestamp");
+                .unwrap();
 
             connection
                 .execute(
@@ -61,7 +60,7 @@ impl Store {
                         on entities (entity)",
                     [],
                 )
-                .expect("Failed to create index on entity");
+                .unwrap();
 
             // Set up the resources table
             connection
@@ -73,7 +72,7 @@ impl Store {
                     );",
                     [],
                 )
-                .expect("Failed to create entity table");
+                .unwrap();
 
             connection
                 .execute(
@@ -81,7 +80,7 @@ impl Store {
                             on resources (timestamp)",
                     [],
                 )
-                .expect("Failed to create index on timestamp");
+                .unwrap();
 
             connection
                 .execute(
@@ -89,7 +88,7 @@ impl Store {
                             on resources (resource)",
                     [],
                 )
-                .expect("Failed to create index on entity");
+                .unwrap();
 
             connection
         })

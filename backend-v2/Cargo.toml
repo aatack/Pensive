@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 rusqlite = { version = "0.33", features = ["bundled"] }
-uuid = "1.12"
+uuid = { version = "1.12", features = ["v4"] }
 json = "0.12"
