@@ -42,7 +42,7 @@ impl Store {
             let mut statement = transaction
                 .prepare(
                     "insert into entities (timestamp, entity, key, value)
-            values (?1, ?2, ?3, ?4);",
+                    values (?1, ?2, ?3, ?4);",
                 )
                 .unwrap();
 
