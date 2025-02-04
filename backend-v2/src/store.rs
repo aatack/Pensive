@@ -1,10 +1,12 @@
 use json::JsonValue;
-use rusqlite::Connection;
+use rusqlite::{params, Connection};
 use std::{
     cell::{OnceCell, RefCell},
     time::SystemTime,
 };
 use uuid::Uuid;
+
+use crate::helpers::timestamp_to_integer;
 
 pub struct Store {
     path: String,
@@ -32,9 +34,33 @@ impl Store {
         }
     }
 
-    pub fn write_entities(&self, entities: &[StoreEntity]) {
+    pub fn write_entities(&self, entities: &[StoreEntity]) -> () {
         let mut connection = self.connection();
         let transaction = connection.transaction().unwrap();
+        
+        {
+            let mut statement = transaction
+                .prepare(
+                    "insert into entities (timestamp, entity, key, value)
+            values (?1, ?2, ?3, ?4);",
+                )
+                .unwrap();
+
+            for entity in entities {
+                statement
+                    .execute(params![
+                        timestamp_to_integer(entity.timestamp),
+                        entity.entity.to_string(),
+                        entity.key,
+                        entity.value.dump()
+                    ])
+                    .unwrap();
+            }
+        }
+
+        transaction.commit().unwrap();
+
+        ();
     }
 
     pub fn connection(&self) -> std::cell::RefMut<Connection> {
