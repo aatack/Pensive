@@ -24,4 +24,6 @@ fn main() {
     for entity in results {
         println!("{:?}", entity);
     }
+
+    println!("{}", store.root_entity().unwrap().to_string())
 }

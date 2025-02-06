@@ -105,6 +105,16 @@ impl Store {
         rows.collect()
     }
 
+    pub fn root_entity(&self) -> rusqlite::Result<Uuid> {
+        let connection = self.connection();
+
+        connection.query_row(
+            "select * from entities order by timestamp asc",
+            [],
+            |row| Ok((Uuid::parse_str(&row.get::<_, String>(1).unwrap())).unwrap()),
+        )
+    }
+
     pub fn connection(&self) -> std::cell::RefMut<Connection> {
         let connection = self
             .connection_cell
