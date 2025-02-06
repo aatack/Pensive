@@ -37,33 +37,29 @@ impl Store {
         }
     }
 
-    pub fn write_entities(&self, entities: &[StoreEntity]) -> () {
+    pub fn write_entities(&self, entities: &[StoreEntity]) -> rusqlite::Result<()> {
         let mut connection = self.connection();
-        let transaction = connection.transaction().unwrap();
+        let transaction = connection.transaction()?;
 
         {
-            let mut statement = transaction
-                .prepare(
-                    "insert into entities (timestamp, entity, key, value)
-                    values (?1, ?2, ?3, ?4);",
-                )
-                .unwrap();
+            let mut statement = transaction.prepare(
+                "insert into entities (timestamp, entity, key, value)
+                values (?1, ?2, ?3, ?4)",
+            )?;
 
             for entity in entities {
-                statement
-                    .execute(params![
-                        timestamp_to_integer(entity.timestamp),
-                        entity.entity.to_string(),
-                        entity.key,
-                        entity.value.dump()
-                    ])
-                    .unwrap();
+                statement.execute(params![
+                    timestamp_to_integer(entity.timestamp),
+                    entity.entity.to_string(),
+                    entity.key,
+                    entity.value.dump()
+                ])?;
             }
         }
 
-        transaction.commit().unwrap();
+        transaction.commit()?;
 
-        ();
+        Ok(())
     }
 
     pub fn read_entities(
@@ -115,7 +111,7 @@ impl Store {
         )
     }
 
-    pub fn connection(&self) -> std::cell::RefMut<Connection> {
+    fn connection(&self) -> std::cell::RefMut<Connection> {
         let connection = self
             .connection_cell
             .get_or_init(|| {

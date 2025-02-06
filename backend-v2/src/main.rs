@@ -1,6 +1,5 @@
 use std::time::SystemTime;
 
-use helpers::timestamp_to_integer;
 use json::parse;
 use store::{Store, StoreEntity};
 use uuid::Uuid;
@@ -13,7 +12,7 @@ fn main() {
 
     let id = Uuid::new_v4();
 
-    store.write_entities(&[StoreEntity {
+    let _ = store.write_entities(&[StoreEntity {
         timestamp: SystemTime::now(),
         entity: id,
         key: "text".to_string(),
@@ -25,5 +24,5 @@ fn main() {
         println!("{:?}", entity);
     }
 
-    println!("{}", store.root_entity().unwrap().to_string())
+    println!("{}", store.root_entity().unwrap().to_string());
 }
