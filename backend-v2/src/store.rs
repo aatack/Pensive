@@ -1,4 +1,4 @@
-use json::JsonValue;
+use json::{parse, JsonValue};
 use rusqlite::{params, Connection};
 use std::{
     cell::{OnceCell, RefCell},
@@ -6,13 +6,15 @@ use std::{
 };
 use uuid::Uuid;
 
-use crate::helpers::timestamp_to_integer;
+use crate::helpers::{integer_to_timestamp, timestamp_to_integer};
 
+#[derive(Debug)]
 pub struct Store {
     path: String,
     connection_cell: OnceCell<RefCell<Connection>>,
 }
 
+#[derive(Debug)]
 pub struct StoreEntity {
     pub timestamp: SystemTime,
     pub entity: Uuid,
@@ -20,6 +22,7 @@ pub struct StoreEntity {
     pub value: JsonValue,
 }
 
+#[derive(Debug)]
 pub struct StoreResource {
     timestamp: SystemTime,
     resource: Uuid,
@@ -61,6 +64,47 @@ impl Store {
         transaction.commit().unwrap();
 
         ();
+    }
+
+    pub fn read_entities(
+        &self,
+        entity_ids: &[String],
+    ) -> rusqlite::Result<Vec<StoreEntity>> {
+        let connection = self.connection();
+
+        if entity_ids.is_empty() {
+            return Ok(vec![]);
+        }
+
+        let placeholders = entity_ids
+            .iter()
+            .map(|_| "?")
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        let query = format!(
+            "select timestamp, entity, key, value from entities where entity in ({})",
+            placeholders
+        );
+
+        let mut statement = connection.prepare(&query)?;
+
+        let entity_refs: Vec<&dyn rusqlite::ToSql> = entity_ids
+            .iter()
+            .map(|id| id as &dyn rusqlite::ToSql)
+            .collect();
+
+        let rows =
+            statement.query_map(rusqlite::params_from_iter(entity_refs), |row| {
+                Ok(StoreEntity {
+                    timestamp: integer_to_timestamp(row.get(0)?),
+                    entity: Uuid::parse_str(&row.get::<_, String>(1)?).unwrap(),
+                    key: row.get(2)?,
+                    value: parse(&row.get::<_, String>(3)?).unwrap(),
+                })
+            })?;
+
+        rows.collect()
     }
 
     pub fn connection(&self) -> std::cell::RefMut<Connection> {

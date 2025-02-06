@@ -11,15 +11,17 @@ mod store;
 fn main() {
     let store = Store::new("data/test.pensive");
 
-    println!("{}", timestamp_to_integer(SystemTime::now()));
-    println!("{}", Uuid::new_v4().to_string());
-
-    println!("{}", (parse("[123, 456, {}]").unwrap()).dump());
+    let id = Uuid::new_v4();
 
     store.write_entities(&[StoreEntity {
         timestamp: SystemTime::now(),
-        entity: Uuid::new_v4(),
+        entity: id,
         key: "text".to_string(),
         value: parse("null").unwrap(),
     }]);
+
+    let results = store.read_entities(&[id.to_string()]).unwrap();
+    for entity in results {
+        println!("{:?}", entity);
+    }
 }
