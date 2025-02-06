@@ -68,19 +68,15 @@ impl Store {
 
     pub fn read_entities(
         &self,
-        entity_ids: &[String],
+        entities: &[Uuid],
     ) -> rusqlite::Result<Vec<StoreEntity>> {
         let connection = self.connection();
 
-        if entity_ids.is_empty() {
+        if entities.is_empty() {
             return Ok(vec![]);
         }
 
-        let placeholders = entity_ids
-            .iter()
-            .map(|_| "?")
-            .collect::<Vec<_>>()
-            .join(", ");
+        let placeholders = entities.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
 
         let query = format!(
             "select timestamp, entity, key, value from entities where entity in ({})",
@@ -89,7 +85,9 @@ impl Store {
 
         let mut statement = connection.prepare(&query)?;
 
-        let entity_refs: Vec<&dyn rusqlite::ToSql> = entity_ids
+        let entity_strings: Vec<String> =
+            entities.iter().map(|id| id.to_string()).collect();
+        let entity_refs: Vec<&dyn rusqlite::ToSql> = entity_strings
             .iter()
             .map(|id| id as &dyn rusqlite::ToSql)
             .collect();

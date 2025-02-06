@@ -20,7 +20,7 @@ fn main() {
         value: parse("null").unwrap(),
     }]);
 
-    let results = store.read_entities(&[id.to_string()]).unwrap();
+    let results = store.read_entities(&[id]).unwrap();
     for entity in results {
         println!("{:?}", entity);
     }
