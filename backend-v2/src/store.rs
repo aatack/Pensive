@@ -109,7 +109,7 @@ impl Store {
         let connection = self.connection();
 
         connection.query_row(
-            "select * from entities order by timestamp asc",
+            "select * from entities order by timestamp asc, entity asc",
             [],
             |row| Ok((Uuid::parse_str(&row.get::<_, String>(1).unwrap())).unwrap()),
         )
