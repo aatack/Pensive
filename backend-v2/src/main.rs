@@ -1,28 +1,24 @@
 use std::time::SystemTime;
 
 use json::parse;
-use store::{Store, StoreEntity};
+use std::fs;
+use store::{Store, StoreEntity, StoreResource};
 use uuid::Uuid;
 
 mod helpers;
 mod store;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let store = Store::new("data/test.pensive");
 
     let id = Uuid::new_v4();
 
-    let _ = store.write_entities(&[StoreEntity {
+    let _ = store.write_resources(&[StoreResource {
         timestamp: SystemTime::now(),
-        entity: id,
-        key: "text".to_string(),
-        value: parse("null").unwrap(),
+        resource: id,
+        data: fs::read("data/test_file.txt")?,
     }]);
 
-    let results = store.read_entities(&[id]).unwrap();
-    for entity in results {
-        println!("{:?}", entity);
-    }
-
-    println!("{}", store.root_entity().unwrap().to_string());
+    println!("{}", fs::read("data/test_file.txt").unwrap().len());
+    Ok(())
 }

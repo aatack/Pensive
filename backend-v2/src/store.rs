@@ -24,9 +24,9 @@ pub struct StoreEntity {
 
 #[derive(Debug)]
 pub struct StoreResource {
-    timestamp: SystemTime,
-    resource: Uuid,
-    data: Vec<u8>,
+    pub timestamp: SystemTime,
+    pub resource: Uuid,
+    pub data: Vec<u8>,
 }
 
 impl Store {
