@@ -111,6 +111,29 @@ impl Store {
         )
     }
 
+    pub fn write_resources(&self, resources: &[StoreResource]) -> rusqlite::Result<()> {
+        let mut connection = self.connection();
+        let transaction = connection.transaction()?;
+
+        {
+            let mut statement = transaction.prepare(
+            "insert into resources (timestamp, resource, data) values (?1, ?2, ?3);",
+        )?;
+
+            for resource in resources {
+                statement.execute(params![
+                    timestamp_to_integer(resource.timestamp),
+                    resource.resource.to_string(),
+                    resource.data
+                ])?;
+            }
+        }
+
+        transaction.commit()?;
+
+        Ok(())
+    }
+
     fn connection(&self) -> std::cell::RefMut<Connection> {
         let connection = self
             .connection_cell
