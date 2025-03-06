@@ -6,3 +6,5 @@ target/
 *.pdb
 
 data/
+
+scratch/
