@@ -11,7 +11,9 @@ export const useAtom = <T,>(
   initialValue: T,
   verify?: (newValue: T, currentValue: T) => T
 ): Atom<T> => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(
+    verify ? verify(initialValue, initialValue) : initialValue
+  );
   const swap = (update: (value: T) => T) =>
     setValue((current) => {
       if (verify == null) {
