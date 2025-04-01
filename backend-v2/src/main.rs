@@ -20,5 +20,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }]);
 
     println!("{}", fs::read("data/test_file.txt").unwrap().len());
+    println!("{}", store.root_entity().unwrap());
     Ok(())
 }
