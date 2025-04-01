@@ -1,3 +1,7 @@
 .venv/
+.vscode/
 
 scratch/
+scratch.ipynb
+
+__pycache__/
