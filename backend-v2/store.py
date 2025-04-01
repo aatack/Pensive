@@ -1,6 +1,24 @@
+from datetime import datetime
 from functools import cached_property
 from pathlib import Path
 import sqlite3
+from typing import NamedTuple
+from uuid import UUID
+
+from helpers import Json
+
+
+class StoreEntity(NamedTuple):
+    timestamp: datetime
+    uuid: UUID
+    key: str
+    value: Json
+
+
+class StoreResource(NamedTuple):
+    timestamp: datetime
+    uuid: UUID
+    data: bytes
 
 
 class Store:
