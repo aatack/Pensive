@@ -4,4 +4,6 @@
 scratch/
 scratch.ipynb
 
+data/
+
 __pycache__/
