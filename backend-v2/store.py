@@ -59,7 +59,7 @@ class Store:
         connection.execute(
             """
             create table if not exists resources (
-                timestamp text not null,
+                timestamp integer not null,
                 uuid text not null,
                 data blob not null
             )
@@ -128,3 +128,15 @@ class Store:
             (int(resource.timestamp.timestamp()), str(resource.uuid), resource.data),
         )
         self.connection.commit()
+
+    def read_resource(self, uuid: UUID) -> StoreResource:
+        timestamp, _, data = (
+            self.connection.cursor()
+            .execute(
+                f"select timestamp, uuid, data from resources where uuid = '{uuid}'"
+            )
+            .fetchone()
+        )
+        return StoreResource(
+            datetime.fromtimestamp(timestamp, tz=timezone.utc), uuid, data
+        )
