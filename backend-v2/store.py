@@ -1,5 +1,6 @@
 from datetime import datetime
 from functools import cached_property
+import json
 from pathlib import Path
 import sqlite3
 from typing import NamedTuple
@@ -26,12 +27,12 @@ class Store:
         self.path = Path(path)
 
     @cached_property
-    def cursor(self) -> sqlite3.Connection:
+    def connection(self) -> sqlite3.Connection:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        cursor = sqlite3.connect(self.path)
+        connection = sqlite3.connect(self.path)
 
         # Entities
-        cursor.execute(
+        connection.execute(
             """
             create table if not exists entities (
                 timestamp integer not null,
@@ -41,13 +42,13 @@ class Store:
             );
             """
         )
-        cursor.execute(
+        connection.execute(
             """
             create index if not exists idx_entities_timestamp
                 on entities (timestamp)
             """
         )
-        cursor.execute(
+        connection.execute(
             """
             create index if not exists idx_entities_uuid
                 on entities (uuid)
@@ -55,7 +56,7 @@ class Store:
         )
 
         # Resources
-        cursor.execute(
+        connection.execute(
             """
             create table if not exists resources (
                 timestamp text not null,
@@ -64,17 +65,29 @@ class Store:
             )
             """
         )
-        cursor.execute(
+        connection.execute(
             """
             create index if not exists idx_resources_timestamp
                 on resources (timestamp)
             """
         )
-        cursor.execute(
+        connection.execute(
             """
             create index if not exists idx_resources_uuid
                 on resources (uuid)
             """
         )
 
-        return cursor
+        return connection
+
+    def write_entities(self, entities: list[StoreEntity]) -> None:
+        self.connection.executemany(
+            """
+            insert into entities (timestamp, uuid, key, value)
+                values (?, ?, ?, ?)
+            """,
+            [
+                (int(timestamp.timestamp()), str(uuid), key, json.dumps(value))
+                for timestamp, uuid, key, value in entities
+            ],
+        )
