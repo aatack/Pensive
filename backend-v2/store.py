@@ -108,6 +108,7 @@ class Store:
                 f"""
                 select timestamp, uuid, key, value from entities
                     where uuid in ({uuids_string})
+                    order by timestamp asc, uuid asc
                 """
             )
             .fetchall()
