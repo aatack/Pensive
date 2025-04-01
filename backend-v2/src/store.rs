@@ -134,6 +134,47 @@ impl Store {
         Ok(())
     }
 
+    pub fn read_resources(
+        &self,
+        uuids: &[Uuid],
+    ) -> rusqlite::Result<Vec<StoreResource>> {
+        if uuids.is_empty() {
+            return Ok(vec![]);
+        }
+
+        let connection = self.connection();
+
+        let placeholders = uuids.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
+        let query = format!(
+            "SELECT timestamp, resource, data FROM resources WHERE resource IN ({})",
+            placeholders
+        );
+
+        let mut statement = connection.prepare(&query)?;
+
+        let resource_id_strings: Vec<String> =
+            uuids.iter().map(|id| id.to_string()).collect();
+        let params: Vec<&dyn rusqlite::ToSql> = resource_id_strings
+            .iter()
+            .map(|id| id as &dyn rusqlite::ToSql)
+            .collect();
+
+        let rows = statement.query_map(rusqlite::params_from_iter(params), |row| {
+            Ok(StoreResource {
+                timestamp: integer_to_timestamp(row.get(0)?),
+                resource: Uuid::parse_str(&row.get::<_, String>(1)?).unwrap(),
+                data: row.get(2)?,
+            })
+        })?;
+
+        let mut resources = Vec::new();
+        for resource in rows {
+            resources.push(resource?);
+        }
+
+        Ok(resources)
+    }
+
     fn connection(&self) -> std::cell::RefMut<Connection> {
         let connection = self
             .connection_cell

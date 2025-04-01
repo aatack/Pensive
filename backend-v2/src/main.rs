@@ -19,7 +19,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         data: fs::read("data/test_file.txt")?,
     }]);
 
-    println!("{}", fs::read("data/test_file.txt").unwrap().len());
-    println!("{}", store.root_entity().unwrap());
+    let resource = store.read_resources(&[id]).unwrap();
+    fs::write("data/test_file_dump.txt", &resource[0].data).unwrap();
+
+    // println!("{}", fs::read("data/test_file.txt").unwrap().len());
+    // println!("{}", store.root_entity().unwrap());
     Ok(())
 }
