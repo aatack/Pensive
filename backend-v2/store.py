@@ -1,4 +1,4 @@
-from datetime import datetime, tzinfo, timezone
+from datetime import datetime, timezone
 from functools import cached_property
 import json
 from pathlib import Path
@@ -82,10 +82,7 @@ class Store:
 
     def write_entities(self, entities: list[StoreEntity]) -> None:
         self.connection.executemany(
-            """
-            insert into entities (timestamp, uuid, key, value)
-                values (?, ?, ?, ?)
-            """,
+            "insert into entities (timestamp, uuid, key, value) values (?, ?, ?, ?)",
             [
                 (int(timestamp.timestamp()), str(uuid), key, json.dumps(value))
                 for timestamp, uuid, key, value in entities
@@ -124,3 +121,10 @@ class Store:
             )
             for timestamp, uuid, key, value in result
         ]
+
+    def write_resource(self, resource: StoreResource) -> None:
+        self.connection.execute(
+            """insert into resources (timestamp, uuid, data) values (?, ?, ?)""",
+            (int(resource.timestamp.timestamp()), str(resource.uuid), resource.data),
+        )
+        self.connection.commit()
