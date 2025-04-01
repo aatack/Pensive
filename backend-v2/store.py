@@ -91,3 +91,13 @@ class Store:
                 for timestamp, uuid, key, value in entities
             ],
         )
+
+    def root_entity(self) -> UUID | None:
+        result = (
+            self.connection.cursor()
+            .execute(
+                "select uuid from entities order by timestamp asc, uuid asc limit 1"
+            )
+            .fetchone()
+        )
+        return None if result is None else UUID(result[0])
