@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, tzinfo, timezone
 from functools import cached_property
 import json
 from pathlib import Path
@@ -91,6 +91,7 @@ class Store:
                 for timestamp, uuid, key, value in entities
             ],
         )
+        self.connection.commit()
 
     def root_entity(self) -> UUID | None:
         result = (
@@ -101,3 +102,25 @@ class Store:
             .fetchone()
         )
         return None if result is None else UUID(result[0])
+
+    def read_entities(self, uuids: list[UUID]) -> list[StoreEntity]:
+        uuids_string = ", ".join(f"'{uuid}'" for uuid in uuids)
+        result = (
+            self.connection.cursor()
+            .execute(
+                f"""
+                select timestamp, uuid, key, value from entities
+                    where uuid in ({uuids_string})
+                """
+            )
+            .fetchall()
+        )
+        return [
+            StoreEntity(
+                datetime.fromtimestamp(timestamp, tz=timezone.utc),
+                UUID(uuid),
+                key,
+                json.loads(value),
+            )
+            for timestamp, uuid, key, value in result
+        ]
