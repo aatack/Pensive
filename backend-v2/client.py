@@ -1,10 +1,11 @@
 from collections import defaultdict
 from collections.abc import Callable, Iterator
+from datetime import datetime
 from uuid import UUID
 
 from helpers import Json
 from reducers import replace
-from store import Store
+from store import Store, StoreEntity
 
 
 class Client:
@@ -40,3 +41,15 @@ class Client:
             )
 
         return entities
+
+    def write_entities(
+        self, timestamp: datetime, entities: dict[UUID, dict[str, Json]]
+    ) -> None:
+        assert timestamp.tzinfo is not None, "Cannot write naive timestamps to entities"
+        self.root_store.write_entities(
+            [
+                StoreEntity(timestamp, uuid, key, value)
+                for uuid, key_values in entities.items()
+                for key, value in key_values.items()
+            ]
+        )
