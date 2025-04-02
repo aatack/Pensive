@@ -5,7 +5,7 @@ from uuid import UUID
 
 from helpers import Json
 from reducers import replace
-from store import Store, StoreEntity
+from store import Store, StoreEntity, StoreResource
 
 
 class Client:
@@ -42,10 +42,21 @@ class Client:
 
         return entities
 
-    def write_entities(
-        self, timestamp: datetime, entities: dict[UUID, dict[str, Json]]
+    def read_resources(self, uuids: list[UUID]) -> dict[UUID, bytes]:
+        return {
+            resource.uuid: resource.data
+            for store in self.stores
+            for resource in store.read_resources(uuids)
+        }
+
+    def write(
+        self,
+        timestamp: datetime,
+        entities: dict[UUID, dict[str, Json]],
+        resources: dict[UUID, bytes],
     ) -> None:
         assert timestamp.tzinfo is not None, "Cannot write naive timestamps to entities"
+
         self.root_store.write_entities(
             [
                 StoreEntity(timestamp, uuid, key, value)
@@ -54,9 +65,6 @@ class Client:
             ]
         )
 
-    def read_resources(self, uuids: list[UUID]) -> dict[UUID, bytes]:
-        return {
-            resource.uuid: resource.data
-            for store in self.stores
-            for resource in store.read_resources(uuids)
-        }
+        self.root_store.write_resources(
+            [StoreResource(timestamp, uuid, data) for uuid, data in resources.items()]
+        )

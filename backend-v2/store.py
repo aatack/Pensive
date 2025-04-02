@@ -81,6 +81,9 @@ class Store:
         return connection
 
     def write_entities(self, entities: list[StoreEntity]) -> None:
+        if len(entities) == 0:
+            return
+
         self.connection.executemany(
             "insert into entities (timestamp, uuid, key, value) values (?, ?, ?, ?)",
             [
@@ -123,7 +126,10 @@ class Store:
             for timestamp, uuid, key, value in result
         ]
 
-    def write_resource(self, resources: list[StoreResource]) -> None:
+    def write_resources(self, resources: list[StoreResource]) -> None:
+        if len(resources) == 0:
+            return
+
         self.connection.executemany(
             "insert into resources (timestamp, uuid, data) values (?, ?, ?)",
             [
