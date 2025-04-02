@@ -53,3 +53,10 @@ class Client:
                 for key, value in key_values.items()
             ]
         )
+
+    def read_resources(self, uuids: list[UUID]) -> dict[UUID, bytes]:
+        return {
+            resource.uuid: resource.data
+            for store in self.stores
+            for resource in store.read_resources(uuids)
+        }

@@ -130,14 +130,22 @@ class Store:
         )
         self.connection.commit()
 
-    def read_resource(self, uuid: UUID) -> StoreResource:
-        timestamp, _, data = (
+    def read_resources(self, uuids: list[UUID]) -> list[StoreResource]:
+        uuids_string = ", ".join(f"'{uuid}'" for uuid in uuids)
+        result = (
             self.connection.cursor()
             .execute(
-                f"select timestamp, uuid, data from resources where uuid = '{uuid}'"
+                f"""
+                select timestamp, uuid, data from resources
+                    where uuid in ({uuids_string})
+                    order by timestamp asc, uuid asc
+                """
             )
-            .fetchone()
+            .fetchall()
         )
-        return StoreResource(
-            datetime.fromtimestamp(timestamp, tz=timezone.utc), uuid, data
-        )
+        return [
+            StoreResource(
+                datetime.fromtimestamp(timestamp, tz=timezone.utc), UUID(uuid), data
+            )
+            for timestamp, uuid, data in result
+        ]
