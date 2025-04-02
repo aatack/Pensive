@@ -123,10 +123,13 @@ class Store:
             for timestamp, uuid, key, value in result
         ]
 
-    def write_resource(self, resource: StoreResource) -> None:
-        self.connection.execute(
-            """insert into resources (timestamp, uuid, data) values (?, ?, ?)""",
-            (int(resource.timestamp.timestamp()), str(resource.uuid), resource.data),
+    def write_resource(self, resources: list[StoreResource]) -> None:
+        self.connection.executemany(
+            "insert into resources (timestamp, uuid, data) values (?, ?, ?)",
+            [
+                (int(timestamp.timestamp()), str(uuid), data)
+                for timestamp, uuid, data in resources
+            ],
         )
         self.connection.commit()
 
