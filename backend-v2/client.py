@@ -55,7 +55,7 @@ class Client:
         entities: dict[UUID, dict[str, Json]],
         resources: dict[UUID, bytes],
     ) -> None:
-        assert timestamp.tzinfo is not None, "Cannot write naive timestamps to entities"
+        assert timestamp.tzinfo is not None, "Cannot write naive timestamps"
 
         self.root_store.write_entities(
             [
