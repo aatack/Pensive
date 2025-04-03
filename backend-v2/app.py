@@ -1,12 +1,11 @@
-from collections import defaultdict
+from datetime import datetime
 import json
-import os
 from typing import Annotated, Any
+from uuid import UUID
+from client import Client
 from fastapi import FastAPI, Form, Response, UploadFile
 from pydantic import BaseModel
 
-from aliases import Json
-from models.pensive import Pensive
 from models.timestamp import Timestamp
 from models.trait import Trait
 
@@ -22,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Looks like it could probably be removed?
 origins = ["http://localhost:3000", "localhost:3000"]
 
 
@@ -45,107 +45,86 @@ app.add_middleware(
 
 
 class State:
-    pensive = Pensive.load(os.getenv("PENSIVE_ROOT", "."))
-
-
-@app.on_event("shutdown")
-def on_shutdown():
-    print("Saving pensive...")
-    State.pensive.save()
-    print("Finished saving pensive")
+    client: Client
 
 
 class Metadata(BaseModel):
-    offset: int
-    note: str
+    root: str | None
 
 
 @app.get("/metadata")
 async def metadata_endpoint() -> dict:
-    pensive = State.pensive
-    return dict(data=Metadata(offset=pensive.offset, note=str(pensive.note)))
-
-
-@app.post("/save")
-async def save_endpoint() -> bool:
-    pensive = State.pensive
-    return pensive.save()
+    client = State.client
+    return dict(
+        data=Metadata(
+            root=None if (root := client.root_entity()) is None else str(root)
+        )
+    )
 
 
 class Read(BaseModel):
-    item: str
-    note: str | None = None
+    uuid: str
+    timestamp: str | None = None
 
 
 @app.post("/read")
 def read_endpoint(read: Read) -> dict:
-    pensive = State.pensive
+    client = State.client
+    uuid = UUID(read.uuid)
 
-    item = Timestamp.parse(read.item)
-    note = None if read.note is None else Timestamp.parse(read.note)
-
-    chunk = pensive.chunk(item)
-
-    # This should ultimately be replaced with a `get_item` method on the pensive
-    return dict(data=State.pensive.get_chunk(chunk, note=note).get(item, {}))
+    return dict(data=client.read_entities([uuid])[uuid])
 
 
 class Write(BaseModel):
-    note: str
-    inputs: dict[Annotated[str, Timestamp], dict[Annotated[str, Trait], Any]]
+    timestamp: str
+    entities: dict[Annotated[str, Timestamp], dict[Annotated[str, Trait], Any]]
 
 
 @app.post("/write")
 async def write_endpoint(
-    note: Annotated[str, Form()],
-    inputs: Annotated[str, Form()],
-    names: Annotated[str, Form()],
-    blobs: Annotated[list[UploadFile] | None | UploadFile, Form()] = None,
+    timestamp: Annotated[str, Form()],
+    entities: Annotated[str, Form()],
+    resource_uuids: Annotated[str, Form()],
+    resource_blobs: Annotated[list[UploadFile] | None | UploadFile, Form()] = None,
 ) -> dict:
-    pensive = State.pensive
-    formatted_note = Timestamp.parse(note)
-
-    # Inputs arrive with keys in a raw string format, and in the more convenient (for
-    # the frontend) item to trait to value mapping.  This must be converted into a new
-    # format, more convenient for the backend, where keys are named tuples and the order
-    # is trait to item to value
-    formatted_inputs: dict[Trait, dict[Timestamp, Json]] = defaultdict(dict)
-    for item, trait_map in json.loads(inputs).items():
-        for trait, snapshot in trait_map.items():
-            formatted_inputs[pensive.trait_by_name[trait]][
-                Timestamp.parse(item)
-            ] = snapshot
+    client = State.client
 
     # If there are no blobs, or just one, the type of the input may need coercing into a
     # list before it can be used
-    formatted_resources = {
-        name: (dict(blob.headers)["content-type"], await blob.read())
-        for name, blob in zip(
-            json.loads(names),
-            [] if blobs is None else (blobs if isinstance(blobs, list) else [blobs]),
+    resources: dict[UUID, bytes] = {
+        UUID(uuid): await blob.read()
+        for uuid, blob in zip(
+            json.loads(resource_uuids),
+            (
+                []
+                if resource_blobs is None
+                else (
+                    resource_blobs
+                    if isinstance(resource_blobs, list)
+                    else [resource_blobs]
+                )
+            ),
         )
     }
 
-    changes = pensive.update(formatted_note, formatted_inputs, formatted_resources)
+    client.write(
+        datetime.fromisoformat(timestamp),
+        {UUID(uuid): updates for uuid, updates in json.loads(entities).items()},
+        resources,
+    )
 
-    formatted_changes: dict[str, dict[str, Any]] = defaultdict(dict)
-    for trait, item_map in changes.items():
-        for item, (_, snapshot) in item_map.items():
-            formatted_changes[str(item)][trait.name] = snapshot
-
-    return dict(data=formatted_changes, headers={"Content-Type": "application/json"})
+    return dict(data="OK", headers={"Content-Type": "application/json"})
 
 
 class ReadResource(BaseModel):
-    note: str
-    name: str
+    uuid: str
 
 
 @app.post("/read-resource")
 async def read_resource_endpoint(read_resource: ReadResource) -> Response:
-    pensive = State.pensive
-    content_type, resource = pensive.read_resource(
-        Timestamp.parse(read_resource.note), read_resource.name
-    )
+    client = State.client
+    uuid = UUID(read_resource.uuid)
 
-    return Response(content=resource, media_type=content_type)
+    resource = client.read_resources([uuid])[uuid]
+
+    return Response(content=resource)
