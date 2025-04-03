@@ -30,9 +30,19 @@ def parse_v1_store(
 
     for file in (Path(path) / "chunks").glob("**/*.json"):
         # Iterate over entity data
-        for entity, update_values in json.loads(file.read_text()).items():
-            for update, value in update_values.items():
-                entities[get_timestamp(update)][uuids[entity]] = value
+        is_parent = file.name.startswith("parent")
+        is_children = file.name.startswith("children")
+
+        if is_parent:
+            raise NotImplementedError()
+
+        if is_children:
+            raise NotImplementedError()
+
+        else:
+            for entity, update_values in json.loads(file.read_text()).items():
+                for update, value in update_values.items():
+                    entities[get_timestamp(update)][uuids[entity]] = value
 
     for file in (Path(path) / "chunks").glob("**/resources/*/"):
         # Iterate over resource folders
