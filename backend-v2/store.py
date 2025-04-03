@@ -87,7 +87,7 @@ class Store:
         self.connection.executemany(
             "insert into entities (timestamp, uuid, key, value) values (?, ?, ?, ?)",
             [
-                (int(timestamp.timestamp()), str(uuid), key, json.dumps(value))
+                (timestamp_to_int(timestamp), str(uuid), key, json.dumps(value))
                 for timestamp, uuid, key, value in entities
             ],
         )
@@ -117,12 +117,7 @@ class Store:
             .fetchall()
         )
         return [
-            StoreEntity(
-                datetime.fromtimestamp(timestamp, tz=timezone.utc),
-                UUID(uuid),
-                key,
-                json.loads(value),
-            )
+            StoreEntity(int_to_timestamp(timestamp), UUID(uuid), key, json.loads(value))
             for timestamp, uuid, key, value in result
         ]
 
@@ -133,7 +128,7 @@ class Store:
         self.connection.executemany(
             "insert into resources (timestamp, uuid, data) values (?, ?, ?)",
             [
-                (int(timestamp.timestamp()), str(uuid), data)
+                (timestamp_to_int(timestamp), str(uuid), data)
                 for timestamp, uuid, data in resources
             ],
         )
@@ -153,8 +148,15 @@ class Store:
             .fetchall()
         )
         return [
-            StoreResource(
-                datetime.fromtimestamp(timestamp, tz=timezone.utc), UUID(uuid), data
-            )
+            StoreResource(int_to_timestamp(timestamp), UUID(uuid), data)
             for timestamp, uuid, data in result
         ]
+
+
+def timestamp_to_int(timestamp: datetime) -> int:
+    assert timestamp.tzinfo is not None
+    return int(timestamp.timestamp() * 1000)
+
+
+def int_to_timestamp(timestamp: int) -> datetime:
+    return datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
