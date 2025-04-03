@@ -17,8 +17,10 @@ def parse_v1_store(
     path: Path | str,
 ) -> tuple[dict[datetime, dict[UUID, Json]], dict[datetime, dict[UUID, bytes]]]:
     entities: dict[datetime, dict[UUID, Json]] = defaultdict(dict)
-    resources: dict[datetime, dict[UUID, Json]] = defaultdict(dict)
-    uuids: dict[str, UUID] = defaultdict(uuid4)
+    resources: dict[datetime, dict[UUID, bytes]] = defaultdict(dict)
+
+    entity_uuids: dict[str, UUID] = defaultdict(uuid4)
+    resource_uuids: dict[str, UUID] = defaultdict(uuid4)
 
     offset: int = cast(dict, (Path(path) / "metadata.json").read_text())["offset"]
 
@@ -28,10 +30,10 @@ def parse_v1_store(
             (offset + timestamp.offset) * 1000 + timestamp.increment
         )
 
-    for file in (Path(path) / "chunks").glob("**/*.json"):
+    for folder in (Path(path) / "chunks").glob("**/*.json"):
         # Iterate over entity data
-        is_parent = file.name.startswith("parent")
-        is_children = file.name.startswith("children")
+        is_parent = folder.name.startswith("parent")
+        is_children = folder.name.startswith("children")
 
         if is_parent:
             raise NotImplementedError()
@@ -40,12 +42,15 @@ def parse_v1_store(
             raise NotImplementedError()
 
         else:
-            for entity, update_values in json.loads(file.read_text()).items():
+            for entity, update_values in json.loads(folder.read_text()).items():
                 for update, value in update_values.items():
-                    entities[get_timestamp(update)][uuids[entity]] = value
+                    entities[get_timestamp(update)][entity_uuids[entity]] = value
 
-    for file in (Path(path) / "chunks").glob("**/resources/*/"):
+    for folder in (Path(path) / "chunks").glob("**/resources/*/"):
         # Iterate over resource folders
-        raise NotImplementedError()
+        (file,) = folder.glob("*.png")
+        resources[get_timestamp(folder.name)][
+            resource_uuids[folder.name]
+        ] = file.read_bytes()
 
-    return {}, {}
+    return entities, resources
