@@ -36,10 +36,12 @@ def parse_v1_store(
         is_children = folder.name.startswith("children")
 
         if is_parent:
-            raise NotImplementedError()
+            for entity, update_values in json.loads(folder.read_text()).items():
+                pass
 
         if is_children:
-            raise NotImplementedError()
+            for entity, update_values in json.loads(folder.read_text()).items():
+                pass
 
         else:
             for entity, update_values in json.loads(folder.read_text()).items():
