@@ -87,7 +87,7 @@ class Store:
         self.connection.executemany(
             "insert into entities (timestamp, uuid, key, value) values (?, ?, ?, ?)",
             [
-                (timestamp_to_int(timestamp), str(uuid), key, json.dumps(value))
+                (timestamp_to_int(timestamp), uuid.hex, key, json.dumps(value))
                 for timestamp, uuid, key, value in entities
             ],
         )
@@ -104,7 +104,7 @@ class Store:
         return None if result is None else UUID(result[0])
 
     def read_entities(self, uuids: list[UUID]) -> list[StoreEntity]:
-        uuids_string = ", ".join(f"'{uuid}'" for uuid in uuids)
+        uuids_string = ", ".join(f"'{uuid.hex}'" for uuid in uuids)
         result = (
             self.connection.cursor()
             .execute(
@@ -128,14 +128,14 @@ class Store:
         self.connection.executemany(
             "insert into resources (timestamp, uuid, data) values (?, ?, ?)",
             [
-                (timestamp_to_int(timestamp), str(uuid), data)
+                (timestamp_to_int(timestamp), uuid.hex, data)
                 for timestamp, uuid, data in resources
             ],
         )
         self.connection.commit()
 
     def read_resources(self, uuids: list[UUID]) -> list[StoreResource]:
-        uuids_string = ", ".join(f"'{uuid}'" for uuid in uuids)
+        uuids_string = ", ".join(f"'{uuid.hex}'" for uuid in uuids)
         result = (
             self.connection.cursor()
             .execute(

@@ -18,8 +18,8 @@ def parse_v1_store(
     entities: dict[datetime, dict[tuple[UUID, str], Json]] = defaultdict(dict)
     resources: dict[datetime, dict[UUID, bytes]] = defaultdict(dict)
 
-    entity_uuids: dict[str, UUID] = defaultdict(uuid4)
-    resource_uuids: dict[str, UUID] = defaultdict(uuid4)
+    entity_uuids: dict[str, UUID] = defaultdict(lambda: uuid4().hex)
+    resource_uuids: dict[str, UUID] = defaultdict(lambda: uuid4().hex)
 
     offset: int = cast(dict, json.loads((Path(path) / "metadata.json").read_text()))[
         "offset"
