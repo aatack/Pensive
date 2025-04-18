@@ -35,16 +35,14 @@ def parse_v1_store(
         is_parent = folder.name.startswith("parent")
         is_children = folder.name.startswith("children")
 
-        if is_parent:
-            for entity, update_values in json.loads(folder.read_text()).items():
+        for entity, update_values in json.loads(folder.read_text()).items():
+            if is_parent:
                 pass
 
-        if is_children:
-            for entity, update_values in json.loads(folder.read_text()).items():
+            if is_children:
                 pass
 
-        else:
-            for entity, update_values in json.loads(folder.read_text()).items():
+            else:
                 for update, value in update_values.items():
                     entities[get_timestamp(update)][entity_uuids[entity]] = value
 
