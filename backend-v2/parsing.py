@@ -35,6 +35,11 @@ def parse_v1_store(
         key = folder.name.removesuffix(".json")
         for entity, update_values in json.loads(folder.read_text()).items():
             for update, value in update_values.items():
+                if key == "parent" and value is not None:
+                    value = entity_uuids[value]
+                if key == "children" and value is not None:
+                    value = [entity_uuids[uuid] for uuid in value]
+
                 entities[get_timestamp(update), entity_uuids[entity], key] = value
 
     for folder in (Path(path) / "chunks").glob("**/resources/*/"):
