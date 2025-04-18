@@ -15,7 +15,7 @@ def int_to_timestamp(timestamp: int) -> datetime:
 def parse_v1_store(
     path: Path | str,
 ) -> tuple[dict[datetime, dict[UUID, Json]], dict[datetime, dict[UUID, bytes]]]:
-    entities: dict[datetime, dict[UUID, Json]] = defaultdict(dict)
+    entities: dict[datetime, dict[tuple[UUID, str], Json]] = defaultdict(dict)
     resources: dict[datetime, dict[UUID, bytes]] = defaultdict(dict)
 
     entity_uuids: dict[str, UUID] = defaultdict(uuid4)
@@ -32,9 +32,11 @@ def parse_v1_store(
         )
 
     for folder in (Path(path) / "chunks").glob("**/*.json"):
+        key = folder.name.removesuffix(".json")
+
         # Iterate over entity data
-        is_parent = folder.name.startswith("parent")
-        is_children = folder.name.startswith("children")
+        is_parent = key == "parent"
+        is_children = key == "children"
 
         for entity, update_values in json.loads(folder.read_text()).items():
             if is_parent:
@@ -45,7 +47,7 @@ def parse_v1_store(
 
             else:
                 for update, value in update_values.items():
-                    entities[get_timestamp(update)][entity_uuids[entity]] = value
+                    entities[get_timestamp(update)][entity_uuids[entity], key] = value
 
     for folder in (Path(path) / "chunks").glob("**/resources/*/"):
         # Iterate over resource folders
