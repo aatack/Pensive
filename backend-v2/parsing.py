@@ -15,11 +15,11 @@ def int_to_timestamp(timestamp: int) -> datetime:
 def parse_v1_store(
     path: Path | str,
 ) -> tuple[dict[datetime, dict[UUID, Json]], dict[datetime, dict[UUID, bytes]]]:
-    entities: dict[datetime, dict[tuple[UUID, str], Json]] = defaultdict(dict)
-    resources: dict[datetime, dict[UUID, bytes]] = defaultdict(dict)
+    entities: dict[tuple[datetime, UUID, str], Json] = {}
+    resources: dict[tuple[datetime, UUID], bytes] = {}
 
-    entity_uuids: dict[str, UUID] = defaultdict(lambda: uuid4().hex)
-    resource_uuids: dict[str, UUID] = defaultdict(lambda: uuid4().hex)
+    entity_uuids: dict[str, UUID] = defaultdict(uuid4)
+    resource_uuids: dict[str, UUID] = defaultdict(uuid4)
 
     offset: int = cast(dict, json.loads((Path(path) / "metadata.json").read_text()))[
         "offset"
@@ -33,28 +33,16 @@ def parse_v1_store(
 
     for folder in (Path(path) / "chunks").glob("**/*.json"):
         key = folder.name.removesuffix(".json")
-
-        # Iterate over entity data
-        is_parent = key == "parent"
-        is_children = key == "children"
-
         for entity, update_values in json.loads(folder.read_text()).items():
-            if is_parent:
-                pass
-
-            if is_children:
-                pass
-
-            else:
-                for update, value in update_values.items():
-                    entities[get_timestamp(update)][entity_uuids[entity], key] = value
+            for update, value in update_values.items():
+                entities[get_timestamp(update), entity_uuids[entity], key] = value
 
     for folder in (Path(path) / "chunks").glob("**/resources/*/"):
         # Iterate over resource folders
         (file,) = folder.glob("*.png")
-        resources[get_timestamp(folder.name)][
-            resource_uuids[folder.name]
-        ] = file.read_bytes()
+        resources[get_timestamp(folder.name), resource_uuids[folder.name]] = (
+            file.read_bytes()
+        )
 
     return entities, resources
 
