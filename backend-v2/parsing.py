@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import NamedTuple, cast
 from uuid import UUID, uuid4
 
-from backend.models.timestamp import Timestamp
 from helpers import Json
 
 
@@ -22,7 +21,9 @@ def parse_v1_store(
     entity_uuids: dict[str, UUID] = defaultdict(uuid4)
     resource_uuids: dict[str, UUID] = defaultdict(uuid4)
 
-    offset: int = cast(dict, (Path(path) / "metadata.json").read_text())["offset"]
+    offset: int = cast(dict, json.loads((Path(path) / "metadata.json").read_text()))[
+        "offset"
+    ]
 
     def get_timestamp(timestamp_string: str) -> datetime:
         timestamp = Timestamp.parse(timestamp_string)
@@ -54,3 +55,13 @@ def parse_v1_store(
         ] = file.read_bytes()
 
     return entities, resources
+
+
+class Timestamp(NamedTuple):
+    offset: int  # Seconds since UNIX epoch
+    increment: int  # Counter for distinguishing between timestamps in the same second
+
+    @staticmethod
+    def parse(string: str) -> "Timestamp":
+        offset, *increment = (int(segment) for segment in string.split("-"))
+        return Timestamp(offset, increment[0] if len(increment) > 0 else 0)
