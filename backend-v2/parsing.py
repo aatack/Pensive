@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import cast
 from uuid import UUID, uuid4
+from store import Store, StoreEntity
 
 from helpers import Json
 
@@ -53,3 +54,54 @@ def parse_v1_store(
         )
 
     return entities, resources
+
+
+def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
+    entities, resources = parse_v1_store(v1_path)
+
+    store = Store(v2_path)
+
+    outbound: dict[UUID, set[UUID]] = defaultdict(set)  # Children
+    inbound: dict[UUID, set[UUID]] = defaultdict(set)  # Parents
+
+    for timestamp, entity, key in sorted(entities.keys()):
+        value = entities[timestamp, entity, key]
+
+        if key == "children":
+            value = set() if value is None else set(value)
+
+            add_outbound = value - outbound[entity]
+            remove_outbound = outbound[entity] - value
+
+            store.write_entities(
+                [
+                    StoreEntity(
+                        timestamp,
+                        entity,
+                        "outbound",
+                        [f"+{uuid.hex}" for uuid in add_outbound]
+                        + [f"-{uuid.hex}" for uuid in remove_outbound],
+                    )
+                ]
+            )
+            outbound[entity] = set(value)
+        elif key == "parent":
+            value = set() if value is None else {value}
+
+            add_inbound = value - inbound[entity]
+            remove_inbound = inbound[entity] - value
+
+            store.write_entities(
+                [
+                    StoreEntity(
+                        timestamp,
+                        entity,
+                        "inbound",
+                        [f"+{uuid.hex}" for uuid in add_inbound]
+                        + [f"-{uuid.hex}" for uuid in remove_inbound],
+                    )
+                ]
+            )
+            outbound[entity] = set(value)
+        else:
+            store.write_entities([StoreEntity(timestamp, entity, key, value)])
