@@ -40,7 +40,10 @@ class Client:
                 entities[uuid][key], value
             )
 
-        return entities
+        return {
+            entity: {key: value for key, value in values.items() if value is not None}
+            for entity, values in entities.items()
+        }
 
     def read_resources(self, uuids: list[UUID]) -> dict[UUID, bytes]:
         return {
