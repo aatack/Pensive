@@ -33,8 +33,7 @@ class Client:
         )
 
         for _, uuid, key, value in sorted(
-            (entity for store in self.stores for entity in store.read_entities(uuids)),
-            key=lambda entity: entity.timestamp,
+            (entity for store in self.stores for entity in store.read_entities(uuids))
         ):
             entities[uuid][key] = self.reducers.get(key, replace)(
                 entities[uuid][key], value

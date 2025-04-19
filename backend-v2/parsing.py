@@ -113,13 +113,12 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
 
             store.write_entities(
                 [
-                    StoreEntity(
-                        timestamp,
-                        entity,
-                        "outbound",
-                        [f"+{uuid.hex}" for uuid in add_outbound]
-                        + [f"-{uuid.hex}" for uuid in remove_outbound],
-                    )
+                    StoreEntity(timestamp, entity, "outbound", f"+{uuid.hex}")
+                    for uuid in add_outbound
+                ]
+                + [
+                    StoreEntity(timestamp, entity, "outbound", f"-{uuid.hex}")
+                    for uuid in remove_outbound
                 ]
             )
             outbound[entity] = value
@@ -132,16 +131,15 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
 
             store.write_entities(
                 [
-                    StoreEntity(
-                        timestamp,
-                        entity,
-                        "inbound",
-                        [f"+{uuid.hex}" for uuid in add_inbound]
-                        + [f"-{uuid.hex}" for uuid in remove_inbound],
-                    )
+                    StoreEntity(timestamp, entity, "inbound", f"+{uuid.hex}")
+                    for uuid in add_inbound
+                ]
+                + [
+                    StoreEntity(timestamp, entity, "inbound", f"-{uuid.hex}")
+                    for uuid in remove_inbound
                 ]
             )
-            outbound[entity] = value
+            inbound[entity] = value
 
         else:
             store.write_entities([StoreEntity(timestamp, entity, key, value)])
