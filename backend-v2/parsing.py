@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import cast
 from uuid import UUID, uuid4
-from store import Store, StoreEntity
+from store import Store, StoreEntity, StoreResource
 from tqdm import tqdm
 from helpers import Json
 
@@ -20,7 +20,7 @@ def _parse_v1_timestamp(string: str) -> tuple[int, int]:
 
 def parse_v1_store(
     path: Path | str,
-) -> tuple[dict[datetime, dict[UUID, Json]], dict[datetime, dict[UUID, bytes]]]:
+) -> tuple[dict[tuple[datetime, UUID, str], Json], dict[tuple[datetime, UUID], bytes]]:
     entities: dict[tuple[datetime, UUID, str], Json] = {}
     resources: dict[tuple[datetime, UUID], bytes] = {}
 
@@ -39,6 +39,11 @@ def parse_v1_store(
         key = folder.name.removesuffix(".json")
         for entity, update_values in json.loads(folder.read_text()).items():
             for update, value in update_values.items():
+                if key == "image" and value is not None:
+                    value = [
+                        {"note": resource_uuids[item["note"]], "name": item["name"]}
+                        for item in value
+                    ]
                 if key == "parent" and value is not None:
                     value = entity_uuids[value]
                 if key == "children" and value is not None:
@@ -61,13 +66,44 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
 
     store = Store(v2_path)
 
+    images: dict[UUID, set[UUID]] = defaultdict(set)
     outbound: dict[UUID, set[UUID]] = defaultdict(set)  # Children
     inbound: dict[UUID, set[UUID]] = defaultdict(set)  # Parents
 
     for timestamp, entity, key in tqdm(list(sorted(entities.keys()))):
         value = entities[timestamp, entity, key]
 
-        if key == "children":
+        if key == "image":
+            # In v2, each image is stored on a separate entity instead of all of them
+            # being part of the main entity.  The `image` key then becomes a boolean
+            # flag denoting whether or not that entity should have its resource rendered
+            # as an image
+
+            value = set() if value is None else set(item["note"] for item in value)
+
+            add_images: set[UUID] = value - images[entity]
+            remove_images: set[UUID] = images[entity] - value
+
+            for image in add_images:
+                store.write_entities(
+                    [
+                        StoreEntity(timestamp, entity, "outbound", f"+{image.hex}"),
+                        StoreEntity(timestamp, image, "inbound", f"+{entity.hex}"),
+                        StoreEntity(timestamp, image, "image", True),
+                    ]
+                )
+
+            for image in remove_images:
+                store.write_entities(
+                    [
+                        StoreEntity(timestamp, entity, "outbound", f"-{image.hex}"),
+                        StoreEntity(timestamp, image, "inbound", f"-{entity.hex}"),
+                    ]
+                )
+
+            images[entity] = value
+
+        elif key == "children":
             value = set() if value is None else set(value)
 
             add_outbound = value - outbound[entity]
@@ -84,7 +120,8 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
                     )
                 ]
             )
-            outbound[entity] = set(value)
+            outbound[entity] = value
+
         elif key == "parent":
             value = set() if value is None else {value}
 
@@ -102,7 +139,8 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
                     )
                 ]
             )
-            outbound[entity] = set(value)
+            outbound[entity] = value
+
         else:
             store.write_entities([StoreEntity(timestamp, entity, key, value)])
 
