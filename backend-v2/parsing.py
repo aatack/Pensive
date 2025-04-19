@@ -70,7 +70,9 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
     outbound: dict[UUID, set[UUID]] = defaultdict(set)  # Children
     inbound: dict[UUID, set[UUID]] = defaultdict(set)  # Parents
 
-    for timestamp, entity, key in tqdm(list(sorted(entities.keys()))):
+    for timestamp, entity, key in tqdm(
+        list(sorted(entities.keys())), desc="Ingesting entities"
+    ):
         value = entities[timestamp, entity, key]
 
         if key == "image":
@@ -143,5 +145,10 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
 
         else:
             store.write_entities([StoreEntity(timestamp, entity, key, value)])
+
+    for (timestamp, resource), data in tqdm(
+        list(resources.items()), desc="Ingesting resources"
+    ):
+        store.write_resources([StoreResource(timestamp, resource, data)])
 
     return store
