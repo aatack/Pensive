@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import cast
 from uuid import UUID, uuid4
 from store import Store, StoreEntity
-
+from tqdm import tqdm
 from helpers import Json
 
 
@@ -64,7 +64,7 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
     outbound: dict[UUID, set[UUID]] = defaultdict(set)  # Children
     inbound: dict[UUID, set[UUID]] = defaultdict(set)  # Parents
 
-    for timestamp, entity, key in sorted(entities.keys()):
+    for timestamp, entity, key in tqdm(list(sorted(entities.keys()))):
         value = entities[timestamp, entity, key]
 
         if key == "children":
@@ -105,3 +105,5 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
             outbound[entity] = set(value)
         else:
             store.write_entities([StoreEntity(timestamp, entity, key, value)])
+
+    return store
