@@ -2,14 +2,19 @@ from collections import defaultdict
 from datetime import datetime, timezone
 import json
 from pathlib import Path
-from typing import NamedTuple, cast
+from typing import cast
 from uuid import UUID, uuid4
 
 from helpers import Json
 
 
-def int_to_timestamp(timestamp: int) -> datetime:
+def _int_to_timestamp(timestamp: int) -> datetime:
     return datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc)
+
+
+def _parse_v1_timestamp(string: str) -> tuple[int, int]:
+    offset, *increment = (int(segment) for segment in string.split("-"))
+    return (offset, increment[0] if len(increment) > 0 else 0)
 
 
 def parse_v1_store(
@@ -21,15 +26,13 @@ def parse_v1_store(
     entity_uuids: dict[str, UUID] = defaultdict(uuid4)
     resource_uuids: dict[str, UUID] = defaultdict(uuid4)
 
-    offset: int = cast(dict, json.loads((Path(path) / "metadata.json").read_text()))[
-        "offset"
-    ]
+    root_offset: int = cast(
+        dict, json.loads((Path(path) / "metadata.json").read_text())
+    )["offset"]
 
     def get_timestamp(timestamp_string: str) -> datetime:
-        timestamp = Timestamp.parse(timestamp_string)
-        return int_to_timestamp(
-            (offset + timestamp.offset) * 1000 + timestamp.increment
-        )
+        offset, increment = _parse_v1_timestamp(timestamp_string)
+        return _int_to_timestamp((root_offset + offset) * 1000 + increment)
 
     for folder in (Path(path) / "chunks").glob("**/*.json"):
         key = folder.name.removesuffix(".json")
@@ -50,13 +53,3 @@ def parse_v1_store(
         )
 
     return entities, resources
-
-
-class Timestamp(NamedTuple):
-    offset: int  # Seconds since UNIX epoch
-    increment: int  # Counter for distinguishing between timestamps in the same second
-
-    @staticmethod
-    def parse(string: str) -> "Timestamp":
-        offset, *increment = (int(segment) for segment in string.split("-"))
-        return Timestamp(offset, increment[0] if len(increment) > 0 else 0)
