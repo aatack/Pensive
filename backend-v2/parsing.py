@@ -160,7 +160,7 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> Store:
     ):
         resource_writes.extend([StoreResource(timestamp, resource, data)])
 
-    # store.write_entities(entity_writes)
-    # store.write_resources(resource_writes)
+    store.write_entities(entity_writes)
+    store.write_resources(resource_writes)
 
     return store
