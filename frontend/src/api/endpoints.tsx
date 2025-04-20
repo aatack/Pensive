@@ -2,7 +2,7 @@ import { EntityState } from "../components/entity/entity";
 import { server } from "../constants";
 import { sort } from "../helpers/sorting";
 
-export type Metadata = { offset: number; note: string };
+export type Metadata = { root: string | null };
 
 export const pensiveMetadata = async (): Promise<Metadata> =>
   fetch(`${server}/metadata`, {})
@@ -10,8 +10,7 @@ export const pensiveMetadata = async (): Promise<Metadata> =>
     .then(({ data }) => data);
 
 export type Read = {
-  item: string;
-  note: string | null;
+  uuid: string;
 };
 
 export const pensiveSave = async (): Promise<boolean> =>
@@ -19,8 +18,7 @@ export const pensiveSave = async (): Promise<boolean> =>
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({}),
-  })
-    .then((response) => response.json());
+  }).then((response) => response.json());
 
 export const pensiveRead = async (read: Read): Promise<EntityState> =>
   fetch(`${server}/read`, {
@@ -32,8 +30,8 @@ export const pensiveRead = async (read: Read): Promise<EntityState> =>
     .then(({ data }) => data);
 
 export type Write = {
-  note: string;
-  inputs: { [timestamp: string]: { [trait: string]: any } };
+  timestamp: string;
+  entities: { [uuid: string]: { [key: string]: any } };
 };
 
 export const pensiveWrite = async (
@@ -46,8 +44,8 @@ export const pensiveWrite = async (
   const form = new FormData();
   form.append("note", note);
   form.append("inputs", JSON.stringify(inputs));
-  names.forEach((name) => form.append("blobs", resources[name]!));
-  form.append("names", JSON.stringify(names));
+  form.append("resource_uuids", JSON.stringify(names));
+  names.forEach((name) => form.append("resource_blobs", resources[name]!));
 
   return fetch(`${server}/write`, { method: "POST", body: form })
     .then((response) => response.json())
