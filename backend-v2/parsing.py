@@ -45,11 +45,13 @@ def parse_v1_store(
                         for item in value
                     ]
                 if key == "parent" and value is not None:
-                    value = entity_uuids[value]
+                    value = entity_uuids[cast(str, value)]
                 if key == "children" and value is not None:
-                    value = [entity_uuids[uuid] for uuid in value]
+                    value = [entity_uuids[uuid] for uuid in cast(list[str], value)]
 
-                entities[get_timestamp(update), entity_uuids[entity], key] = value
+                entities[get_timestamp(update), entity_uuids[entity], key] = cast(
+                    Json, value
+                )
 
     for folder in (Path(path) / "chunks").glob("**/resources/*/"):
         # Iterate over resource folders
@@ -61,7 +63,7 @@ def parse_v1_store(
     return entities, resources
 
 
-def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
+def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> Store:
     entities, resources = parse_v1_store(v1_path)
 
     store = Store(v2_path)
@@ -69,6 +71,9 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
     images: dict[UUID, set[UUID]] = defaultdict(set)
     outbound: dict[UUID, set[UUID]] = defaultdict(set)  # Children
     inbound: dict[UUID, set[UUID]] = defaultdict(set)  # Parents
+
+    entity_writes: list[StoreEntity] = []
+    resource_writes: list[StoreResource] = []
 
     for timestamp, entity, key in tqdm(
         list(sorted(entities.keys())), desc="Ingesting entities"
@@ -81,13 +86,17 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
             # flag denoting whether or not that entity should have its resource rendered
             # as an image
 
-            value = set() if value is None else set(item["note"] for item in value)
+            value = (
+                set()
+                if value is None
+                else set(item["note"] for item in cast(list[dict], value))
+            )
 
             add_images: set[UUID] = value - images[entity]
             remove_images: set[UUID] = images[entity] - value
 
             for image in add_images:
-                store.write_entities(
+                entity_writes.extend(
                     [
                         StoreEntity(timestamp, entity, "outbound", f"+{image.hex}"),
                         StoreEntity(timestamp, image, "inbound", f"+{entity.hex}"),
@@ -96,7 +105,7 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
                 )
 
             for image in remove_images:
-                store.write_entities(
+                entity_writes.extend(
                     [
                         StoreEntity(timestamp, entity, "outbound", f"-{image.hex}"),
                         StoreEntity(timestamp, image, "inbound", f"-{entity.hex}"),
@@ -106,12 +115,14 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
             images[entity] = value
 
         elif key == "children":
-            value = set() if value is None else set(value)
+            children: set[UUID] = (
+                set() if value is None else set(cast(list[UUID], value))
+            )
 
-            add_outbound = value - outbound[entity]
-            remove_outbound = outbound[entity] - value
+            add_outbound = children - outbound[entity]
+            remove_outbound = outbound[entity] - children
 
-            store.write_entities(
+            entity_writes.extend(
                 [
                     StoreEntity(timestamp, entity, "outbound", f"+{uuid.hex}")
                     for uuid in add_outbound
@@ -121,15 +132,15 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
                     for uuid in remove_outbound
                 ]
             )
-            outbound[entity] = value
+            outbound[entity] = children
 
         elif key == "parent":
-            value = set() if value is None else {value}
+            parent: set[UUID] = set() if value is None else {cast(UUID, value)}
 
-            add_inbound = value - inbound[entity]
-            remove_inbound = inbound[entity] - value
+            add_inbound = parent - inbound[entity]
+            remove_inbound = inbound[entity] - parent
 
-            store.write_entities(
+            entity_writes.extend(
                 [
                     StoreEntity(timestamp, entity, "inbound", f"+{uuid.hex}")
                     for uuid in add_inbound
@@ -139,7 +150,7 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
                     for uuid in remove_inbound
                 ]
             )
-            inbound[entity] = value
+            inbound[entity] = parent
 
         else:
             store.write_entities([StoreEntity(timestamp, entity, key, value)])
@@ -147,6 +158,9 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> None:
     for (timestamp, resource), data in tqdm(
         list(resources.items()), desc="Ingesting resources"
     ):
-        store.write_resources([StoreResource(timestamp, resource, data)])
+        resource_writes.extend([StoreResource(timestamp, resource, data)])
+
+    # store.write_entities(entity_writes)
+    # store.write_resources(resource_writes)
 
     return store

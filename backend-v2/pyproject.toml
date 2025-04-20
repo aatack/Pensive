@@ -17,4 +17,5 @@ dev = [
 [tool.uv]
 dev-dependencies = [
     "ipykernel>=6.29.5",
+    "tqdm>=4.67.1",
 ]
