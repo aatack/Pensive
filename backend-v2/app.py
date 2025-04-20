@@ -6,9 +6,6 @@ from client import Client
 from fastapi import FastAPI, Form, Response, UploadFile
 from pydantic import BaseModel
 
-from models.timestamp import Timestamp
-from models.trait import Trait
-
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from fastapi import FastAPI, Request, status
@@ -73,11 +70,6 @@ def read_endpoint(read: Read) -> dict:
     uuid = UUID(read.uuid)
 
     return dict(data=client.read_entities([uuid])[uuid])
-
-
-class Write(BaseModel):
-    timestamp: str
-    entities: dict[Annotated[str, Timestamp], dict[Annotated[str, Trait], Any]]
 
 
 @app.post("/write")
