@@ -18,7 +18,8 @@ def array(current: Json, update: Json) -> Json:
     if operation == "+" and not present:
         return current + [text]
     elif operation == "-" and present:
-        return [item for item in current if item != text]
+        items = [item for item in current if item != text]
+        return None if len(items) == 0 else items
     elif (
         operation == ">"
         and present

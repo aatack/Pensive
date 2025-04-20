@@ -97,7 +97,12 @@ class Store:
         result = (
             self.connection.cursor()
             .execute(
-                "select uuid from entities order by timestamp asc, uuid asc limit 1"
+                """
+                select uuid from entities
+                    where key = 'text'
+                    order by timestamp asc, uuid asc
+                    limit 1
+                """
             )
             .fetchone()
         )
