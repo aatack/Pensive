@@ -64,10 +64,7 @@ const usePensiveState = (): Atom<PensiveState> => {
     queries: { default: { status: "waiting", subscribers: 0 }, mapping: {} },
     metadata: null,
     resources: {
-      default: {
-        default: { status: "waiting", subscribers: 0, url: null },
-        mapping: {},
-      },
+      default: { status: "waiting", subscribers: 0, url: null },
       mapping: {},
     },
   });

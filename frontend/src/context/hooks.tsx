@@ -5,7 +5,6 @@ import {
   pensiveWrite,
 } from "../api/endpoints";
 import { cursor, mappingCursor } from "../helpers/atoms";
-import { mappingUpdate } from "../helpers/mapping";
 import { usePensive } from "../components/pensive";
 import { EntityState } from "../components/entity/entity";
 import { useDeepMemo } from "../helpers/state";
@@ -120,42 +119,17 @@ export const useResource = (resourceUuid: string): string | null => {
 };
 
 export const useWrite = () => {
-  const cache = cursor(usePensive(), "entities");
-  const metadata = cursor(usePensive(), "metadata");
-  const nextSnapshot = useNextSnapshot();
+  const syncEntity = useSyncEntity();
 
   return (
-    inputs: (snapshot: string) => {
-      [entity: string]: { [trait: string]: any };
-    },
-    resources?: (snapshot: string) => { [name: string]: Blob }
+    entities: { [uuid: string]: { [key: string]: any } },
+    resources?: { [uuid: string]: Blob }
   ) => {
-    const snapshot = nextSnapshot();
-
     // At this point we could in principle partially apply the results locally,
     // to be corrected later once the full results from the backend return
-    pensiveWrite(
-      snapshot,
-      inputs(snapshot),
-      resources == null ? {} : resources(snapshot)
-    ).then((changes) => {
-      metadata.swap((current) => ({ ...current!, note: snapshot }));
-
-      cache.swap((current) =>
-        Object.entries(changes).reduce(
-          (mapping, [entityId, newEntity]) =>
-            mappingUpdate(mapping, entityId + ":", (oldEntity) =>
-              tidyEntity({
-                ...oldEntity,
-                ...newEntity,
-              })
-            ),
-          current
-        )
-      );
+    pensiveWrite(new Date(), entities, resources ?? {}).then(() => {
+      Object.keys(entities).forEach(syncEntity);
     });
-
-    return snapshot;
   };
 };
 
@@ -173,16 +147,11 @@ export const useSwapEntity = () => {
   const getEntity = useGetEntity();
 
   return (
-    entityId: string,
-    update: (entity: EntityState, note: string) => EntityState,
-    resources?: {
-      [name: string]: File;
-    }
+    entityUuid: string,
+    update: (entity: EntityState) => EntityState,
+    resources?: { [name: string]: File }
   ) =>
-    getEntity(entityId, null).then((entity) => {
-      return write(
-        (snapshot) => ({ [entityId]: update(entity, snapshot) }),
-        () => resources ?? {}
-      );
+    getEntity(entityUuid).then((entity) => {
+      return write({ [entityUuid]: update(entity) }, resources);
     });
 };
