@@ -36,7 +36,7 @@ export type PensiveState = {
    * This is not yet implemented, however; once loaded, resources will hang
    * around indefinitely.
    */
-  resources: Mapping<string, Mapping<string, Request & { url: string | null }>>;
+  resources: Mapping<string, Request & { url: string | null }>;
 };
 
 export type Request = {

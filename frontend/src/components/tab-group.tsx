@@ -6,7 +6,7 @@ import { Tab, TabState } from "./tab";
 import CircleIcon from "@mui/icons-material/Circle";
 import { WindowControls } from "./window-controls";
 import { colours, font } from "../constants";
-import { uuid } from "../helpers/uuid";
+import { generateUuid } from "../helpers/uuid";
 import { moveTab, useTabsState } from "./tabs";
 import { useEntity } from "../context/hooks";
 
@@ -95,7 +95,7 @@ const useTabGroupActions = (
     "ctrl+t",
     () =>
       tabGroupData.openTab({
-        uuid: uuid(),
+        uuid: generateUuid(),
         frame: { entityId: "0", selection: [], context: null, highlight: {} },
         collapsed: [],
         expanded: [],
@@ -270,7 +270,7 @@ const popFrameIntoTab = (
           tab.uuid === tabUuid ? { ...tab, frame: frame.context! } : tab
         ),
         {
-          uuid: uuid(),
+          uuid: generateUuid(),
           frame: { ...frame, context: null },
           collapsed: [],
           expanded: [],

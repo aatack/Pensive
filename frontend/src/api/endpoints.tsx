@@ -9,34 +9,28 @@ export const pensiveMetadata = async (): Promise<Metadata> =>
     .then((response) => response.json())
     .then(({ data }) => data);
 
-export type Read = {
-  uuid: string;
-};
-
-export const pensiveRead = async (read: Read): Promise<EntityState> =>
+export const pensiveRead = async (uuid: string): Promise<EntityState> =>
   fetch(`${server}/read`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(read),
+    body: JSON.stringify({ uuid }),
   })
     .then((response) => response.json())
     .then(({ data }) => data);
 
-export type Write = {
-  timestamp: Date;
-  entities: { [uuid: string]: { [key: string]: any } };
-  resources: { [uuid: string]: Blob };
-};
-
-export const pensiveWrite = async (write: Write): Promise<"OK"> => {
-  const resourceUuids = sort(Object.keys(write.resources), (uuid) => uuid);
+export const pensiveWrite = async (
+  timestamp: Date,
+  entities: { [uuid: string]: { [key: string]: any } },
+  resources: { [uuid: string]: Blob }
+): Promise<"OK"> => {
+  const resourceUuids = sort(Object.keys(resources), (uuid) => uuid);
 
   const form = new FormData();
-  form.append("timestamp", write.timestamp.toISOString());
-  form.append("entities", JSON.stringify(write.entities));
+  form.append("timestamp", timestamp.toISOString());
+  form.append("entities", JSON.stringify(entities));
   form.append("resource_uuids", JSON.stringify(resourceUuids));
   resourceUuids.forEach((uuid) =>
-    form.append("resource_blobs", write.resources[uuid]!)
+    form.append("resource_blobs", resources[uuid]!)
   );
 
   return fetch(`${server}/write`, { method: "POST", body: form })

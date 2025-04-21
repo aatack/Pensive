@@ -9,7 +9,7 @@ import {
   usePersistentAtom,
 } from "../helpers/atoms";
 import { clamp } from "../helpers/maths";
-import { uuid } from "../helpers/uuid";
+import { generateUuid } from "../helpers/uuid";
 import { Provide, useProvided } from "../providers/provider";
 import { StatusBar } from "./status-bar";
 import { getFocusedTab, TabGroup, TabGroupState } from "./tab-group";
@@ -173,7 +173,7 @@ const verifyTabs = (tabs: TabsState): TabsState => {
             {
               tabs: [
                 {
-                  uuid: uuid(),
+                  uuid: generateUuid(),
                   frame: {
                     entityId: "0",
                     selection: [],
@@ -216,7 +216,7 @@ export const duplicateTab = (tabs: TabsState, tabUuid: string): TabsState => ({
           ...tabGroup.tabs,
           {
             ...tabGroup.tabs.find((tab) => tab.uuid === tabUuid)!,
-            uuid: uuid(),
+            uuid: generateUuid(),
           },
         ]
       : tabGroup.tabs,
