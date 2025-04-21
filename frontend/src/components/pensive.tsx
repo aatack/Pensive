@@ -1,10 +1,9 @@
 import { ReactNode, useEffect } from "react";
-import { Metadata, pensiveMetadata, pensiveSave } from "../api/endpoints";
+import { Metadata, pensiveMetadata } from "../api/endpoints";
 import { Atom, useAtom } from "../helpers/atoms";
 import { Mapping, mappingGet } from "../helpers/mapping";
 import { Provide, useProvided } from "../providers/provider";
 import { EntityState } from "./entity/entity";
-import { ToolState } from "./tool/tool";
 import { headTail, isEmptyArray } from "../helpers/arrays";
 
 export type PensiveState = {
@@ -83,14 +82,6 @@ const usePensiveState = (): Atom<PensiveState> => {
 };
 
 export const ProvidePensive = ({ children }: { children: ReactNode }) => {
-  useEffect(() => {
-    const interval = setInterval(() => {
-      pensiveSave();
-    }, 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return <Provide values={{ pensive: usePensiveState() }}>{children}</Provide>;
 };
 
@@ -128,7 +119,7 @@ export const resolveQuery = (
   const entityCollapsed = collapsed.includes(entityId) && path.length > 0;
   const entityExpanded = expanded.includes(entityId);
 
-  const children = entity.children ?? [];
+  const children = entity.outbound ?? [];
   const includedChildren = children.filter((child) => limit.has(child));
 
   const selectionPathParts = headTail(selectionPath ?? []);
@@ -185,7 +176,7 @@ export const findQueryResolutionLimit = (
   while (toExplore.length > 0 && included.size < limit) {
     const current = toExplore.shift()!;
     included.add(current);
-    (mappingGet(entities, current + ":").children ?? []).forEach((child) => {
+    (mappingGet(entities, current + ":").outbound ?? []).forEach((child) => {
       toExplore.push(child);
     });
   }
