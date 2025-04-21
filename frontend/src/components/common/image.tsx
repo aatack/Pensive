@@ -4,8 +4,8 @@ import { colours } from "../../constants";
 import { Box, Typography } from "@mui/material";
 import { generateUuid } from "../../helpers/uuid";
 
-export const RenderImage = ({ entityUuid }: { entityUuid: string }) => {
-  const resource = useResource(entityUuid);
+export const RenderImage = ({ resourceUuid }: { resourceUuid: string }) => {
+  const resource = useResource(resourceUuid);
   const [containerRef] = useDimensions<HTMLImageElement>();
 
   const imageRef = useRef<HTMLImageElement>(null);
@@ -43,11 +43,11 @@ const useDimensions = <T extends HTMLElement>() => {
 };
 
 export const PasteImage = ({
+  entityUuid,
   children,
-  entityId,
 }: {
+  entityUuid: string;
   children: ReactNode;
-  entityId: string;
 }) => {
   const addImage = useAddImage();
 
@@ -55,7 +55,7 @@ export const PasteImage = ({
     const file = event.clipboardData.files[0];
 
     if (file != null) {
-      addImage(entityId, file);
+      addImage(entityUuid, file);
     }
   };
 
