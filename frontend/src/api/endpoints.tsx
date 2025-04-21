@@ -23,33 +23,32 @@ export const pensiveRead = async (read: Read): Promise<EntityState> =>
     .then(({ data }) => data);
 
 export type Write = {
-  timestamp: string;
+  timestamp: Date;
   entities: { [uuid: string]: { [key: string]: any } };
+  resources: { [uuid: string]: Blob };
 };
 
-export const pensiveWrite = async (
-  note: string,
-  inputs: { [timestamp: string]: { [trait: string]: any } },
-  resources: { [name: string]: Blob }
-): Promise<{ [timestamp: string]: { [trait: string]: any } }> => {
-  const names = sort(Object.keys(resources), (name) => name);
+export const pensiveWrite = async (write: Write): Promise<"OK"> => {
+  const resourceUuids = sort(Object.keys(write.resources), (uuid) => uuid);
 
   const form = new FormData();
-  form.append("note", note);
-  form.append("inputs", JSON.stringify(inputs));
-  form.append("resource_uuids", JSON.stringify(names));
-  names.forEach((name) => form.append("resource_blobs", resources[name]!));
+  form.append("timestamp", write.timestamp.toISOString());
+  form.append("entities", JSON.stringify(write.entities));
+  form.append("resource_uuids", JSON.stringify(resourceUuids));
+  resourceUuids.forEach((uuid) =>
+    form.append("resource_blobs", write.resources[uuid]!)
+  );
 
   return fetch(`${server}/write`, { method: "POST", body: form })
     .then((response) => response.json())
     .then(({ data }) => data);
 };
 
-export const pensiveReadResource = async (note: string, name: string) => {
+export const pensiveReadResource = async (uuid: string) => {
   return fetch(`${server}/read-resource`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ note, name }),
+    body: JSON.stringify({ uuid }),
   })
     .then(({ body }: { body: ReadableStream | null }) => body)
     .then((stream) => new Response(stream))
