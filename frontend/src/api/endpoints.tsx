@@ -13,13 +13,6 @@ export type Read = {
   uuid: string;
 };
 
-export const pensiveSave = async (): Promise<boolean> =>
-  fetch(`${server}/save`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({}),
-  }).then((response) => response.json());
-
 export const pensiveRead = async (read: Read): Promise<EntityState> =>
   fetch(`${server}/read`, {
     method: "POST",

@@ -4,20 +4,17 @@ import { RowEntity } from "./rowEntity";
 import { TableEntity } from "./tableEntity";
 import { TreeEntity } from "./treeEntity";
 
-export type EntityState = {
-  text?: string | null;
+export type EntityState = Partial<{
+  text: string | null;
 
-  open?: boolean | null;
-  section?: boolean | null;
+  open: boolean | null;
+  section: boolean | null;
 
-  parent?: EntityId | null;
-  children?: EntityId[] | null;
+  inbound: EntityId[] | null;
+  outbound: EntityId[] | null;
 
-  reference?: EntityId | null;
-  referees?: EntityId[] | null;
-
-  image?: { note: string; name: string }[] | null;
-};
+  image: boolean | null;
+}>;
 
 export type EntityId = string;
 
