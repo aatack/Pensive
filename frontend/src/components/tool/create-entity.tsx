@@ -13,7 +13,7 @@ export type CreateEntityState = {
   type: "createEntity";
   tabUuid: string;
   path: string[];
-  extraValues?: EntityState;
+  extraUpdates?: EntityState;
 };
 
 export const useCreateEntityState = () => {
@@ -29,7 +29,7 @@ export const useCreateEntityState = () => {
 export const useCreateEntityActions = (tab: TabState, selected: boolean) => {
   const tool = useToolState();
 
-  const startCreating = (extraValues: EntityState) =>
+  const startCreating = (extraUpdates: EntityState) =>
     tool.value.type === "createEntity"
       ? () => null
       : () =>
@@ -37,7 +37,7 @@ export const useCreateEntityActions = (tab: TabState, selected: boolean) => {
             type: "createEntity",
             tabUuid: tab.uuid,
             path: tab.frame.selection,
-            extraValues,
+            extraUpdates,
           });
 
   useHotkeys("enter", startCreating({}), {
@@ -69,7 +69,11 @@ export const CreateEntity = () => {
   const confirm = (text: string) => {
     const childUuid = generateUuid();
     write({
-      [childUuid]: { inbound: `+${parentUuid}`, text },
+      [childUuid]: {
+        inbound: `+${parentUuid}`,
+        text,
+        ...createEntity.value.extraUpdates,
+      },
       [parentUuid]: { outbound: `+${childUuid}` },
     });
     selection.reset([...createEntity.value.path, childUuid]);
@@ -79,7 +83,7 @@ export const CreateEntity = () => {
 
   return (
     // Really this should update the tool state on every key press
-    <EntityIndent entity={createEntity.value.extraValues ?? {}}>
+    <EntityIndent entity={createEntity.value.extraUpdates ?? {}}>
       <TextInput confirm={confirm} cancel={createEntity.clear} />
     </EntityIndent>
   );
