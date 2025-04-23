@@ -7,6 +7,7 @@ import { EntityState } from "../entity/entity";
 import { EntityIndent } from "../entity/indent";
 import { TabState, useTabState } from "../tab";
 import { useToolState } from "./tool";
+import { generateUuid } from "../../helpers/uuid";
 
 export type CreateEntityState = {
   type: "createEntity";
@@ -63,16 +64,17 @@ export const CreateEntity = () => {
     return null;
   }
 
-  const entityId = last(createEntity.value.path) ?? frame.value.entityId;
+  const parentUuid = last(createEntity.value.path) ?? frame.value.entityId;
 
   const confirm = (text: string) => {
-    const snapshot = write((snapshot) => ({
-      [snapshot]: { ...createEntity.value.extraValues, parent: entityId, text },
-    }));
-    selection.reset([...createEntity.value.path, snapshot]);
+    const childUuid = generateUuid();
+    write({
+      [childUuid]: { inbound: `+${parentUuid}`, text },
+      [parentUuid]: { outbound: `+${childUuid}` },
+    });
+    selection.reset([...createEntity.value.path, childUuid]);
 
     createEntity.clear();
-    return snapshot;
   };
 
   return (

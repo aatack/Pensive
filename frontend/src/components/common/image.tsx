@@ -68,8 +68,8 @@ const useAddImage = () => {
     const resourceUuid = generateUuid();
     return write(
       {
-        [entityUuid]: { outbound: [`+${resourceUuid}`] },
-        [resourceUuid]: { inbound: [`+${entityUuid}`], image: true },
+        [entityUuid]: { outbound: `+${resourceUuid}` },
+        [resourceUuid]: { inbound: `+${entityUuid}`, image: true },
       },
       { [resourceUuid]: file }
     );
