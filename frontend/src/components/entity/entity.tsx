@@ -1,8 +1,8 @@
 import { useEntity } from "../../context/hooks";
 import { ResolvedQuery } from "../pensive";
-import { RowEntity } from "./rowEntity";
-import { TableEntity } from "./tableEntity";
-import { TreeEntity } from "./treeEntity";
+import { RowEntity } from "./row-entity";
+import { TableEntity } from "./table-entity";
+import { TreeEntity } from "./tree-entity";
 
 export type EntityState = Partial<{
   text: string | null;
