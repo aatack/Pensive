@@ -27,7 +27,7 @@ class Store:
     def __init__(self, path: str | Path) -> None:
         self.path = Path(path)
 
-        _ = self.old_connection  # Initialise the database
+        self._initialise_database()
 
     @contextmanager
     def connection(self) -> Iterator[sqlite3.Connection]:
@@ -37,59 +37,55 @@ class Store:
         finally:
             connection.close()
 
-    @property
-    def old_connection(self) -> sqlite3.Connection:
+    def _initialise_database(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        connection = sqlite3.connect(self.path)
-
-        # Entities
-        connection.execute(
-            """
-            create table if not exists entities (
-                timestamp integer not null,
-                uuid text not null,
-                key text not null,
-                value text not null
-            );
-            """
-        )
-        connection.execute(
-            """
-            create index if not exists idx_entities_timestamp
-                on entities (timestamp)
-            """
-        )
-        connection.execute(
-            """
-            create index if not exists idx_entities_uuid
-                on entities (uuid)
-            """
-        )
-
-        # Resources
-        connection.execute(
-            """
-            create table if not exists resources (
-                timestamp integer not null,
-                uuid text not null,
-                data blob not null
+        with self.connection() as connection:
+            # Entities
+            connection.execute(
+                """
+                create table if not exists entities (
+                    timestamp integer not null,
+                    uuid text not null,
+                    key text not null,
+                    value text not null
+                );
+                """
             )
-            """
-        )
-        connection.execute(
-            """
-            create index if not exists idx_resources_timestamp
-                on resources (timestamp)
-            """
-        )
-        connection.execute(
-            """
-            create index if not exists idx_resources_uuid
-                on resources (uuid)
-            """
-        )
+            connection.execute(
+                """
+                create index if not exists idx_entities_timestamp
+                    on entities (timestamp)
+                """
+            )
+            connection.execute(
+                """
+                create index if not exists idx_entities_uuid
+                    on entities (uuid)
+                """
+            )
 
-        return connection
+            # Resources
+            connection.execute(
+                """
+                create table if not exists resources (
+                    timestamp integer not null,
+                    uuid text not null,
+                    data blob not null
+                )
+                """
+            )
+            connection.execute(
+                """
+                create index if not exists idx_resources_timestamp
+                    on resources (timestamp)
+                """
+            )
+            connection.execute(
+                """
+                create index if not exists idx_resources_uuid
+                    on resources (uuid)
+                """
+            )
 
     def write_entities(self, entities: list[StoreEntity]) -> None:
         if len(entities) == 0:
