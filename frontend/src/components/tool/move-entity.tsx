@@ -22,11 +22,15 @@ export const useMoveEntityActions = (tab: TabState, enabled: boolean) => {
   const confirm = (uuid: string) => {
     const value = tool.value;
     if (value.type === "moveEntity") {
-      write({
-        [value.parentUuid]: { outbound: `-${value.childUuid}` },
-        [value.childUuid]: { inbound: [`-${value.parentUuid}`, `+${uuid}`] },
-        [uuid]: { outbound: `+${value.childUuid}` },
-      });
+      // Cancel the operation if it would be a degenerate move - ie. if any of
+      // the arguments are the same as each other
+      if (new Set([value.parentUuid, value.childUuid, uuid]).size === 3) {
+        write({
+          [value.parentUuid]: { outbound: `-${value.childUuid}` },
+          [value.childUuid]: { inbound: [`-${value.parentUuid}`, `+${uuid}`] },
+          [uuid]: { outbound: `+${value.childUuid}` },
+        });
+      }
       tool.clear();
     }
   };
