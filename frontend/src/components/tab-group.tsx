@@ -225,7 +225,7 @@ const TabHeader = ({
   tabGroup: Atom<TabGroupState>;
   uuids: string[];
 }) => {
-  const entity = useEntity(tab.frame.entityId, null);
+  const entity = useEntity(tab.frame.entityId);
 
   return (
     <Box

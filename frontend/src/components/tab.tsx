@@ -213,7 +213,7 @@ const TabContext = ({ tab }: { tab: TabState }) => {
 };
 
 const TabContextEntity = ({ entityId }: { entityId: string }) => {
-  const entity = useEntity(entityId, null);
+  const entity = useEntity(entityId);
   return (
     <EntityIndent entity={entity}>
       <EntityContent

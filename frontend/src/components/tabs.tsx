@@ -72,7 +72,7 @@ export const Tabs = () => {
   return (
     <Provide values={{ tabs }}>
       <PasteImage
-        entityId={getFocusedEntityId(
+        entityUuid={getFocusedEntityId(
           getFocusedTab(getFocusedTabGroup(tabs.value))
         )}
       >
