@@ -67,9 +67,12 @@ class Read(BaseModel):
 @app.post("/read")
 def read_endpoint(read: Read) -> dict:
     client = State.client
-    uuid = UUID(read.uuid)
+    # Having a special value for the root entity allows new tabs to be initialised
+    # without an additional call to the backend.  It also makes new stores easier to set
+    # up
+    uuid = client.root_entity() if read.uuid == "root" else UUID(read.uuid)
 
-    return dict(data=client.read_entities([uuid])[uuid])
+    return dict(data={} if uuid is None else client.read_entities([uuid])[uuid])
 
 
 @app.post("/write")

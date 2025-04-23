@@ -110,7 +110,7 @@ export const resolveQuery = (
   createEntityPath: string[] | null,
   editEntityPath: string[] | null
 ): ResolvedQuery => {
-  const entity = mappingGet(entities, entityId + ":");
+  const entity = mappingGet(entities, entityId);
 
   // The root entity is never collapsed
   const entityCollapsed = collapsed.includes(entityId) && path.length > 0;
@@ -173,7 +173,7 @@ export const findQueryResolutionLimit = (
   while (toExplore.length > 0 && included.size < limit) {
     const current = toExplore.shift()!;
     included.add(current);
-    (mappingGet(entities, current + ":").outbound ?? []).forEach((child) => {
+    (mappingGet(entities, current).outbound ?? []).forEach((child) => {
       toExplore.push(child);
     });
   }
