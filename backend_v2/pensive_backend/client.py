@@ -3,9 +3,9 @@ from collections.abc import Callable, Iterator
 from datetime import datetime
 from uuid import UUID
 
-from helpers import Json
-from reducers import replace
-from store import Store, StoreEntity, StoreResource
+from pensive_backend.helpers import Json
+from pensive_backend.reducers import replace
+from pensive_backend.store import Store, StoreEntity, StoreResource
 
 
 class Client:

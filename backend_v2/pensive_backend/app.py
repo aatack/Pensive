@@ -1,23 +1,19 @@
-from datetime import datetime
 import json
+import logging
 import os
+from datetime import datetime
 from typing import Annotated
 from uuid import UUID
-from client import Client
-from fastapi import FastAPI, Form, Response, UploadFile
+
+from fastapi import FastAPI, Form, Request, Response, UploadFile, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from fastapi.middleware.cors import CORSMiddleware
-import logging
-from fastapi import FastAPI, Request, status
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from reducers import array
-from store import Store
-
+from pensive_backend.client import Client
+from pensive_backend.reducers import array
+from pensive_backend.store import Store
 
 app = FastAPI()
 

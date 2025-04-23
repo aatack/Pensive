@@ -1,4 +1,4 @@
-from helpers import Json
+from pensive_backend.helpers import Json
 
 
 def replace(_: Json, update: Json) -> Json:
