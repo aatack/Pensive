@@ -6,6 +6,12 @@ def replace(_: Json, update: Json) -> Json:
 
 
 def array(current: Json, update: Json) -> Json:
+    if isinstance(update, list):
+        if len(update) == 0:
+            return current
+        else:
+            return array(array(current, update[0]), update[1:])
+
     if not isinstance(update, str) or len(update) < 1:
         return current
 
