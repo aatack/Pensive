@@ -62,7 +62,6 @@ async def metadata_endpoint() -> dict:
 
 class Read(BaseModel):
     uuid: str
-    timestamp: str | None = None
 
 
 @app.post("/read")
