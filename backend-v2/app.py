@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
-from typing import Annotated, Any
+import os
+from typing import Annotated
 from uuid import UUID
 from client import Client
 from fastapi import FastAPI, Form, Response, UploadFile
@@ -14,6 +15,8 @@ from fastapi.responses import JSONResponse
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from reducers import array
+from store import Store
 
 
 app = FastAPI()
@@ -42,7 +45,11 @@ app.add_middleware(
 
 
 class State:
-    client: Client
+    client: Client = Client(
+        dict(inbound=array, outbound=array),
+        Store(os.environ.get("PENSIVE_PATH", ".pensive")),
+        [],
+    )
 
 
 class Metadata(BaseModel):
@@ -53,9 +60,7 @@ class Metadata(BaseModel):
 async def metadata_endpoint() -> dict:
     client = State.client
     return dict(
-        data=Metadata(
-            root=None if (root := client.root_entity()) is None else str(root)
-        )
+        data=Metadata(root=None if (root := client.root_entity()) is None else root.hex)
     )
 
 
