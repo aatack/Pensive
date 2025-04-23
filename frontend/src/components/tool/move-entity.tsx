@@ -5,23 +5,28 @@ import { useToolState } from "./tool";
 
 export type MoveEntityState = {
   type: "moveEntity";
-  entityId: string;
+  parentUuid: string;
+  childUuid: string;
 };
 
 export const useMoveEntityActions = (tab: TabState, enabled: boolean) => {
   const tool = useToolState();
   const write = useWrite();
 
-  const initiate = (entityId: string) => {
+  const initiate = (parentUuid: string, childUuid: string) => {
     if (tool.value.type === "noTool") {
-      tool.reset({ type: "moveEntity", entityId });
+      tool.reset({ type: "moveEntity", parentUuid, childUuid });
     }
   };
 
-  const confirm = (entityId: string) => {
+  const confirm = (uuid: string) => {
     const value = tool.value;
     if (value.type === "moveEntity") {
-      write(() => ({ [value.entityId]: { parent: entityId } }));
+      write({
+        [value.parentUuid]: { outbound: `-${value.childUuid}` },
+        [value.childUuid]: { inbound: [`-${value.parentUuid}`, `+${uuid}`] },
+        [uuid]: { outbound: `+${value.childUuid}` },
+      });
       tool.clear();
     }
   };
@@ -38,7 +43,10 @@ export const useMoveEntityActions = (tab: TabState, enabled: boolean) => {
       if (tool.value.type === "moveEntity") {
         confirm(getFocusedEntityId(tab));
       } else {
-        initiate(getFocusedEntityId(tab));
+        const path = [tab.frame.entityId, ...tab.frame.selection];
+        if (path.length >= 2) {
+          initiate(path[path.length - 2]!, path[path.length - 1]!);
+        }
       }
     },
     { enabled }
