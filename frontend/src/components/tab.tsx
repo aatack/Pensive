@@ -1,6 +1,6 @@
 import { Box, Divider } from "@mui/material";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useEntity, useSwapEntity } from "../context/hooks";
+import { useEntity, useSwapEntity, useWrite } from "../context/hooks";
 import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
 import { Provide, useProvided } from "../providers/provider";
@@ -108,6 +108,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const tabData = useTabData(tab);
 
   const swapEntity = useSwapEntity();
+  const write = useWrite();
 
   useHotkeys("a", tabData.selectParent, { enabled: selected });
   useHotkeys("s", tabData.selectFollowing, { enabled: selected });
@@ -116,11 +117,16 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useHotkeys(
     "delete,backspace",
     () => {
-      tabData.selectPreceding();
-      swapEntity(getFocusedEntityId(tab.value), (current) => ({
-        ...current,
-        parent: null,
-      }));
+      const path = [tab.value.frame.entityId, ...tab.value.frame.selection];
+      if (path.length >= 2) {
+        tabData.selectPreceding();
+        const parentUuid = path[path.length - 2]!;
+        const childUuid = path[path.length - 1]!;
+        write({
+          [parentUuid]: { outbound: `-${childUuid}` },
+          [childUuid]: { inbound: `-${parentUuid}` },
+        });
+      }
     },
     { enabled: selected }
   );
