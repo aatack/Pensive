@@ -129,23 +129,31 @@ export const resolveQuery = (
     path: path ?? [],
     children: entityCollapsed
       ? []
-      : includedChildren.map((child) => ({
-          key: child,
-          value: resolveQuery(
-            entities,
-            child,
-            entityExpanded ? () => true : highlight,
-            collapsed,
-            expanded,
-            limit,
-            [...(path ?? []), child],
-            child === selectionPathParts.head ? selectionPathParts.tail : null,
-            child === createEntityPathParts.head
-              ? createEntityPathParts.tail
-              : null,
-            child === editEntityPathParts.head ? editEntityPathParts.tail : null
-          ),
-        })),
+      : includedChildren
+          // To prevent infinite loops, if the entity has already been rendered
+          // in this branch, it should not be rendered again
+          .filter((child) => !path.includes(child))
+          .map((child) => ({
+            key: child,
+            value: resolveQuery(
+              entities,
+              child,
+              entityExpanded ? () => true : highlight,
+              collapsed,
+              expanded,
+              limit,
+              [...(path ?? []), child],
+              child === selectionPathParts.head
+                ? selectionPathParts.tail
+                : null,
+              child === createEntityPathParts.head
+                ? createEntityPathParts.tail
+                : null,
+              child === editEntityPathParts.head
+                ? editEntityPathParts.tail
+                : null
+            ),
+          })),
     highlight: entityExpanded || highlight(entity),
     collapsed: entityCollapsed,
     hasHiddenChildren:
@@ -172,6 +180,9 @@ export const findQueryResolutionLimit = (
   const toExplore = [entityId];
   while (toExplore.length > 0 && included.size < limit) {
     const current = toExplore.shift()!;
+    if (included.has(current)) {
+      continue;
+    }
     included.add(current);
     (mappingGet(entities, current).outbound ?? []).forEach((child) => {
       toExplore.push(child);
