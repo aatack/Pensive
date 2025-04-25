@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+import sys
 from typing import cast
 from uuid import UUID, uuid4
 
@@ -23,6 +24,9 @@ def _parse_v1_timestamp(string: str) -> tuple[int, int]:
 def parse_v1_store(
     path: Path | str,
 ) -> tuple[dict[tuple[datetime, UUID, str], Json], dict[tuple[datetime, UUID], bytes]]:
+    if not Path(path).exists() or not Path(path).is_dir():
+        raise ValueError(f"{path} does not exist or is not a directory")
+
     entities: dict[tuple[datetime, UUID, str], Json] = {}
     resources: dict[tuple[datetime, UUID], bytes] = {}
 
@@ -66,6 +70,7 @@ def parse_v1_store(
 
 
 def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> Store:
+
     entities, resources = parse_v1_store(v1_path)
 
     store = Store(v2_path)
@@ -166,3 +171,7 @@ def ingest_v1_store(v1_path: Path | str, v2_path: Path | str) -> Store:
     store.write_resources(resource_writes)
 
     return store
+
+
+if __name__ == "__main__":
+    ingest_v1_store(sys.argv[1], sys.argv[2])
