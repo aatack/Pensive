@@ -15,6 +15,7 @@ import { StatusBar } from "./status-bar";
 import { getFocusedTab, TabGroup, TabGroupState } from "./tab-group";
 import { PasteImage } from "./common/image";
 import { getFocusedEntityId, TabState } from "./tab";
+import { useMetadata } from "./pensive";
 
 export type TabsState = {
   tabGroups: TabGroupState[];
@@ -62,7 +63,7 @@ export const useTabsState = () => useProvided("tabs");
 
 export const Tabs = () => {
   const tabs = usePersistentAtom("tabsState", defaultTabsState, {
-    verify: verifyTabs,
+    verify: useVerifyTabs(),
   });
   const tabsData = useTabsData(tabs);
   useTabsActions(tabs, tabsData);
@@ -161,33 +162,37 @@ export const moveTab = (
 export const getFocusedTabGroup = (tabs: TabsState) =>
   tabs.tabGroups[clamp(tabs.selectedIndex, 0, tabs.tabGroups.length - 1)]!;
 
-const verifyTabs = (tabs: TabsState): TabsState => {
-  const tabGroups = tabs.tabGroups.filter(
-    (tabGroup) => tabGroup.tabs.length > 0
-  );
-  return {
-    ...tabs,
-    tabGroups:
-      tabGroups.length === 0
-        ? [
-            {
-              tabs: [
-                {
-                  uuid: generateUuid(),
-                  frame: {
-                    entityId: "root",
-                    selection: [],
-                    context: null,
-                    highlight: {},
+const useVerifyTabs = () => {
+  const metadata = useMetadata();
+
+  return (tabs: TabsState): TabsState => {
+    const tabGroups = tabs.tabGroups.filter(
+      (tabGroup) => tabGroup.tabs.length > 0
+    );
+    return {
+      ...tabs,
+      tabGroups:
+        tabGroups.length === 0
+          ? [
+              {
+                tabs: [
+                  {
+                    uuid: generateUuid(),
+                    frame: {
+                      entityId: metadata.root!,
+                      selection: [],
+                      context: null,
+                      highlight: {},
+                    },
+                    collapsed: [],
+                    expanded: [],
                   },
-                  collapsed: [],
-                  expanded: [],
-                },
-              ],
-              selectedIndex: 0,
-            },
-          ]
-        : tabGroups,
+                ],
+                selectedIndex: 0,
+              },
+            ]
+          : tabGroups,
+    };
   };
 };
 
