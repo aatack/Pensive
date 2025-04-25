@@ -73,7 +73,7 @@ def read_endpoint(read: Read) -> dict:
     client = State.client
     uuid = UUID(read.uuid)
 
-    return dict(data={} if uuid is None else client.read_entities([uuid])[uuid])
+    return dict(data={} if uuid is None else client.read_entities([uuid]).get(uuid, {}))
 
 
 @app.post("/write")
