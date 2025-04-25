@@ -9,6 +9,7 @@ import { colours, font } from "../constants";
 import { generateUuid } from "../helpers/uuid";
 import { moveTab, useTabsState } from "./tabs";
 import { useEntity } from "../context/hooks";
+import { useMetadata } from "./pensive";
 
 const padding = "4px";
 
@@ -82,6 +83,7 @@ const useTabGroupActions = (
   selected: boolean
 ) => {
   const tabGroupData = useTabGroupData(tabGroup);
+  const metadata = useMetadata();
 
   useHotkeys(
     "ctrl+w",
@@ -96,7 +98,12 @@ const useTabGroupActions = (
     () =>
       tabGroupData.openTab({
         uuid: generateUuid(),
-        frame: { entityId: "root", selection: [], context: null, highlight: {} },
+        frame: {
+          entityId: metadata.root!,
+          selection: [],
+          context: null,
+          highlight: {},
+        },
         collapsed: [],
         expanded: [],
       }),
