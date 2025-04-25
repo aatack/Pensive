@@ -17,9 +17,6 @@ from pensive_backend.store import Store
 
 app = FastAPI()
 
-# Looks like it could probably be removed?
-origins = ["http://localhost:3000", "localhost:3000"]
-
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -33,7 +30,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
