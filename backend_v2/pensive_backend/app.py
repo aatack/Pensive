@@ -1,9 +1,9 @@
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Annotated
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import FastAPI, Form, Request, Response, UploadFile, status
 from fastapi.exceptions import RequestValidationError
@@ -58,8 +58,8 @@ async def metadata_endpoint() -> dict:
 
     root = client.root_entity()
     if root is None:
-        root = UUID()
-        client.write(datetime.now(), {root: {"text": "Root"}}, {})
+        root = uuid4()
+        client.write(datetime.now(tz=UTC), {root: {"text": "Root"}}, {})
 
     return dict(data=Metadata(root=root.hex))
 
