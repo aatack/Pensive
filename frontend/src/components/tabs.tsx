@@ -15,7 +15,6 @@ import { StatusBar } from "./status-bar";
 import { getFocusedTab, TabGroup, TabGroupState } from "./tab-group";
 import { PasteImage } from "./common/image";
 import { getFocusedEntityId, TabState } from "./tab";
-import { usePensive } from "./pensive";
 
 export type TabsState = {
   tabGroups: TabGroupState[];

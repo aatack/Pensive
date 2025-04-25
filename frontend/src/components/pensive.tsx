@@ -5,6 +5,7 @@ import { Mapping, mappingGet } from "../helpers/mapping";
 import { Provide, useProvided } from "../providers/provider";
 import { EntityState } from "./entity/entity";
 import { headTail, isEmptyArray } from "../helpers/arrays";
+import { LinearProgress } from "@mui/material";
 
 export type PensiveState = {
   /**
@@ -21,11 +22,6 @@ export type PensiveState = {
    * Data on the status of queries
    */
   queries: Mapping<string, Request>;
-
-  /**
-   * A copy of the pensive's metadata, once it has been queried.
-   */
-  metadata: Metadata | null;
 
   /**
    * Mapping from snapshots to name to object URLs for loaded resources.
@@ -62,27 +58,35 @@ const usePensiveState = (): Atom<PensiveState> => {
   const pensive = useAtom<PensiveState>({
     entities: { default: {}, mapping: {} },
     queries: { default: { status: "waiting", subscribers: 0 }, mapping: {} },
-    metadata: null,
     resources: {
       default: { status: "waiting", subscribers: 0, url: null },
       mapping: {},
     },
   });
 
-  useEffect(() => {
-    pensiveMetadata().then((metadata) =>
-      pensive.swap((current) => ({ ...current, metadata }))
-    );
-  }, []);
-
   return pensive;
 };
 
 export const ProvidePensive = ({ children }: { children: ReactNode }) => {
-  return <Provide values={{ pensive: usePensiveState() }}>{children}</Provide>;
+  const metadata = useAtom<Metadata | null>(null);
+  const pensiveState = usePensiveState();
+
+  useEffect(() => {
+    pensiveMetadata().then(metadata.reset);
+  }, []);
+
+  return metadata.value == null ? (
+    <LinearProgress />
+  ) : (
+    <Provide values={{ pensive: pensiveState, metadata: metadata.value }}>
+      {children}
+    </Provide>
+  );
 };
 
 export const usePensive = () => useProvided("pensive");
+
+export const useMetadata = () => useProvided("metadata");
 
 export type ResolvedQuery = {
   entityId: string;
