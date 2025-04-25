@@ -37,6 +37,13 @@ def parse_v1_store(
         dict, json.loads((Path(path) / "metadata.json").read_text())
     )["offset"]
 
+    # The root entity is determined differently for v1 and v2.  In v1 it is the entity
+    # whose identifier is `0`, but in v2 it is the entity whose text was written
+    # earliest.  This means it is possible for the root entity to change during the
+    # ingest process.  To stop that happening, we write "Root" to the true root entity
+    # at the very first time step
+    entities[_int_to_timestamp(root_offset * 1000), entity_uuids["0"], "text"] = "Root"
+
     def get_timestamp(timestamp_string: str) -> datetime:
         offset, increment = _parse_v1_timestamp(timestamp_string)
         return _int_to_timestamp((root_offset + offset) * 1000 + increment)
