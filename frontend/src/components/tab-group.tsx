@@ -99,7 +99,7 @@ const useTabGroupActions = (
       tabGroupData.openTab({
         uuid: generateUuid(),
         frame: {
-          entityId: metadata.root!,
+          entityId: metadata.root,
           selection: [],
           context: null,
           highlight: {},

@@ -2,7 +2,7 @@ import { EntityState } from "../components/entity/entity";
 import { server } from "../constants";
 import { sort } from "../helpers/sorting";
 
-export type Metadata = { root: string | null };
+export type Metadata = { root: string };
 
 export const pensiveMetadata = async (): Promise<Metadata> =>
   fetch(`${server}/metadata`, {})

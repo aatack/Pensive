@@ -179,7 +179,7 @@ const useVerifyTabs = () => {
                   {
                     uuid: generateUuid(),
                     frame: {
-                      entityId: metadata.root!,
+                      entityId: metadata.root,
                       selection: [],
                       context: null,
                       highlight: {},

@@ -49,15 +49,19 @@ class State:
 
 
 class Metadata(BaseModel):
-    root: str | None
+    root: str
 
 
 @app.get("/metadata")
 async def metadata_endpoint() -> dict:
     client = State.client
-    return dict(
-        data=Metadata(root=None if (root := client.root_entity()) is None else root.hex)
-    )
+
+    root = client.root_entity()
+    if root is None:
+        root = UUID()
+        client.write(datetime.now(), {root: {"text": "Root"}}, {})
+
+    return dict(data=Metadata(root=root.hex))
 
 
 class Read(BaseModel):
