@@ -4,7 +4,6 @@
 
 ```bash
 uv venv
-source .venv/Scripts/activate
 ```
 
 ## Running
