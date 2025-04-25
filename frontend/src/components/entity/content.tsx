@@ -95,14 +95,7 @@ export const EntityContent = ({
         ) : null}
       </Stack>
 
-      {(entity.image ?? []).map((image) => (
-        <RenderImage
-          key={image.note + "__" + image.name}
-          entityId={path == null ? undefined : entityId}
-          note={image.note}
-          name={image.name}
-        />
-      ))}
+      {entity.image ? <RenderImage resourceUuid={entityId} /> : null}
     </Stack>
   );
 };

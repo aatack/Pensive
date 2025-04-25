@@ -1,45 +1,19 @@
-import { useEffect, useLayoutEffect, useRef, useState, ReactNode } from "react";
-import { useResource, useSwapEntity } from "../../context/hooks";
+import { useLayoutEffect, useRef, useState, ReactNode } from "react";
+import { useResource, useWrite } from "../../context/hooks";
 import { colours } from "../../constants";
 import { Box, Typography } from "@mui/material";
-import { nullIfEmpty } from "../../helpers/arrays";
+import { generateUuid } from "../../helpers/uuid";
 
-export const RenderImage = ({
-  entityId,
-  note,
-  name,
-}: {
-  entityId?: string;
-  note: string;
-  name: string;
-}) => {
-  const resource = useResource(note, name);
-  const [containerRef, dimensions] = useDimensions<HTMLImageElement>();
+export const RenderImage = ({ resourceUuid }: { resourceUuid: string }) => {
+  const resource = useResource(resourceUuid);
+  const [containerRef] = useDimensions<HTMLImageElement>();
 
   const imageRef = useRef<HTMLImageElement>(null);
-  const [naturalWidth, setNaturalWidth] = useState<number | null>(null);
-
-  const removeImage = useRemoveImage()
-
-  useEffect(() => {
-    if (imageRef.current != null) {
-      setNaturalWidth(imageRef.current.naturalWidth);
-    }
-  }, [imageRef.current]);
-
-  const overflowing =
-    naturalWidth == null || dimensions == null
-      ? false
-      : naturalWidth > dimensions.width;
 
   return resource == null ? (
     <Typography sx={{ color: colours.tx2 }}>{"Loading image..."}</Typography>
   ) : (
-    <Box ref={containerRef} onDoubleClick={() => {
-        if (entityId != null) {
-            removeImage(entityId, note, name)
-        }
-    }}>
+    <Box ref={containerRef}>
       <img
         ref={imageRef}
         style={{ width: 400, objectFit: "fill" }}
@@ -69,11 +43,11 @@ const useDimensions = <T extends HTMLElement>() => {
 };
 
 export const PasteImage = ({
+  entityUuid,
   children,
-  entityId,
 }: {
+  entityUuid: string;
   children: ReactNode;
-  entityId: string;
 }) => {
   const addImage = useAddImage();
 
@@ -81,7 +55,7 @@ export const PasteImage = ({
     const file = event.clipboardData.files[0];
 
     if (file != null) {
-      addImage(entityId, file);
+      addImage(entityUuid, file);
     }
   };
 
@@ -89,28 +63,15 @@ export const PasteImage = ({
 };
 
 const useAddImage = () => {
-  const swapEntity = useSwapEntity();
-  return (entityId: string, file: File) =>
-    swapEntity(
-      entityId,
-      (current, note) => ({
-        ...current,
-        // No need to remove duplicates here since the note will always be new
-        image: [...(current.image ?? []), { note, name: file.name }],
-      }),
-      { [file.name]: file }
+  const write = useWrite();
+  return (entityUuid: string, file: File) => {
+    const resourceUuid = generateUuid();
+    return write(
+      {
+        [entityUuid]: { outbound: `+${resourceUuid}` },
+        [resourceUuid]: { inbound: `+${entityUuid}`, image: true },
+      },
+      { [resourceUuid]: file }
     );
-};
-
-const useRemoveImage = () => {
-  const swapEntity = useSwapEntity();
-  return (entityId: string, note: string, name: string) =>
-    swapEntity(entityId, (current) => ({
-      ...current,
-      image: nullIfEmpty(
-        (current.image ?? []).filter(
-          (image) => image.note !== note && image.name !== name
-        )
-      ),
-    }));
+  };
 };

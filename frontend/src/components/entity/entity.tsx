@@ -1,23 +1,20 @@
 import { useEntity } from "../../context/hooks";
 import { ResolvedQuery } from "../pensive";
-import { RowEntity } from "./rowEntity";
-import { TableEntity } from "./tableEntity";
-import { TreeEntity } from "./treeEntity";
+import { RowEntity } from "./row-entity";
+import { TableEntity } from "./table-entity";
+import { TreeEntity } from "./tree-entity";
 
-export type EntityState = {
-  text?: string | null;
+export type EntityState = Partial<{
+  text: string | null;
 
-  open?: boolean | null;
-  section?: boolean | null;
+  open: boolean | null;
+  section: boolean | null;
 
-  parent?: EntityId | null;
-  children?: EntityId[] | null;
+  inbound: EntityId[] | null;
+  outbound: EntityId[] | null;
 
-  reference?: EntityId | null;
-  referees?: EntityId[] | null;
-
-  image?: { note: string; name: string }[] | null;
-};
+  image: boolean | null;
+}>;
 
 export type EntityId = string;
 
@@ -29,7 +26,7 @@ export const Entity = ({
   row?: boolean;
 }) => {
   // Make sure the entity stays loaded
-  const _ = useEntity(resolvedQuery.entityId, null);
+  const _ = useEntity(resolvedQuery.entityId);
 
   if (row) {
     return <RowEntity resolvedQuery={resolvedQuery} />;

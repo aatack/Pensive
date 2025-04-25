@@ -1,11 +1,11 @@
 import { ReactNode, useEffect } from "react";
-import { Metadata, pensiveMetadata, pensiveSave } from "../api/endpoints";
+import { Metadata, pensiveMetadata } from "../api/endpoints";
 import { Atom, useAtom } from "../helpers/atoms";
 import { Mapping, mappingGet } from "../helpers/mapping";
 import { Provide, useProvided } from "../providers/provider";
 import { EntityState } from "./entity/entity";
-import { ToolState } from "./tool/tool";
 import { headTail, isEmptyArray } from "../helpers/arrays";
+import { LinearProgress } from "@mui/material";
 
 export type PensiveState = {
   /**
@@ -24,11 +24,6 @@ export type PensiveState = {
   queries: Mapping<string, Request>;
 
   /**
-   * A copy of the pensive's metadata, once it has been queried.
-   */
-  metadata: Metadata | null;
-
-  /**
    * Mapping from snapshots to name to object URLs for loaded resources.
    *
    * Once a resource is loaded, the blob is immediately converted into an object
@@ -37,7 +32,7 @@ export type PensiveState = {
    * This is not yet implemented, however; once loaded, resources will hang
    * around indefinitely.
    */
-  resources: Mapping<string, Mapping<string, Request & { url: string | null }>>;
+  resources: Mapping<string, Request & { url: string | null }>;
 };
 
 export type Request = {
@@ -63,38 +58,35 @@ const usePensiveState = (): Atom<PensiveState> => {
   const pensive = useAtom<PensiveState>({
     entities: { default: {}, mapping: {} },
     queries: { default: { status: "waiting", subscribers: 0 }, mapping: {} },
-    metadata: null,
     resources: {
-      default: {
-        default: { status: "waiting", subscribers: 0, url: null },
-        mapping: {},
-      },
+      default: { status: "waiting", subscribers: 0, url: null },
       mapping: {},
     },
   });
-
-  useEffect(() => {
-    pensiveMetadata().then((metadata) =>
-      pensive.swap((current) => ({ ...current, metadata }))
-    );
-  }, []);
 
   return pensive;
 };
 
 export const ProvidePensive = ({ children }: { children: ReactNode }) => {
-  useEffect(() => {
-    const interval = setInterval(() => {
-      pensiveSave();
-    }, 60 * 1000);
+  const metadata = useAtom<Metadata | null>(null);
+  const pensiveState = usePensiveState();
 
-    return () => clearInterval(interval);
+  useEffect(() => {
+    pensiveMetadata().then(metadata.reset);
   }, []);
 
-  return <Provide values={{ pensive: usePensiveState() }}>{children}</Provide>;
+  return metadata.value == null ? (
+    <LinearProgress />
+  ) : (
+    <Provide values={{ pensive: pensiveState, metadata: metadata.value }}>
+      {children}
+    </Provide>
+  );
 };
 
 export const usePensive = () => useProvided("pensive");
+
+export const useMetadata = () => useProvided("metadata");
 
 export type ResolvedQuery = {
   entityId: string;
@@ -122,13 +114,13 @@ export const resolveQuery = (
   createEntityPath: string[] | null,
   editEntityPath: string[] | null
 ): ResolvedQuery => {
-  const entity = mappingGet(entities, entityId + ":");
+  const entity = mappingGet(entities, entityId);
 
   // The root entity is never collapsed
   const entityCollapsed = collapsed.includes(entityId) && path.length > 0;
   const entityExpanded = expanded.includes(entityId);
 
-  const children = entity.children ?? [];
+  const children = entity.outbound ?? [];
   const includedChildren = children.filter((child) => limit.has(child));
 
   const selectionPathParts = headTail(selectionPath ?? []);
@@ -141,23 +133,31 @@ export const resolveQuery = (
     path: path ?? [],
     children: entityCollapsed
       ? []
-      : includedChildren.map((child) => ({
-          key: child,
-          value: resolveQuery(
-            entities,
-            child,
-            entityExpanded ? () => true : highlight,
-            collapsed,
-            expanded,
-            limit,
-            [...(path ?? []), child],
-            child === selectionPathParts.head ? selectionPathParts.tail : null,
-            child === createEntityPathParts.head
-              ? createEntityPathParts.tail
-              : null,
-            child === editEntityPathParts.head ? editEntityPathParts.tail : null
-          ),
-        })),
+      : includedChildren
+          // To prevent infinite loops, if the entity has already been rendered
+          // in this branch, it should not be rendered again
+          .filter((child) => !path.includes(child))
+          .map((child) => ({
+            key: child,
+            value: resolveQuery(
+              entities,
+              child,
+              entityExpanded ? () => true : highlight,
+              collapsed,
+              expanded,
+              limit,
+              [...(path ?? []), child],
+              child === selectionPathParts.head
+                ? selectionPathParts.tail
+                : null,
+              child === createEntityPathParts.head
+                ? createEntityPathParts.tail
+                : null,
+              child === editEntityPathParts.head
+                ? editEntityPathParts.tail
+                : null
+            ),
+          })),
     highlight: entityExpanded || highlight(entity),
     collapsed: entityCollapsed,
     hasHiddenChildren:
@@ -184,8 +184,11 @@ export const findQueryResolutionLimit = (
   const toExplore = [entityId];
   while (toExplore.length > 0 && included.size < limit) {
     const current = toExplore.shift()!;
+    if (included.has(current)) {
+      continue;
+    }
     included.add(current);
-    (mappingGet(entities, current + ":").children ?? []).forEach((child) => {
+    (mappingGet(entities, current).outbound ?? []).forEach((child) => {
       toExplore.push(child);
     });
   }

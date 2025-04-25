@@ -1,0 +1,38 @@
+from pensive_backend.helpers import Json
+
+
+def replace(_: Json, update: Json) -> Json:
+    return update
+
+
+def array(current: Json, update: Json) -> Json:
+    if isinstance(update, list):
+        if len(update) == 0:
+            return current
+        else:
+            return array(array(current, update[0]), update[1:])
+
+    if not isinstance(update, str) or len(update) < 1:
+        return current
+
+    operation, text = update[0], update[1:]
+
+    if not isinstance(current, list):
+        current = []
+
+    present = text in current
+    if operation == "+" and not present:
+        return current + [text]
+    elif operation == "-" and present:
+        items = [item for item in current if item != text]
+        return None if len(items) == 0 else items
+    elif (
+        operation == ">"
+        and present
+        and (index := current.index(text) < len(current) - 1)
+    ):
+        current[index], current[index + 1] = current[index + 1], current[index]
+        return current
+    elif operation == "<" and present and (index := current.index(text) > 0):
+        current[index], current[index - 1] = current[index - 1], current[index]
+        return current

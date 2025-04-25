@@ -4,13 +4,15 @@ import { Atom } from "../helpers/atoms";
 import { TabState } from "../components/tab";
 import { ToolState } from "../components/tool/tool";
 import { TabsState } from "../components/tabs";
+import { Metadata } from "../api/endpoints";
 
-export type PensiveContext = {
-  pensive?: Atom<PensiveState>;
-  tabs?: Atom<TabsState>;
-  tab?: Atom<TabState> & { selected: boolean };
-  tool?: Atom<ToolState>;
-};
+export type PensiveContext = Partial<{
+  pensive: Atom<PensiveState>;
+  metadata: Metadata;
+  tabs: Atom<TabsState>;
+  tab: Atom<TabState> & { selected: boolean };
+  tool: Atom<ToolState>;
+}>;
 
 const Context = createContext<PensiveContext>({});
 

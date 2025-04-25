@@ -7,12 +7,13 @@ import { EntityState } from "../entity/entity";
 import { EntityIndent } from "../entity/indent";
 import { TabState, useTabState } from "../tab";
 import { useToolState } from "./tool";
+import { generateUuid } from "../../helpers/uuid";
 
 export type CreateEntityState = {
   type: "createEntity";
   tabUuid: string;
   path: string[];
-  extraValues?: EntityState;
+  extraUpdates?: EntityState;
 };
 
 export const useCreateEntityState = () => {
@@ -28,7 +29,7 @@ export const useCreateEntityState = () => {
 export const useCreateEntityActions = (tab: TabState, selected: boolean) => {
   const tool = useToolState();
 
-  const startCreating = (extraValues: EntityState) =>
+  const startCreating = (extraUpdates: EntityState) =>
     tool.value.type === "createEntity"
       ? () => null
       : () =>
@@ -36,7 +37,7 @@ export const useCreateEntityActions = (tab: TabState, selected: boolean) => {
             type: "createEntity",
             tabUuid: tab.uuid,
             path: tab.frame.selection,
-            extraValues,
+            extraUpdates,
           });
 
   useHotkeys("enter", startCreating({}), {
@@ -63,21 +64,26 @@ export const CreateEntity = () => {
     return null;
   }
 
-  const entityId = last(createEntity.value.path) ?? frame.value.entityId;
+  const parentUuid = last(createEntity.value.path) ?? frame.value.entityId;
 
   const confirm = (text: string) => {
-    const snapshot = write((snapshot) => ({
-      [snapshot]: { ...createEntity.value.extraValues, parent: entityId, text },
-    }));
-    selection.reset([...createEntity.value.path, snapshot]);
+    const childUuid = generateUuid();
+    write({
+      [childUuid]: {
+        inbound: `+${parentUuid}`,
+        text,
+        ...createEntity.value.extraUpdates,
+      },
+      [parentUuid]: { outbound: `+${childUuid}` },
+    });
+    selection.reset([...createEntity.value.path, childUuid]);
 
     createEntity.clear();
-    return snapshot;
   };
 
   return (
     // Really this should update the tool state on every key press
-    <EntityIndent entity={createEntity.value.extraValues ?? {}}>
+    <EntityIndent entity={createEntity.value.extraUpdates ?? {}}>
       <TextInput confirm={confirm} cancel={createEntity.clear} />
     </EntityIndent>
   );

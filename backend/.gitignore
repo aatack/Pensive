@@ -1,12 +1,14 @@
 .venv/
 .vscode/
 
-backend.bash
-
-**/__pycache__/
-
 scratch/
 scratch.ipynb
 
+data/
+
+__pycache__/
+
+*.pensive
 .pensive/
-.pensive-backup/
+
+backend.bash

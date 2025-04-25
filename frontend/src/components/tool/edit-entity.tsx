@@ -32,7 +32,7 @@ export const useEditEntityActions = (tab: TabState, selected: boolean) => {
     tool.value.type === "editEntity"
       ? () => null
       : () =>
-          getEntity(last(tab.frame.selection) ?? tab.frame.entityId, null).then(
+          getEntity(last(tab.frame.selection) ?? tab.frame.entityId).then(
             (initialValues) =>
               tool.reset({
                 type: "editEntity",

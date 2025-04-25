@@ -1,0 +1,24 @@
+[project]
+name = "backend-v2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.12",
+    "python-multipart>=0.0.20",
+    "uvicorn[standard]>=0.34.2",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "isort>=6.0.1",
+    "tqdm>=4.67.1",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "ipykernel>=6.29.5",
+    "tqdm>=4.67.1",
+]
