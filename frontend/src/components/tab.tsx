@@ -19,6 +19,7 @@ import {
 import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
+import { useConnectEntityActions } from "./tool/connect-entities";
 
 export type TabState = {
   uuid: string;
@@ -137,6 +138,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useCreateEntityActions(tab.value, selected);
   useEditEntityActions(tab.value, selected);
   useMoveEntityActions(tab.value, selected);
+  useConnectEntityActions(tab.value, selected);
   useCollapsedExpandedActions(tab, selected);
 
   const entityId = last(tab.value.frame.selection) ?? tab.value.frame.entityId;

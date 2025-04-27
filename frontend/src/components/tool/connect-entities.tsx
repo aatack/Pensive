@@ -78,7 +78,7 @@ export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
 
   // Initiate connection with the current entity as the destination
   useHotkeys(
-    "r",
+    "shift+r",
     () => {
       const uuid = getFocusedEntityId(tab);
       if (tool.value.type === "connectEntities") {
