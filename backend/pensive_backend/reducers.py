@@ -36,3 +36,5 @@ def array(current: Json, update: Json) -> Json:
     elif operation == "<" and present and (index := current.index(text) > 0):
         current[index], current[index - 1] = current[index - 1], current[index]
         return current
+    else:
+        return current
