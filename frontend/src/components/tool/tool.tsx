@@ -4,12 +4,14 @@ import { Provide, useProvided } from "../../providers/provider";
 import { CreateEntityState } from "./create-entity";
 import { EditEntityState } from "./edit-entity";
 import { MoveEntityState } from "./move-entity";
+import { ConnectEntitiesState } from "./connect-entities";
 
 export type ToolState =
   | NoToolState
   | CreateEntityState
   | EditEntityState
-  | MoveEntityState;
+  | MoveEntityState
+  | ConnectEntitiesState;
 
 export type NoToolState = { type: "noTool" };
 
