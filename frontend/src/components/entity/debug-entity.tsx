@@ -4,9 +4,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Stack,
   Typography,
 } from "@mui/material";
 import { useEntity } from "../../context/hooks";
+import { colours } from "../../constants";
 
 export const DebugEntity = ({
   entityUuid,
@@ -19,15 +21,25 @@ export const DebugEntity = ({
 
   return (
     <Dialog open onClose={close}>
-      <DialogTitle>{entityUuid}</DialogTitle>
+      <Stack sx={{ backgroundColor: colours.ui }}>
+        <DialogTitle>
+          <Typography variant="h5" sx={{ fontFamily: "monospace" }}>
+            {entityUuid}
+          </Typography>
+        </DialogTitle>
 
-      <DialogContent>
-        <Typography>{JSON.stringify(entity)}</Typography>
-      </DialogContent>
+        <DialogContent>
+          <Typography sx={{ fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
+            {JSON.stringify(entity, null, 2)}
+          </Typography>
+        </DialogContent>
 
-      <DialogActions>
-        <Button>Close</Button>
-      </DialogActions>
+        <DialogActions>
+          <Button sx={{ textTransform: "none" }} onClick={close}>
+            Close
+          </Button>
+        </DialogActions>
+      </Stack>
     </Dialog>
   );
 };
