@@ -6,6 +6,7 @@ import {
   arrayCursors,
   Atom,
   cursor,
+  useAtom,
   usePersistentAtom,
 } from "../helpers/atoms";
 import { clamp } from "../helpers/maths";
@@ -16,6 +17,7 @@ import { getFocusedTab, TabGroup, TabGroupState } from "./tab-group";
 import { PasteImage } from "./common/image";
 import { getFocusedEntityId, TabState } from "./tab";
 import { useMetadata } from "./pensive";
+import { DebugEntity } from "./entity/debug-entity";
 
 export type TabsState = {
   tabGroups: TabGroupState[];
@@ -70,6 +72,13 @@ export const Tabs = () => {
 
   const tabGroups = cursor(tabs, "tabGroups");
 
+  const debugEntity = useAtom<string | null>(null);
+  useHotkeys("3", () =>
+    debugEntity.reset(
+      getFocusedEntityId(getFocusedTab(getFocusedTabGroup(tabs.value)))
+    )
+  );
+
   return (
     <Provide values={{ tabs }}>
       <PasteImage
@@ -78,6 +87,13 @@ export const Tabs = () => {
         )}
       >
         <Stack sx={{ height: "100vh" }}>
+          {debugEntity.value == null ? null : (
+            <DebugEntity
+              entityUuid={debugEntity.value}
+              close={() => debugEntity.reset(null)}
+            />
+          )}
+
           <Grid
             container
             sx={{
