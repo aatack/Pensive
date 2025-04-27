@@ -44,9 +44,11 @@ Currently the keyboard shortcuts aren't documented in the app, and aren't config
 - `x`: start moving the selected entity
   - `escape`: cancel moving entity
   - `x`: confirm new parent of moved entity
+- `r,shift+r`: start making a connection between two entities. `r` starts from the source, and `shift+r` starts from the destination
+  - `escape`: cancel making connection between two entities
+  - `r,shift+r`: confirm the other entity with which to make a connection
 - `ctrl+v`: paste image onto entity
-- `delete,backspace`: delete the current entity
-  - Note: this doesn't technically delete the current entity; it just removes the association to its parent
+- `delete,backspace`: remove the connection between the current entity and its parent (in the current context)
 
 ### Workspace
 
