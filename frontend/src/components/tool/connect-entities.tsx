@@ -19,16 +19,19 @@ export type ConnectEntitiesState = {
 export const useConnectEntities = () => {
   const write = useWrite();
 
-  return ({ kind, sourceUuid, destinationUuid }: ConnectEntities) =>
-    write({
-      [sourceUuid]: {
-        outbound:
-          kind === "create" ? `+${destinationUuid}` : `-${destinationUuid}`,
-      },
-      [destinationUuid]: {
-        inbound: kind === "create" ? `+${sourceUuid}` : `-${sourceUuid}`,
-      },
-    });
+  return ({ kind, sourceUuid, destinationUuid }: ConnectEntities) => {
+    if (sourceUuid !== destinationUuid) {
+      return write({
+        [sourceUuid]: {
+          outbound:
+            kind === "create" ? `+${destinationUuid}` : `-${destinationUuid}`,
+        },
+        [destinationUuid]: {
+          inbound: kind === "create" ? `+${sourceUuid}` : `-${sourceUuid}`,
+        },
+      });
+    }
+  };
 };
 
 export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
