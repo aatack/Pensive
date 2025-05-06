@@ -1,8 +1,7 @@
 {
-  "name": "sqlite-demo",
-  "license": "0BSD",
+  "name": "mobile",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -11,13 +10,15 @@
   },
   "dependencies": {
     "expo": "~53.0.8",
-    "expo-sqlite": "~15.2.9",
+    "expo-sqlite": "^15.2.9",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.0.10",
+    "typescript": "~5.8.3"
   },
   "private": true
 }
