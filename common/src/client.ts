@@ -1,5 +1,5 @@
 import { Json, Uuid } from "./helpers";
-import { Reducer } from "./reducers";
+import { Reducer, replace } from "./reducers";
 import { Store } from "./store";
 
 export type Client = {
@@ -24,7 +24,24 @@ export const client = (
   return {
     rootEntity: rootStore.rootEntity,
 
-    readEntities: () => ({}),
+    readEntities: (uuids) => {
+      // Store entities still need to be sorted
+      const storeEntities = [rootStore, ...additionalStores].flatMap((store) =>
+        store.readEntities(uuids)
+      );
+
+      const entities: { [uuid: Uuid]: { [key: string]: Json } } = {};
+
+      storeEntities.forEach(({ timestamp, uuid, key, value }) => {
+        const reducer = reducers[key] ?? replace;
+        entities[uuid] = {
+          ...entities[uuid],
+          key: reducer(entities[uuid]?.[key] ?? null, value),
+        };
+      });
+
+      return entities;
+    },
 
     readResources: () => ({}),
 
