@@ -34,7 +34,7 @@ export const client = (
 
       const entities: { [uuid: Uuid]: { [key: string]: Json } } = {};
 
-      storeEntities.forEach(({ timestamp, uuid, key, value }) => {
+      storeEntities.forEach(({ uuid, key, value }) => {
         const reducer = reducers[key] ?? replace;
         entities[uuid] = {
           ...entities[uuid],
@@ -45,7 +45,22 @@ export const client = (
       return entities;
     },
 
-    readResources: () => ({}),
+    readResources: (uuids) => {
+      const storeResources = sorted(
+        [rootStore, ...additionalStores].flatMap((store) =>
+          store.readResources(uuids)
+        ),
+        ({ timestamp, uuid, data }) => [timestamp, uuid, data]
+      );
+
+      const resources: { [uuid: Uuid]: Buffer } = {};
+
+      storeResources.forEach(({ uuid, data }) => {
+        resources[uuid] = data;
+      });
+
+      return resources;
+    },
 
     write: (timestamp, entities, resources) => {
       rootStore.writeEntities(
