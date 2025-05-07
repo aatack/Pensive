@@ -1,12 +1,4 @@
-export type Json =
-  | Json[]
-  | { [key: string]: Json }
-  | string
-  | number
-  | boolean
-  | null;
-
-export type Uuid = string;
+import { Json, Uuid } from "./helpers";
 
 export type StoreEntity = {
   timestamp: Date;
