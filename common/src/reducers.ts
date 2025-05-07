@@ -1,8 +1,10 @@
 import { Json } from "./helpers";
 
-export const replace = (_: Json, update: Json): Json => update;
+export type Reducer = (current: Json, update: Json) => Json;
 
-export const array = (current: Json, update: Json): Json => {
+export const replace: Reducer = (_, update) => update;
+
+export const array: Reducer = (current, update) => {
   if (Array.isArray(update)) {
     if (update.length === 0) {
       return current;
