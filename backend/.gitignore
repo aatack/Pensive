@@ -1,14 +1,5 @@
-.venv/
-.vscode/
+**/scratch.ts
 
-scratch/
-scratch.ipynb
+node_modules/
 
-data/
-
-__pycache__/
-
-*.pensive
-.pensive/
-
-backend.bash
+**/*.pensive
