@@ -1,4 +1,4 @@
-export const server = "http://localhost:8000";
+export const server = "http://localhost:2998";
 
 export const colours = {
   bg: "rgb(255, 252, 240)",

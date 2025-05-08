@@ -38,7 +38,7 @@ export const createClient = (
         const reducer = reducers[key] ?? replace;
         entities[uuid] = {
           ...entities[uuid],
-          key: reducer(entities[uuid]?.[key] ?? null, value),
+          [key]: reducer(entities[uuid]?.[key] ?? null, value),
         };
       });
 

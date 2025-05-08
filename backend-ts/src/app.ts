@@ -7,7 +7,9 @@ import { createStore } from "./database";
 
 const app = express();
 const upload = multer();
-const PORT = process.env.PORT || 3000;
+
+const PORT = process.env.PENSIVE_PORT ?? 2998;
+const PATH = process.env.PENSIVE_PATH ?? ".pensive";
 
 app.use(cors());
 app.use(bodyParserJson());
@@ -15,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const client: Client = createClient(
   { inbound: array, outbound: array },
-  createStore(".pensive"),
+  createStore(PATH),
   []
 );
 
