@@ -16,7 +16,7 @@ export type Client = {
   ) => void;
 };
 
-export const client = (
+export const createClient = (
   reducers: { [key: string]: Reducer },
   rootStore: Store,
   additionalStores: Store[]

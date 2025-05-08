@@ -1,8 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import multer from "multer";
-import { Client, generateUuid } from "@pensive/common"; // Adjust path as needed
+import { array, Client, createClient, generateUuid } from "@pensive/common";
 import { json as bodyParserJson } from "body-parser";
+import { createStore } from "./database";
 
 const app = express();
 const upload = multer();
@@ -12,7 +13,11 @@ app.use(cors());
 app.use(bodyParserJson());
 app.use(express.urlencoded({ extended: true }));
 
-const client: Client = {} as Client;
+const client: Client = createClient(
+  { inbound: array, outbound: array },
+  createStore(".pensive"),
+  []
+);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(`${req.method} ${req.url} - ${err.message}`);
