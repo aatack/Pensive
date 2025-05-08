@@ -9,7 +9,7 @@ import Database from "better-sqlite3";
 export const migrateStoreEntities = (
   storePath: string,
   transform: (entity: StoreEntity) => StoreEntity | null,
-  options?: { apply: boolean }
+  options?: { dryRun: boolean }
 ): void => {
   const db = new Database(storePath);
 
@@ -29,6 +29,8 @@ export const migrateStoreEntities = (
 
   const rows = selectAll.all();
 
+  const dryRun = options?.dryRun ?? true;
+
   const migrate = db.transaction(() => {
     rows.forEach((row: any) => {
       const original: StoreEntity = {
@@ -43,13 +45,13 @@ export const migrateStoreEntities = (
       if (result === null) {
         console.info("Deleting", original);
 
-        if (options?.apply) {
+        if (!dryRun) {
           deleteStatement.run(row.timestamp, row.uuid, row.key);
         }
       } else if (!equal(original, result)) {
         console.info("Updating", original, "-->", result);
 
-        if (options?.apply) {
+        if (!dryRun) {
           updateStatement.run(
             serialiseTimestamp(result.timestamp),
             result.uuid,
@@ -65,11 +67,17 @@ export const migrateStoreEntities = (
   });
 
   migrate();
+
+  if (dryRun) {
+    console.info(
+      "\nMigration was run in dry mode. Disable dry mode to apply updates."
+    );
+  }
 };
 
 export const migrateUuids = (
   storePath: string,
-  options?: { apply: boolean }
+  options?: { dryRun: boolean }
 ) => {
   const stripDashes = (uuid: string) => {
     const first = uuid[0];
