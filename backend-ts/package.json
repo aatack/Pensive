@@ -5,7 +5,8 @@
   "types": "src/app.ts",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "start": "npx ts-node src/app.ts"
   },
   "dependencies": {
     "@pensive/common": "file:../common",
