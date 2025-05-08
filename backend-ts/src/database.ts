@@ -2,44 +2,39 @@ import {
   deserialiseTimestamp,
   serialiseTimestamp,
   Store,
-  StoreEntity,
-  StoreResource,
-  Uuid,
 } from "@pensive/common/src";
 import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 
-export function createStore(dbPath: string): Store {
-  const resolvedPath = path.resolve(dbPath);
-  const parentDir = path.dirname(resolvedPath);
-  fs.mkdirSync(parentDir, { recursive: true });
+export const createStore = (storePath: string): Store => {
+  const resolvedPath = path.resolve(storePath);
+  const parentFolder = path.dirname(resolvedPath);
+  fs.mkdirSync(parentFolder, { recursive: true });
 
-  const db = new Database(resolvedPath);
-  initializeSchema(db);
+  const database = new Database(resolvedPath);
+  initialiseDatabase(database);
 
   return {
-    writeEntities(entities: StoreEntity[]) {
-      if (entities.length === 0) return;
-
-      const stmt = db.prepare(
+    writeEntities: (entities) => {
+      const statement = database.prepare(
         "insert into entities (timestamp, uuid, key, value) values (?, ?, ?, ?)"
       );
-      const insert = db.transaction(() => {
-        for (const { timestamp, uuid, key, value } of entities) {
-          stmt.run(
+      const insert = database.transaction(() => {
+        entities.forEach(({ timestamp, uuid, key, value }) => {
+          statement.run(
             serialiseTimestamp(timestamp),
             uuid,
             key,
             JSON.stringify(value)
           );
-        }
+        });
       });
       insert();
     },
 
-    rootEntity(): Uuid | null {
-      const row: any = db
+    rootEntity: () => {
+      const row: any = database
         .prepare(
           `select uuid from entities
            where key = 'text'
@@ -50,10 +45,9 @@ export function createStore(dbPath: string): Store {
       return row ? row.uuid : null;
     },
 
-    readEntities(uuids: Uuid[]): StoreEntity[] {
-      if (uuids.length === 0) return [];
+    readEntities: (uuids) => {
       const placeholders = uuids.map(() => "?").join(",");
-      const rows = db
+      const rows = database
         .prepare(
           `select timestamp, uuid, key, value from entities
            where uuid in (${placeholders})
@@ -69,24 +63,21 @@ export function createStore(dbPath: string): Store {
       }));
     },
 
-    writeResources(resources: StoreResource[]) {
-      if (resources.length === 0) return;
-
-      const stmt = db.prepare(
+    writeResources: (resources) => {
+      const statement = database.prepare(
         "insert into resources (timestamp, uuid, data) values (?, ?, ?)"
       );
-      const insert = db.transaction(() => {
-        for (const { timestamp, uuid, data } of resources) {
-          stmt.run(serialiseTimestamp(timestamp), uuid, data);
-        }
+      const insert = database.transaction(() => {
+        resources.forEach(({ timestamp, uuid, data }) => {
+          statement.run(serialiseTimestamp(timestamp), uuid, data);
+        });
       });
       insert();
     },
 
-    readResources(uuids: Uuid[]): StoreResource[] {
-      if (uuids.length === 0) return [];
+    readResources: (uuids) => {
       const placeholders = uuids.map(() => "?").join(",");
-      const rows = db
+      const rows = database
         .prepare(
           `select timestamp, uuid, data from resources
            where uuid in (${placeholders})
@@ -101,9 +92,9 @@ export function createStore(dbPath: string): Store {
       }));
     },
   };
-}
+};
 
-function initializeSchema(db: Database.Database) {
+const initialiseDatabase = (db: Database.Database) => {
   db.exec(`
     create table if not exists entities (
       timestamp integer not null,
@@ -124,4 +115,4 @@ function initializeSchema(db: Database.Database) {
     create index if not exists idx_resources_timestamp on resources (timestamp);
     create index if not exists idx_resources_uuid on resources (uuid);
   `);
-}
+};
