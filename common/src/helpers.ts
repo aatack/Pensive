@@ -1,9 +1,4 @@
-/**
- * A couple of helper functions, including aliases for serialising and
- * deserialising objects for efficient storage in the database.
- */
-
-import { parse, stringify, v4 } from "uuid";
+import { v4 } from "uuid";
 
 export type Json =
   | Json[]
@@ -15,11 +10,12 @@ export type Json =
 
 export type Uuid = string;
 
-export const generateUuid = (): Uuid => v4();
-
-export const serialiseUuid = (uuid: Uuid): Buffer => Buffer.from(parse(uuid));
-
-export const deserialiseUuid = (uuid: Buffer): Uuid => stringify(uuid);
+export const generateUuid = (): Uuid =>
+  v4()
+    .toString()
+    .split("")
+    .filter((character) => character !== "-")
+    .join("");
 
 export const serialiseTimestamp = (timestamp: Date): number =>
   Math.floor(timestamp.getTime());
