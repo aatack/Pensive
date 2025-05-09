@@ -7,6 +7,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { cursor } from "../../helpers/atoms";
 import { useTabState } from "../tab";
 import { ResolvedQuery } from "../pensive";
+import Markdown from "react-markdown";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -80,11 +81,11 @@ export const EntityContent = ({
           <EditEntity />
         ) : (
           <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
-            <Typography
-              sx={{ ...font, fontSize: entity.section ? 22 : font.fontSize }}
+            <Markdown
+            // sx={{ ...font, fontSize: entity.section ? 22 : font.fontSize }}
             >
               {entity.text ?? "No content"}
-            </Typography>
+            </Markdown>
           </Stack>
         )}
         {hasHiddenChildren ? (
