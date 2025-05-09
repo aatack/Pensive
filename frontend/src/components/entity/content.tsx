@@ -82,7 +82,21 @@ export const EntityContent = ({
         ) : (
           <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
             <Markdown
-            // sx={{ ...font, fontSize: entity.section ? 22 : font.fontSize }}
+              components={{
+                p: (x) => <Typography>{x.children}</Typography>,
+                code: (x) => (
+                  <Typography
+                    variant="body1Monospace"
+                    sx={{
+                      backgroundColor: colours.ui2,
+                      padding: 0.3,
+                      borderRadius: 1,
+                    }}
+                  >
+                    {x.children}
+                  </Typography>
+                ),
+              }}
             >
               {entity.text ?? "No content"}
             </Markdown>
