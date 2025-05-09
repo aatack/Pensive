@@ -83,7 +83,7 @@ export const EntityContent = ({
           <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
             <Markdown
               components={{
-                p: (x) => <Typography>{x.children}</Typography>,
+                // p: (x) => <Typography>{x.children}</Typography>,
                 code: (x) => (
                   <Typography
                     variant="body1Monospace"
