@@ -89,7 +89,7 @@ export const Tabs = () => {
           getFocusedTab(getFocusedTabGroup(tabs.value))
         )}
       >
-        <Stack sx={{ height: "100vh" }}>
+        <Stack sx={{ height: "100vh", backgroundColor: colours.bg }}>
           {debugEntity.value == null ? null : (
             <DebugEntity
               entityUuid={debugEntity.value}
@@ -103,7 +103,6 @@ export const Tabs = () => {
             <Grid
               container
               sx={{
-                backgroundColor: colours.bg,
                 color: colours.tx,
                 flexGrow: 1,
                 overflowY: "clip",
