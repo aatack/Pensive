@@ -1,9 +1,20 @@
 import { ReactNode } from "react";
-import { useAtom, usePersistentAtom } from "../helpers/atoms";
+import { usePersistentAtom } from "../helpers/atoms";
 import { Provide, useProvided } from "./provider";
 import { useHotkeys } from "react-hotkeys-hook";
 import { OptionsOrDependencyArray } from "react-hotkeys-hook/dist/types";
 import { defaultHotkeys } from "../constants";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 export type Hotkeys = {
   toggleSections: string;
@@ -53,7 +64,10 @@ export type Hotkeys = {
 };
 
 export const ProvideHotkeys = ({ children }: { children: ReactNode }) => {
-  const hotkeys = usePersistentAtom<Partial<Hotkeys>>("hotkeys", defaultHotkeys);
+  const hotkeys = usePersistentAtom<Partial<Hotkeys>>(
+    "hotkeys",
+    defaultHotkeys
+  );
 
   return <Provide values={{ hotkeys }}>{children}</Provide>;
 };
@@ -65,4 +79,49 @@ export const useHotkey = (
 ) => {
   const hotkey = useProvided("hotkeys").value?.[key];
   useHotkeys(hotkey ?? "", callback, options);
+};
+
+export const EditHotkeys = () => {
+  const hotkeys = useProvided("hotkeys");
+
+  return (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>
+              <Typography fontWeight="bold">Action</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography fontWeight="bold">Hotkey</Typography>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {Object.keys(defaultHotkeys).map((hotkey) => (
+            <TableRow key={hotkey}>
+              <TableCell>
+                <Typography variant="body1Monospace" fontWeight="bold">
+                  {hotkey}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  value={hotkeys.value[hotkey as keyof Hotkeys] ?? ""}
+                  onChange={(e) =>
+                    hotkeys.swap((current) => ({
+                      ...current,
+                      [hotkey]: e.target.value,
+                    }))
+                  }
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 };
