@@ -92,12 +92,14 @@ export const EntityContent = ({
                   <Typography
                     sx={{
                       ...font,
-                      fontSize:
-                        font.fontSize *
-                        (entity.section
-                          ? Math.max(1.6 * Math.pow(0.9, path.length), 1.1)
-                          : 1),
-                      fontWeight: font.fontWeight * (entity.section ? 1.5 : 1),
+                      ...(entity.section
+                        ? {
+                            fontSize:
+                              font.fontSize *
+                              Math.max(1.6 * Math.pow(0.9, path.length), 1.1),
+                            fontWeight: font.fontWeight * 1.5,
+                          }
+                        : {}),
                     }}
                   >
                     {x.children}
