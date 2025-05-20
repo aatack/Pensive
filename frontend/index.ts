@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
@@ -21,6 +21,20 @@ const createWindow = (): void => {
 
   activeWindows.push(mainWindow);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
+  // Force electron to open clicked links in the browser, instead of navigating to them
+  // within the electron window
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    const isLocal = url.startsWith("file://");
+    if (!isLocal) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
+  });
 };
 
 app.on("ready", createWindow);
