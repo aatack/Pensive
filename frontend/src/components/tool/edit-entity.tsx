@@ -1,4 +1,3 @@
-import { useHotkeys } from "react-hotkeys-hook";
 import { useGetEntity, useSwapEntity } from "../../context/hooks";
 import { last } from "../../helpers/arrays";
 import { Atom, cursor } from "../../helpers/atoms";
@@ -6,6 +5,7 @@ import { TextInput } from "../common/text";
 import { EntityState } from "../entity/entity";
 import { TabState, useTabState } from "../tab";
 import { useToolState } from "./tool";
+import { useHotkey } from "../../providers/hotkeys";
 
 export type EditEntityState = {
   type: "editEntity";
@@ -42,7 +42,10 @@ export const useEditEntityActions = (tab: TabState, selected: boolean) => {
               })
           );
 
-  useHotkeys("e", startEditing(), { enabled: selected, preventDefault: true });
+  useHotkey("editEntity", startEditing(), {
+    enabled: selected,
+    preventDefault: true,
+  });
 };
 
 export const EditEntity = () => {

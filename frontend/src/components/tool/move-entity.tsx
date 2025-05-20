@@ -1,7 +1,7 @@
-import { useHotkeys } from "react-hotkeys-hook";
 import { useWrite } from "../../context/hooks";
 import { getFocusedEntityId, TabState } from "../tab";
 import { useToolState } from "./tool";
+import { useHotkey } from "../../providers/hotkeys";
 
 export type MoveEntityState = {
   type: "moveEntity";
@@ -41,8 +41,8 @@ export const useMoveEntityActions = (tab: TabState, enabled: boolean) => {
     }
   };
 
-  useHotkeys(
-    "x",
+  useHotkey(
+    "moveConnection",
     () => {
       if (tool.value.type === "moveEntity") {
         confirm(getFocusedEntityId(tab));
@@ -55,8 +55,8 @@ export const useMoveEntityActions = (tab: TabState, enabled: boolean) => {
     },
     { enabled }
   );
-  useHotkeys(
-    "escape",
+  useHotkey(
+    "cancelMoveConnection",
     () => {
       if (tool.value.type === "moveEntity") {
         cancel();

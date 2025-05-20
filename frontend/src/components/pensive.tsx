@@ -214,3 +214,64 @@ export const flattenResolvedQuery = (
     ),
   ];
 };
+
+/**
+ * Export a resolved query as a markdown string.
+ */
+export const exportResolvedQuery = (
+  resolvedQuery: ResolvedQuery,
+  sectionIndent: number = 1,
+  textIndent: number = 0
+): string => {
+  const children = [...(resolvedQuery.children ?? [])].sort(
+    compareResolvedQueries
+  );
+
+  if (resolvedQuery.entity.section) {
+    const prefix = "#".repeat(sectionIndent);
+    return [
+      "",
+      `${prefix} ${resolvedQuery.entity.text ?? "No title"}`,
+      "",
+      ...children.map(({ value }) =>
+        exportResolvedQuery(value, sectionIndent + 1, 0)
+      ),
+    ].join("\n");
+  } else {
+    const prefix = `${"  ".repeat(textIndent)}- ${
+      resolvedQuery.entity.open == null
+        ? ""
+        : resolvedQuery.entity.open
+        ? "[ ] "
+        : "[x] "
+    }`;
+    return [
+      `${prefix}${resolvedQuery.entity.text ?? ""}`,
+      ...children.map(({ value }) =>
+        exportResolvedQuery(value, sectionIndent, textIndent + 1)
+      ),
+    ].join("\n");
+  }
+};
+
+/**
+ * Order resolved queries such that sections appear after non-sections.
+ *
+ * This makes the structure of the resolved query easier to parse visually when
+ * laid out and rendered.
+ */
+const compareResolvedQueries = (
+  { value: left }: { value: ResolvedQuery },
+  { value: right }: { value: ResolvedQuery }
+) => {
+  const leftSection = Boolean(left.entity.section);
+  const rightSection = Boolean(right.entity.section);
+
+  if ((leftSection && rightSection) || (!leftSection && !rightSection)) {
+    return 0;
+  } else if (leftSection) {
+    return 1;
+  } else {
+    return -1;
+  }
+};

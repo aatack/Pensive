@@ -1,7 +1,7 @@
 import { TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { colours, font } from "../../constants";
+import { useHotkey } from "../../providers/hotkeys";
 
 export const TextInput = ({
   confirm,
@@ -15,8 +15,8 @@ export const TextInput = ({
   const [text, setText] = useState(initial ?? "");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  useHotkeys(
-    "enter",
+  useHotkey(
+    "confirmAddEntity",
     () => {
       if (text !== (initial ?? "")) {
         confirm(text);
@@ -26,8 +26,8 @@ export const TextInput = ({
     },
     { enableOnFormTags: true }
   );
-  useHotkeys(
-    "escape",
+  useHotkey(
+    "cancelAddEntity",
     () => {
       if (inputRef.current && document.activeElement === inputRef.current) {
         cancel();

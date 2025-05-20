@@ -1,12 +1,12 @@
-import { Stack, TextField, Typography } from "@mui/material";
+import { Button, Stack, TextField, Typography } from "@mui/material";
 import { useRef } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { colours, font } from "../constants";
 import { arrayCursor, Atom, cursor } from "../helpers/atoms";
 import { clamp } from "../helpers/maths";
 import { LabelledCheckbox } from "./common/checkbox";
 import { useTabsState } from "./tabs";
 import { useToolState } from "./tool/tool";
+import { useHotkey } from "../providers/hotkeys";
 
 const useSelectedFrame = () => {
   const tabs = useTabsState();
@@ -21,19 +21,31 @@ const useSelectedFrame = () => {
   return cursor(tab, "frame");
 };
 
-export const StatusBar = () => {
+export const StatusBar = ({
+  showSettings,
+}: {
+  showSettings: Atom<boolean>;
+}) => {
   return (
     <Stack
       direction="row"
       alignItems="center"
-      justifyContent="space-between"
       sx={{ backgroundColor: colours.tx3 }}
     >
       <Typography sx={{ maxWidth: 0.5, fontFamily: "monospace" }} noWrap>
         {JSON.stringify(useToolState().value)}
       </Typography>
 
-      <Highlight />
+      <Stack sx={{ marginLeft: "auto" }}>
+        <Highlight />
+      </Stack>
+
+      <Button
+        onClick={() => showSettings.swap((current) => !current)}
+        sx={{ textTransform: "none", ...font }}
+      >
+        Settings
+      </Button>
     </Stack>
   );
 };
@@ -57,20 +69,20 @@ const HighlightSection = ({
 }: {
   section: Atom<boolean | undefined>;
 }) => {
-  useHotkeys("q", () => section.swap((current) => !current));
+  useHotkey("toggleSections", () => section.swap((current) => !current));
   return <LabelledCheckbox label="Section" value={section} />;
 };
 
 const HighlightText = ({ text }: { text: Atom<string | undefined> }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  useHotkeys("ctrl+f", () => {
+  useHotkey("search", () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   });
-  useHotkeys(
-    "escape",
+  useHotkey(
+    "cancelSearch",
     () => {
       if (inputRef.current && document.activeElement === inputRef.current) {
         inputRef.current.blur();
@@ -79,8 +91,8 @@ const HighlightText = ({ text }: { text: Atom<string | undefined> }) => {
     },
     { enableOnFormTags: true }
   );
-  useHotkeys(
-    "enter",
+  useHotkey(
+    "confirmSearch",
     () => {
       if (inputRef.current) {
         inputRef.current.blur();

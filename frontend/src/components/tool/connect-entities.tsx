@@ -2,6 +2,7 @@ import { useHotkeys } from "react-hotkeys-hook/dist";
 import { useWrite } from "../../context/hooks";
 import { getFocusedEntityId, TabState } from "../tab";
 import { useToolState } from "./tool";
+import { useHotkey } from "../../providers/hotkeys";
 
 export type ConnectEntities = {
   kind: "create" | "remove";
@@ -66,8 +67,8 @@ export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
   };
 
   // Initiate connection with the current entity as the source
-  useHotkeys(
-    "r",
+  useHotkey(
+    "startOutboundConnection",
     () => {
       const uuid = getFocusedEntityId(tab);
       if (tool.value.type === "connectEntities") {
@@ -80,8 +81,8 @@ export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
   );
 
   // Initiate connection with the current entity as the destination
-  useHotkeys(
-    "shift+r",
+  useHotkey(
+    "startInboundConnection",
     () => {
       const uuid = getFocusedEntityId(tab);
       if (tool.value.type === "connectEntities") {
@@ -94,8 +95,8 @@ export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
   );
 
   // Cancel the current connection
-  useHotkeys(
-    "escape",
+  useHotkey(
+    "cancelConnection",
     () => {
       if (tool.value.type === "connectEntities") {
         cancel();

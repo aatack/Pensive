@@ -1,6 +1,5 @@
 import { Grid } from "@mui/material";
 import { Stack } from "@mui/system";
-import { useHotkeys } from "react-hotkeys-hook";
 import { colours } from "../constants";
 import {
   arrayCursors,
@@ -18,6 +17,8 @@ import { PasteImage } from "./common/image";
 import { getFocusedEntityId, TabState } from "./tab";
 import { useMetadata } from "./pensive";
 import { DebugEntity } from "./entity/debug-entity";
+import { useHotkey } from "../providers/hotkeys";
+import { EditHotkeys } from "./settings/edit-hotkeys";
 
 export type TabsState = {
   tabGroups: TabGroupState[];
@@ -55,8 +56,8 @@ const useTabsData = (tabs: Atom<TabsState>) => {
 const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   const { selectNextTabGroup, selectPreviousTabGroup } = tabsData;
 
-  useHotkeys("alt+right", selectNextTabGroup);
-  useHotkeys("alt+left", selectPreviousTabGroup);
+  useHotkey("selectNextTabGroup", selectNextTabGroup);
+  useHotkey("selectPreviousTabGroup", selectPreviousTabGroup);
 };
 
 export const defaultTabsState: TabsState = { tabGroups: [], selectedIndex: 0 };
@@ -73,11 +74,13 @@ export const Tabs = () => {
   const tabGroups = cursor(tabs, "tabGroups");
 
   const debugEntity = useAtom<string | null>(null);
-  useHotkeys("3", () =>
+  useHotkey("debugEntity", () =>
     debugEntity.reset(
       getFocusedEntityId(getFocusedTab(getFocusedTabGroup(tabs.value)))
     )
   );
+
+  const showSettings = useAtom(false);
 
   return (
     <Provide values={{ tabs }}>
@@ -86,7 +89,7 @@ export const Tabs = () => {
           getFocusedTab(getFocusedTabGroup(tabs.value))
         )}
       >
-        <Stack sx={{ height: "100vh" }}>
+        <Stack sx={{ height: "100vh", backgroundColor: colours.bg }}>
           {debugEntity.value == null ? null : (
             <DebugEntity
               entityUuid={debugEntity.value}
@@ -94,37 +97,40 @@ export const Tabs = () => {
             />
           )}
 
-          <Grid
-            container
-            sx={{
-              backgroundColor: colours.bg,
-              color: colours.tx,
-              flexGrow: 1,
-              overflowY: "clip",
-            }}
-          >
-            {arrayCursors(tabGroups).map((tabGroup, index) => (
-              <Grid
-                key={index}
-                item
-                xs={12 / tabGroups.value.length}
-                sx={{ height: 1, pr: 0 }}
-              >
-                <TabGroup
-                  tabGroup={tabGroup}
-                  selected={index === tabsData.selectedIndex}
-                  select={() =>
-                    tabs.swap((current) => ({
-                      ...current,
-                      selectedIndex: index,
-                    }))
-                  }
-                  lastGroup={index === tabGroups.value.length - 1}
-                />
-              </Grid>
-            ))}
-          </Grid>
-          <StatusBar />
+          {showSettings.value ? (
+            <EditHotkeys />
+          ) : (
+            <Grid
+              container
+              sx={{
+                color: colours.tx,
+                flexGrow: 1,
+                overflowY: "clip",
+              }}
+            >
+              {arrayCursors(tabGroups).map((tabGroup, index) => (
+                <Grid
+                  key={index}
+                  item
+                  xs={12 / tabGroups.value.length}
+                  sx={{ height: 1, pr: 0 }}
+                >
+                  <TabGroup
+                    tabGroup={tabGroup}
+                    selected={index === tabsData.selectedIndex}
+                    select={() =>
+                      tabs.swap((current) => ({
+                        ...current,
+                        selectedIndex: index,
+                      }))
+                    }
+                    lastGroup={index === tabGroups.value.length - 1}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+          <StatusBar showSettings={showSettings} />
         </Stack>
       </PasteImage>
     </Provide>
