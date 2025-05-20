@@ -7,6 +7,7 @@ import { theme } from "./theme";
 import { ProvideTool } from "../tool/tool";
 import { Tabs, TabsState } from "../tabs";
 import { MigrateTabsState } from "../../helpers/migration";
+import { ProvideHotkeys } from "../../providers/hotkeys";
 
 const App = () => {
   const migration: ((current: TabsState) => TabsState) | null = null;
@@ -15,9 +16,11 @@ const App = () => {
     <ThemeProvider theme={theme}>
       {migration == null ? (
         <ProvidePensive>
-          <ProvideTool>
-            <Tabs />
-          </ProvideTool>
+          <ProvideHotkeys>
+            <ProvideTool>
+              <Tabs />
+            </ProvideTool>
+          </ProvideHotkeys>
         </ProvidePensive>
       ) : (
         <MigrateTabsState migration={migration} />

@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
-import { useAtom } from "../helpers/atoms";
+import { useAtom, usePersistentAtom } from "../helpers/atoms";
 import { Provide, useProvided } from "./provider";
 import { useHotkeys } from "react-hotkeys-hook";
 import { OptionsOrDependencyArray } from "react-hotkeys-hook/dist/types";
+import { defaultHotkeys } from "../constants";
 
 export type Hotkeys = {
   toggleSections: string;
@@ -52,8 +53,7 @@ export type Hotkeys = {
 };
 
 export const ProvideHotkeys = ({ children }: { children: ReactNode }) => {
-  // Should later be switched to a persisted atom
-  const hotkeys = useAtom<Partial<Hotkeys>>({});
+  const hotkeys = usePersistentAtom<Partial<Hotkeys>>("hotkeys", defaultHotkeys);
 
   return <Provide values={{ hotkeys }}>{children}</Provide>;
 };
