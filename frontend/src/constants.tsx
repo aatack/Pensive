@@ -35,7 +35,8 @@ export const font = {
   fontSize: 14.5,
 };
 
-export const defaultHotkeys: Partial<Hotkeys> = {
+// Set to `""` for no default
+export const defaultHotkeys: Hotkeys = {
   toggleSections: "q",
 
   search: "ctrl+f",
