@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { EditEntity } from "../tool/edit-entity";
-import { colours } from "../../constants";
+import { colours, font } from "../../constants";
 import { RenderImage } from "../common/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { cursor } from "../../helpers/atoms";
@@ -88,13 +88,27 @@ export const EntityContent = ({
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
               components={{
-                p: (x) => <Typography>{x.children}</Typography>,
+                p: (x) => (
+                  <Typography
+                    sx={{
+                      ...font,
+                      fontSize:
+                        font.fontSize *
+                        (entity.section
+                          ? Math.max(1.6 * Math.pow(0.9, path.length), 1.1)
+                          : 1),
+                      fontWeight: font.fontWeight * (entity.section ? 1.5 : 1),
+                    }}
+                  >
+                    {x.children}
+                  </Typography>
+                ),
                 code: (x) => {
                   return (
                     <Typography
                       variant="body1Monospace"
                       sx={{
-                        backgroundColor: colours.ui2,
+                        backgroundColor: colours.ui,
                         padding: 0.3,
                         borderRadius: 1,
                       }}
