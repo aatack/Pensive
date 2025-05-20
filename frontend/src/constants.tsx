@@ -1,3 +1,5 @@
+import { Hotkeys } from "./providers/hotkeys";
+
 export const server = "http://localhost:2998";
 
 export const colours = {
@@ -32,3 +34,7 @@ export const font = {
   fontFamily: "SourceSans3",
   fontSize: 14.5,
 };
+
+export const defaultHotkeys: Partial<Hotkeys> = {
+  
+}
