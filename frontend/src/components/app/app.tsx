@@ -7,7 +7,8 @@ import { theme } from "./theme";
 import { ProvideTool } from "../tool/tool";
 import { Tabs, TabsState } from "../tabs";
 import { MigrateTabsState } from "../../helpers/migration";
-import { EditHotkeys, ProvideHotkeys } from "../../providers/hotkeys";
+import { ProvideHotkeys } from "../../providers/hotkeys";
+import { EditHotkeys } from "../settings/edit-hotkeys";
 
 const App = () => {
   const migration: ((current: TabsState) => TabsState) | null = null;
