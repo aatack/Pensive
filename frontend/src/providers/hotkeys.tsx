@@ -50,6 +50,8 @@ export type Hotkeys = {
   moveConnection: string;
   cancelMoveConnection: string;
   removeConnection: string;
+
+  exportEntity: string;
 };
 
 export const ProvideHotkeys = ({ children }: { children: ReactNode }) => {

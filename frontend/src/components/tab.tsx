@@ -9,6 +9,7 @@ import { EntityIndent } from "./entity/indent";
 import { EntityContent } from "./entity/content";
 import { useEffect, useMemo, useRef } from "react";
 import {
+  exportResolvedQuery,
   findQueryResolutionLimit,
   flattenResolvedQuery,
   ResolvedQuery,
@@ -114,6 +115,15 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useHotkey("selectParent", tabData.selectParent, { enabled: selected });
   useHotkey("selectFollowing", tabData.selectFollowing, { enabled: selected });
   useHotkey("selectPreceding", tabData.selectPreceding, { enabled: selected });
+
+  useHotkey(
+    "exportEntity",
+    () => {
+      const markdown = exportResolvedQuery(tabData.resolvedQuery).trim();
+      navigator.clipboard.writeText(markdown);
+    },
+    { enabled: selected }
+  );
 
   useHotkey(
     "removeConnection",

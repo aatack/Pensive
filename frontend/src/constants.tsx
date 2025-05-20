@@ -81,4 +81,6 @@ export const defaultHotkeys: Hotkeys = {
   moveConnection: "x",
   cancelMoveConnection: "escape",
   removeConnection: "delete,backspace",
+
+  exportEntity: "ctrl+e",
 };
