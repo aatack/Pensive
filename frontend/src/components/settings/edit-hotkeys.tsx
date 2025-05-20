@@ -29,6 +29,7 @@ export const EditHotkeys = () => {
                 <TextField
                   variant="standard"
                   size="small"
+                  fullWidth
                   value={hotkeys.value[hotkey as keyof Hotkeys] ?? ""}
                   onChange={({ target: { value } }) =>
                     hotkeys.swap((current) => ({ ...current, [hotkey]: value }))
