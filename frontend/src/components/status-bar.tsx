@@ -1,4 +1,4 @@
-import { Stack, TextField, Typography } from "@mui/material";
+import { Button, Stack, TextField, Typography } from "@mui/material";
 import { useRef } from "react";
 import { colours, font } from "../constants";
 import { arrayCursor, Atom, cursor } from "../helpers/atoms";
@@ -21,19 +21,31 @@ const useSelectedFrame = () => {
   return cursor(tab, "frame");
 };
 
-export const StatusBar = () => {
+export const StatusBar = ({
+  showSettings,
+}: {
+  showSettings: Atom<boolean>;
+}) => {
   return (
     <Stack
       direction="row"
       alignItems="center"
-      justifyContent="space-between"
       sx={{ backgroundColor: colours.tx3 }}
     >
       <Typography sx={{ maxWidth: 0.5, fontFamily: "monospace" }} noWrap>
         {JSON.stringify(useToolState().value)}
       </Typography>
 
-      <Highlight />
+      <Stack sx={{ marginLeft: "auto" }}>
+        <Highlight />
+      </Stack>
+
+      <Button
+        onClick={() => showSettings.swap((current) => !current)}
+        sx={{ textTransform: "none", ...font }}
+      >
+        Settings
+      </Button>
     </Stack>
   );
 };

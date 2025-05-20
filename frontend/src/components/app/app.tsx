@@ -9,6 +9,7 @@ import { Tabs, TabsState } from "../tabs";
 import { MigrateTabsState } from "../../helpers/migration";
 import { ProvideHotkeys } from "../../providers/hotkeys";
 import { EditHotkeys } from "../settings/edit-hotkeys";
+import { useAtom } from "../../helpers/atoms";
 
 const App = () => {
   const migration: ((current: TabsState) => TabsState) | null = null;
@@ -19,8 +20,7 @@ const App = () => {
         <ProvidePensive>
           <ProvideHotkeys>
             <ProvideTool>
-              {/* <Tabs /> */}
-              <EditHotkeys />
+              <Tabs />
             </ProvideTool>
           </ProvideHotkeys>
         </ProvidePensive>

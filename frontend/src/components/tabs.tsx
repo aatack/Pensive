@@ -18,6 +18,7 @@ import { getFocusedEntityId, TabState } from "./tab";
 import { useMetadata } from "./pensive";
 import { DebugEntity } from "./entity/debug-entity";
 import { useHotkey } from "../providers/hotkeys";
+import { EditHotkeys } from "./settings/edit-hotkeys";
 
 export type TabsState = {
   tabGroups: TabGroupState[];
@@ -79,6 +80,8 @@ export const Tabs = () => {
     )
   );
 
+  const showSettings = useAtom(false);
+
   return (
     <Provide values={{ tabs }}>
       <PasteImage
@@ -94,37 +97,41 @@ export const Tabs = () => {
             />
           )}
 
-          <Grid
-            container
-            sx={{
-              backgroundColor: colours.bg,
-              color: colours.tx,
-              flexGrow: 1,
-              overflowY: "clip",
-            }}
-          >
-            {arrayCursors(tabGroups).map((tabGroup, index) => (
-              <Grid
-                key={index}
-                item
-                xs={12 / tabGroups.value.length}
-                sx={{ height: 1, pr: 0 }}
-              >
-                <TabGroup
-                  tabGroup={tabGroup}
-                  selected={index === tabsData.selectedIndex}
-                  select={() =>
-                    tabs.swap((current) => ({
-                      ...current,
-                      selectedIndex: index,
-                    }))
-                  }
-                  lastGroup={index === tabGroups.value.length - 1}
-                />
-              </Grid>
-            ))}
-          </Grid>
-          <StatusBar />
+          {showSettings.value ? (
+            <EditHotkeys />
+          ) : (
+            <Grid
+              container
+              sx={{
+                backgroundColor: colours.bg,
+                color: colours.tx,
+                flexGrow: 1,
+                overflowY: "clip",
+              }}
+            >
+              {arrayCursors(tabGroups).map((tabGroup, index) => (
+                <Grid
+                  key={index}
+                  item
+                  xs={12 / tabGroups.value.length}
+                  sx={{ height: 1, pr: 0 }}
+                >
+                  <TabGroup
+                    tabGroup={tabGroup}
+                    selected={index === tabsData.selectedIndex}
+                    select={() =>
+                      tabs.swap((current) => ({
+                        ...current,
+                        selectedIndex: index,
+                      }))
+                    }
+                    lastGroup={index === tabGroups.value.length - 1}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+          <StatusBar showSettings={showSettings} />
         </Stack>
       </PasteImage>
     </Provide>
