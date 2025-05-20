@@ -1,4 +1,3 @@
-import { useHotkeys } from "react-hotkeys-hook";
 import { useWrite } from "../../context/hooks";
 import { getFocusedEntityId, TabState } from "../tab";
 import { useToolState } from "./tool";

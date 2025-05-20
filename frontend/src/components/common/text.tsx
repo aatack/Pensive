@@ -1,6 +1,5 @@
 import { TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { colours, font } from "../../constants";
 import { useHotkey } from "../../providers/hotkeys";
 

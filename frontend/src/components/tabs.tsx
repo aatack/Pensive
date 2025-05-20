@@ -1,6 +1,5 @@
 import { Grid } from "@mui/material";
 import { Stack } from "@mui/system";
-import { useHotkeys } from "react-hotkeys-hook";
 import { colours } from "../constants";
 import {
   arrayCursors,

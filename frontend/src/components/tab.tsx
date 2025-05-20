@@ -1,5 +1,4 @@
 import { Box, Divider } from "@mui/material";
-import { useHotkeys } from "react-hotkeys-hook";
 import { useEntity, useSwapEntity, useWrite } from "../context/hooks";
 import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";

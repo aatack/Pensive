@@ -1,4 +1,3 @@
-import { useHotkeys } from "react-hotkeys-hook";
 import { useGetEntity, useSwapEntity } from "../../context/hooks";
 import { last } from "../../helpers/arrays";
 import { Atom, cursor } from "../../helpers/atoms";

@@ -1,6 +1,5 @@
 import { Stack, TextField, Typography } from "@mui/material";
 import { useRef } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { colours, font } from "../constants";
 import { arrayCursor, Atom, cursor } from "../helpers/atoms";
 import { clamp } from "../helpers/maths";

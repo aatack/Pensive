@@ -6,50 +6,49 @@ import { OptionsOrDependencyArray } from "react-hotkeys-hook/dist/types";
 
 export type Hotkeys = {
   toggleSections: string;
-  
-  search: string
-  cancelSearch: string
-  confirmSearch: string
 
-  closeTab: string
-  openTab: string
-  selectNextTab: string
-  selectPreviousTab: string
-  selectNextTabGroup: string
-  selectPreviousTabGroup: string
-  incrementTabGroup: string
-  decrementTabGroup: string
+  search: string;
+  cancelSearch: string;
+  confirmSearch: string;
 
-  selectParent: string
-  selectFollowing: string
-  selectPreceding: string
+  closeTab: string;
+  openTab: string;
+  selectNextTab: string;
+  selectPreviousTab: string;
+  selectNextTabGroup: string;
+  selectPreviousTabGroup: string;
+  incrementTabGroup: string;
+  decrementTabGroup: string;
 
-  pushFrame: string
-  popFrame: string
-  popFrameIntoTab: string // Probably going to be removed soon
-  
-  addSection: string
-  addOpenEntity: string
-  addEntity: string
-  confirmAddEntity: string
-  cancelAddEntity: string
-  
-  editEntity: string
-  toggleSection: string
-  toggleOpen: string
+  selectParent: string;
+  selectFollowing: string;
+  selectPreceding: string;
 
-  collapseEntity: string
-  expandEntity: string
-  
-  debugEntity: string
-  
-  startOutboundConnection: string
-  startInboundConnection: string
-  cancelConnection: string
-  moveConnection: string
-  cancelMoveConnection: string
-  removeConnection: string
+  pushFrame: string;
+  popFrame: string;
+  popFrameIntoTab: string; // Probably going to be removed soon
 
+  addSection: string;
+  addOpenEntity: string;
+  addEntity: string;
+  confirmAddEntity: string;
+  cancelAddEntity: string;
+
+  editEntity: string;
+  toggleSection: string;
+  toggleOpen: string;
+
+  collapseEntity: string;
+  expandEntity: string;
+
+  debugEntity: string;
+
+  startOutboundConnection: string;
+  startInboundConnection: string;
+  cancelConnection: string;
+  moveConnection: string;
+  cancelMoveConnection: string;
+  removeConnection: string;
 };
 
 export const ProvideHotkeys = ({ children }: { children: ReactNode }) => {
