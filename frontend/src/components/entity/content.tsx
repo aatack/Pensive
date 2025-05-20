@@ -11,6 +11,7 @@ import Markdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
+import { shell } from "electron";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -119,6 +120,20 @@ export const EntityContent = ({
                     </Typography>
                   );
                 },
+                a: (x) => (
+                  <a
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      event.preventDefault();
+                      if (x.href) {
+                        shell.openExternal(x.href);
+                      }
+                    }}
+                    href={x.href}
+                  >
+                    {x.children}
+                  </a>
+                ),
               }}
             >
               {entity.text ?? "No content"}
