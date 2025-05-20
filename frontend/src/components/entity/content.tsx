@@ -1,13 +1,16 @@
 import { Stack, Typography } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { EditEntity } from "../tool/edit-entity";
-import { colours, font } from "../../constants";
+import { colours } from "../../constants";
 import { RenderImage } from "../common/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { cursor } from "../../helpers/atoms";
 import { useTabState } from "../tab";
 import { ResolvedQuery } from "../pensive";
 import Markdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+import "katex/dist/katex.min.css";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -82,20 +85,24 @@ export const EntityContent = ({
         ) : (
           <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
             <Markdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
               components={{
-                // p: (x) => <Typography>{x.children}</Typography>,
-                code: (x) => (
-                  <Typography
-                    variant="body1Monospace"
-                    sx={{
-                      backgroundColor: colours.ui2,
-                      padding: 0.3,
-                      borderRadius: 1,
-                    }}
-                  >
-                    {x.children}
-                  </Typography>
-                ),
+                p: (x) => <Typography>{x.children}</Typography>,
+                code: (x) => {
+                  return (
+                    <Typography
+                      variant="body1Monospace"
+                      sx={{
+                        backgroundColor: colours.ui2,
+                        padding: 0.3,
+                        borderRadius: 1,
+                      }}
+                    >
+                      {x.children}
+                    </Typography>
+                  );
+                },
               }}
             >
               {entity.text ?? "No content"}
