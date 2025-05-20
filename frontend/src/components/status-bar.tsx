@@ -7,6 +7,7 @@ import { clamp } from "../helpers/maths";
 import { LabelledCheckbox } from "./common/checkbox";
 import { useTabsState } from "./tabs";
 import { useToolState } from "./tool/tool";
+import { useHotkey } from "../providers/hotkeys";
 
 const useSelectedFrame = () => {
   const tabs = useTabsState();
@@ -57,20 +58,20 @@ const HighlightSection = ({
 }: {
   section: Atom<boolean | undefined>;
 }) => {
-  useHotkeys("q", () => section.swap((current) => !current));
+  useHotkey("toggleSections", () => section.swap((current) => !current));
   return <LabelledCheckbox label="Section" value={section} />;
 };
 
 const HighlightText = ({ text }: { text: Atom<string | undefined> }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  useHotkeys("ctrl+f", () => {
+  useHotkey("search", () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   });
-  useHotkeys(
-    "escape",
+  useHotkey(
+    "cancelSearch",
     () => {
       if (inputRef.current && document.activeElement === inputRef.current) {
         inputRef.current.blur();
@@ -79,8 +80,8 @@ const HighlightText = ({ text }: { text: Atom<string | undefined> }) => {
     },
     { enableOnFormTags: true }
   );
-  useHotkeys(
-    "enter",
+  useHotkey(
+    "confirmSearch",
     () => {
       if (inputRef.current) {
         inputRef.current.blur();

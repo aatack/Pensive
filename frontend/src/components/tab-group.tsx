@@ -1,5 +1,4 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { useHotkeys } from "react-hotkeys-hook";
 import { arrayCursor, Atom, cursor } from "../helpers/atoms";
 import { clamp } from "../helpers/maths";
 import { Tab, TabState } from "./tab";
@@ -10,6 +9,7 @@ import { generateUuid } from "../helpers/uuid";
 import { moveTab, useTabsState } from "./tabs";
 import { useEntity } from "../context/hooks";
 import { useMetadata } from "./pensive";
+import { useHotkey } from "../providers/hotkeys";
 
 const padding = "4px";
 
@@ -85,16 +85,16 @@ const useTabGroupActions = (
   const tabGroupData = useTabGroupData(tabGroup);
   const metadata = useMetadata();
 
-  useHotkeys(
-    "ctrl+w",
+  useHotkey(
+    "closeTab",
     () => tabGroupData.closeTab(tabGroupData.selectedTab.value.uuid),
     {
       preventDefault: true,
       enabled: selected,
     }
   );
-  useHotkeys(
-    "ctrl+t",
+  useHotkey(
+    "openTab",
     () =>
       tabGroupData.openTab({
         uuid: generateUuid(),
@@ -112,22 +112,22 @@ const useTabGroupActions = (
       enabled: selected,
     }
   );
-  useHotkeys("ctrl+tab", () => tabGroupData.selectNextTab(), {
+  useHotkey("selectNextTab", () => tabGroupData.selectNextTab(), {
     enabled: selected,
   });
-  useHotkeys("ctrl+shift+tab", () => tabGroupData.selectPreviousTab(), {
-    enabled: selected,
-  });
-
-  useHotkeys("ctrl+alt+right", tabGroupData.incrementTabGroup, {
-    enabled: selected,
-  });
-  useHotkeys("ctrl+alt+left", tabGroupData.decrementTabGroup, {
+  useHotkey("selectPreviousTab", () => tabGroupData.selectPreviousTab(), {
     enabled: selected,
   });
 
-  useHotkeys(
-    "ctrl+d",
+  useHotkey("incrementTabGroup", tabGroupData.incrementTabGroup, {
+    enabled: selected,
+  });
+  useHotkey("decrementTabGroup", tabGroupData.decrementTabGroup, {
+    enabled: selected,
+  });
+
+  useHotkey(
+    "popFrameIntoTab",
     () =>
       tabGroup.swap((current) =>
         popFrameIntoTab(current, tabGroupData.selectedTab.value.uuid)

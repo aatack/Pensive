@@ -8,6 +8,7 @@ import { EntityIndent } from "../entity/indent";
 import { TabState, useTabState } from "../tab";
 import { useToolState } from "./tool";
 import { generateUuid } from "../../helpers/uuid";
+import { useHotkey } from "../../providers/hotkeys";
 
 export type CreateEntityState = {
   type: "createEntity";
@@ -40,15 +41,15 @@ export const useCreateEntityActions = (tab: TabState, selected: boolean) => {
             extraUpdates,
           });
 
-  useHotkeys("enter", startCreating({}), {
+  useHotkey("addEntity", startCreating({}), {
     enabled: selected,
     preventDefault: true,
   });
-  useHotkeys("/", startCreating({ section: true }), {
+  useHotkey("addSection", startCreating({ section: true }), {
     enabled: selected,
     preventDefault: true,
   });
-  useHotkeys("shift+slash", startCreating({ open: true }), {
+  useHotkey("addOpenEntity", startCreating({ open: true }), {
     enabled: selected,
     preventDefault: true,
   });

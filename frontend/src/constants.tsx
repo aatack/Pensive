@@ -36,5 +36,48 @@ export const font = {
 };
 
 export const defaultHotkeys: Partial<Hotkeys> = {
-  
-}
+  toggleSections: "q",
+
+  search: "ctrl+f",
+  cancelSearch: "escape",
+  confirmSearch: "enter",
+
+  closeTab: "ctrl+w",
+  openTab: "ctrl+t",
+  selectNextTab: "ctrl+tab",
+  selectPreviousTab: "ctrl+shift+tab",
+  selectNextTabGroup: "alt+right",
+  selectPreviousTabGroup: "alt+left",
+  incrementTabGroup: "ctrl+alt+right",
+  decrementTabGroup: "ctrl+alt+left",
+
+  selectParent: "a",
+  selectFollowing: "s",
+  selectPreceding: "w",
+
+  pushFrame: "d",
+  popFrame: "shift+a",
+  popFrameIntoTab: "ctrl+d",
+
+  addSection: "/",
+  addOpenEntity: "shift+slash",
+  addEntity: "enter",
+  confirmAddEntity: "enter",
+  cancelAddEntity: "escape",
+
+  editEntity: "e",
+  toggleSection: "ctrl+/",
+  toggleOpen: "shift+.",
+
+  collapseEntity: "left",
+  expandEntity: "right",
+
+  debugEntity: "3",
+
+  startOutboundConnection: "r",
+  startInboundConnection: "shift+r",
+  cancelConnection: "escape",
+  moveConnection: "x",
+  cancelMoveConnection: "escape",
+  removeConnection: "delete,backspace",
+};

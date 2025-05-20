@@ -18,6 +18,7 @@ import { PasteImage } from "./common/image";
 import { getFocusedEntityId, TabState } from "./tab";
 import { useMetadata } from "./pensive";
 import { DebugEntity } from "./entity/debug-entity";
+import { useHotkey } from "../providers/hotkeys";
 
 export type TabsState = {
   tabGroups: TabGroupState[];
@@ -55,8 +56,8 @@ const useTabsData = (tabs: Atom<TabsState>) => {
 const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   const { selectNextTabGroup, selectPreviousTabGroup } = tabsData;
 
-  useHotkeys("alt+right", selectNextTabGroup);
-  useHotkeys("alt+left", selectPreviousTabGroup);
+  useHotkey("selectNextTabGroup", selectNextTabGroup);
+  useHotkey("selectPreviousTabGroup", selectPreviousTabGroup);
 };
 
 export const defaultTabsState: TabsState = { tabGroups: [], selectedIndex: 0 };
@@ -73,7 +74,7 @@ export const Tabs = () => {
   const tabGroups = cursor(tabs, "tabGroups");
 
   const debugEntity = useAtom<string | null>(null);
-  useHotkeys("3", () =>
+  useHotkey("debugEntity", () =>
     debugEntity.reset(
       getFocusedEntityId(getFocusedTab(getFocusedTabGroup(tabs.value)))
     )

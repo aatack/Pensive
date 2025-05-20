@@ -20,6 +20,7 @@ import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
 import { useConnectEntityActions } from "./tool/connect-entities";
+import { useHotkey } from "../providers/hotkeys";
 
 export type TabState = {
   uuid: string;
@@ -111,12 +112,12 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const swapEntity = useSwapEntity();
   const write = useWrite();
 
-  useHotkeys("a", tabData.selectParent, { enabled: selected });
-  useHotkeys("s", tabData.selectFollowing, { enabled: selected });
-  useHotkeys("w", tabData.selectPreceding, { enabled: selected });
+  useHotkey("selectParent", tabData.selectParent, { enabled: selected });
+  useHotkey("selectFollowing", tabData.selectFollowing, { enabled: selected });
+  useHotkey("selectPreceding", tabData.selectPreceding, { enabled: selected });
 
-  useHotkeys(
-    "delete,backspace",
+  useHotkey(
+    "removeConnection",
     () => {
       const path = [tab.value.frame.entityId, ...tab.value.frame.selection];
       if (path.length >= 2) {
@@ -132,8 +133,8 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
     { enabled: selected }
   );
 
-  useHotkeys("d", tabData.pushFrame, { enabled: selected });
-  useHotkeys("shift+a", tabData.popFrame, { enabled: selected });
+  useHotkey("pushFrame", tabData.pushFrame, { enabled: selected });
+  useHotkey("popFrame", tabData.popFrame, { enabled: selected });
 
   useCreateEntityActions(tab.value, selected);
   useEditEntityActions(tab.value, selected);
@@ -143,16 +144,16 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
 
   const entityId = last(tab.value.frame.selection) ?? tab.value.frame.entityId;
 
-  useHotkeys(
-    "ctrl+/",
+  useHotkey(
+    "toggleSection",
     () =>
       swapEntity(entityId, (current) => ({
         section: current.section ? null : true,
       })),
     { enabled: selected, preventDefault: true }
   );
-  useHotkeys(
-    "shift+.",
+  useHotkey(
+    "toggleOpen",
     () =>
       swapEntity(entityId, (current) => ({
         open: current.open == null ? true : current.open ? false : null,
@@ -320,8 +321,8 @@ const useFrameNavigation = (
 };
 
 const useCollapsedExpandedActions = (tab: Atom<TabState>, enabled: boolean) => {
-  useHotkeys(
-    "left",
+  useHotkey(
+    "collapseEntity",
     () => {
       const entityId =
         last(tab.value.frame.selection) ?? tab.value.frame.entityId;
@@ -342,8 +343,8 @@ const useCollapsedExpandedActions = (tab: Atom<TabState>, enabled: boolean) => {
     },
     { enabled }
   );
-  useHotkeys(
-    "right",
+  useHotkey(
+    "expandEntity",
     () => {
       const entityId =
         last(tab.value.frame.selection) ?? tab.value.frame.entityId;

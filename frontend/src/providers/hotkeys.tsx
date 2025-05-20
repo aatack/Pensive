@@ -20,37 +20,35 @@ export type Hotkeys = {
   incrementTabGroup: string
   decrementTabGroup: string
 
-  popFrameIntoTab: string // Probably going to be removed soon
-
   selectParent: string
   selectFollowing: string
   selectPreceding: string
 
-  removeConnection: string
-
   pushFrame: string
   popFrame: string
-
+  popFrameIntoTab: string // Probably going to be removed soon
+  
   addSection: string
   addOpenEntity: string
   addEntity: string
   confirmAddEntity: string
   cancelAddEntity: string
-
+  
   editEntity: string
   toggleSection: string
   toggleOpen: string
 
   collapseEntity: string
   expandEntity: string
-
+  
   debugEntity: string
-
+  
   startOutboundConnection: string
   startInboundConnection: string
   cancelConnection: string
   moveConnection: string
   cancelMoveConnection: string
+  removeConnection: string
 
 };
 
