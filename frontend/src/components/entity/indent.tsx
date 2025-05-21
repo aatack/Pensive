@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 import { ReactNode } from "react";
 import { EntityState } from "./entity";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import DoneIcon from "@mui/icons-material/Done";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
@@ -18,7 +18,7 @@ export const EntityIndent = ({
     <Stack direction="row" gap={1}>
       <Stack sx={{ width: 12 }}>
         {entity.open === true ? (
-          <RadioButtonUncheckedIcon sx={iconStyle} />
+          <CheckBoxOutlineBlankIcon sx={iconStyle} />
         ) : entity.open === false ? (
           <DoneIcon sx={iconStyle} />
         ) : entity.section ? null : (
