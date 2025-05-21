@@ -54,7 +54,7 @@ export const EntityContent = ({
             : selected
             ? { cursor: "pointer" }
             : {
-                backgroundColor: colours.ui,
+                backgroundColor: colours.bg2,
                 cursor: "pointer",
               },
         borderRadius: 1,
@@ -186,7 +186,7 @@ const EntityText = memo(
                   backgroundColor: colours.ui,
                   padding: 1,
                   borderRadius: 1,
-                  marginY: 0.5
+                  marginY: 0.5,
                 }}
               >
                 {text}

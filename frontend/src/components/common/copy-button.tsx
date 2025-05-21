@@ -20,7 +20,9 @@ export const CopyButton = ({
   return (
     <Stack
       direction="column"
-      onClick={() => {
+      onClick={(event) => {
+        event.stopPropagation();
+        event.preventDefault();
         onClick();
         copied.reset(true);
         setTimeout(() => copied.reset(false), 2000);
