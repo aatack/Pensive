@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { EditEntity } from "../tool/edit-entity";
 import { colours, font } from "../../constants";
 import { RenderImage } from "../common/image";
@@ -46,7 +46,7 @@ export const EntityContent = ({
             ? "lightblue"
             : colours.ui3
           : undefined,
-        transition: "background-color 0.1s ease",
+        transition: "background-color 0.15s ease",
         "&:hover":
           path == null
             ? {}
@@ -84,45 +84,11 @@ export const EntityContent = ({
           <EditEntity />
         ) : (
           <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
-            <Markdown
-              remarkPlugins={[remarkMath]}
-              rehypePlugins={[rehypeKatex]}
-              components={{
-                p: (x) => (
-                  <Typography
-                    sx={{
-                      ...font,
-                      ...(entity.section
-                        ? {
-                            fontSize:
-                              font.fontSize *
-                              Math.max(1.6 * Math.pow(0.9, path.length), 1.1),
-                            fontWeight: font.fontWeight * 1.5,
-                          }
-                        : {}),
-                    }}
-                  >
-                    {x.children}
-                  </Typography>
-                ),
-                code: (x) => {
-                  return (
-                    <Typography
-                      variant="body1Monospace"
-                      sx={{
-                        backgroundColor: colours.ui,
-                        padding: 0.3,
-                        borderRadius: 1,
-                      }}
-                    >
-                      {x.children}
-                    </Typography>
-                  );
-                },
-              }}
-            >
-              {entity.text ?? "No content"}
-            </Markdown>
+            <EntityText
+              text={entity.text}
+              section={entity.section}
+              depth={path.length}
+            />
           </Stack>
         )}
         {hasHiddenChildren ? (
@@ -154,3 +120,61 @@ export const EntityContentClicked = ({
 
   return null;
 };
+
+// Needs to me memoised to prevent markdown from breaking text selection
+const EntityText = memo(
+  ({
+    text,
+    section,
+    depth,
+  }: {
+    text?: string | null;
+    section?: boolean | null;
+    depth: number;
+  }) => {
+    return (
+      <Markdown
+        remarkPlugins={[remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        components={{
+          p: (x) => (
+            <Typography
+              component="p"
+              display="inline"
+              sx={{
+                ...font,
+                ...(section
+                  ? {
+                      fontSize:
+                        font.fontSize *
+                        Math.max(1.6 * Math.pow(0.9, depth), 1.1),
+                      fontWeight: font.fontWeight * 1.5,
+                    }
+                  : {}),
+              }}
+            >
+              {x.children}
+            </Typography>
+          ),
+          code: (x) => {
+            return (
+              <Typography
+                component="code"
+                variant="body1Monospace"
+                sx={{
+                  backgroundColor: colours.ui,
+                  padding: 0.3,
+                  borderRadius: 1,
+                }}
+              >
+                {x.children}
+              </Typography>
+            );
+          },
+        }}
+      >
+        {text ?? "No content"}
+      </Markdown>
+    );
+  }
+);
