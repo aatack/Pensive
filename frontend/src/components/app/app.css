@@ -23,6 +23,8 @@
   display: none;
 }
 
+/* Prevent spurious vertical spacing when rendering multiline
+  code blocks */
 pre {
   margin: 0;
 }
