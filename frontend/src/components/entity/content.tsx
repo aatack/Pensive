@@ -42,24 +42,14 @@ export const EntityContent = ({
   return (
     <Stack
       sx={{
-        backgroundColor: selected
-          ? selected
-            ? "lightblue"
-            : colours.ui3
-          : undefined,
+        backgroundColor: selected ? "lightblue" : undefined,
         transition: "background-color 0.15s ease",
         "&:hover":
-          path == null
-            ? {}
-            : selected
-            ? { cursor: "pointer" }
-            : {
-                backgroundColor: colours.bg2,
-                cursor: "pointer",
-              },
+          path == null || selected ? {} : { backgroundColor: colours.bg2 },
         borderRadius: 1,
         paddingLeft: 0.5,
         paddingRight: 0.5,
+        cursor: "pointer",
       }}
       /* It's difficult/impossible to lazily read the value of a context in
         react.  Swapping the current frame's selection requires reading the
