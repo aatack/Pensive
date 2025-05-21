@@ -11,6 +11,7 @@ import Markdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
+import { CopyButton } from "../common/copy-button";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -179,6 +180,9 @@ const EntityText = memo(
 
             return inline ? (
               <Stack
+                direction="row"
+                alignItems="flex-start"
+                gap={1}
                 sx={{
                   backgroundColor: colours.ui,
                   padding: 1,
@@ -187,6 +191,14 @@ const EntityText = memo(
                 }}
               >
                 {text}
+
+                <CopyButton
+                  onClick={() =>
+                    // Remove the trailing new line, which occurs before the
+                    // closing backticks
+                    navigator.clipboard.writeText(children.slice(0, -1))
+                  }
+                />
               </Stack>
             ) : (
               text
