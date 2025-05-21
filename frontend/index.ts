@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
-declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -12,9 +11,6 @@ const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
-    webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-    },
     autoHideMenuBar: true,
     titleBarStyle: "hidden",
   });
@@ -24,13 +20,16 @@ const createWindow = (): void => {
 
   // Force electron to open clicked links in the browser, instead of navigating to them
   // within the electron window
+  const localUrl = (url: string) =>
+    url.endsWith("main_window") || url.startsWith("file://");
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
+    if (!localUrl(url)) {
+      shell.openExternal(url);
+    }
     return { action: "deny" };
   });
   mainWindow.webContents.on("will-navigate", (event, url) => {
-    const isLocal = url.startsWith("file://");
-    if (!isLocal) {
+    if (!localUrl(url)) {
       event.preventDefault();
       shell.openExternal(url);
     }
