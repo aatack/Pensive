@@ -18,7 +18,7 @@ export const theme = createTheme({
       fontSize: 12,
       fontWeight: 400,
       lineHeight: 1.6,
-      fontFamily: "Source Code Pro, monospace",
+      fontFamily: "Fira Code, monospace",
     },
   },
   palette: {
