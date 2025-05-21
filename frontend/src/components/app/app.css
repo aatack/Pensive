@@ -22,3 +22,7 @@
 .katex-mathml {
   display: none;
 }
+
+pre {
+  margin: 0;
+}

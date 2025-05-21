@@ -162,7 +162,6 @@ const EntityText = memo(
               typeof children === "string" && children.includes("\n");
             const text = (
               <Typography
-                component="code"
                 variant="body1Monospace"
                 sx={
                   inline
@@ -187,7 +186,7 @@ const EntityText = memo(
                   backgroundColor: colours.ui,
                   padding: 1,
                   borderRadius: 1,
-                  margin: 0,
+                  marginY: 0.5
                 }}
               >
                 {text}
