@@ -1,5 +1,5 @@
 import { Stack, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { EditEntity } from "../tool/edit-entity";
 import { colours, font } from "../../constants";
 import { RenderImage } from "../common/image";
@@ -7,6 +7,11 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { cursor } from "../../helpers/atoms";
 import { useTabState } from "../tab";
 import { ResolvedQuery } from "../pensive";
+import Markdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+import "katex/dist/katex.min.css";
+import { CopyButton } from "../common/copy-button";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -42,7 +47,7 @@ export const EntityContent = ({
             ? "lightblue"
             : colours.ui3
           : undefined,
-        transition: "background-color 0.1s ease",
+        transition: "background-color 0.15s ease",
         "&:hover":
           path == null
             ? {}
@@ -80,11 +85,11 @@ export const EntityContent = ({
           <EditEntity />
         ) : (
           <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
-            <Typography
-              sx={{ ...font, fontSize: entity.section ? 22 : font.fontSize }}
-            >
-              {entity.text ?? "No content"}
-            </Typography>
+            <EntityText
+              text={entity.text}
+              section={entity.section}
+              depth={path.length}
+            />
           </Stack>
         )}
         {hasHiddenChildren ? (
@@ -116,3 +121,92 @@ export const EntityContentClicked = ({
 
   return null;
 };
+
+// Needs to me memoised to prevent markdown from breaking text selection
+const EntityText = memo(
+  ({
+    text,
+    section,
+    depth,
+  }: {
+    text?: string | null;
+    section?: boolean | null;
+    depth: number;
+  }) => {
+    return (
+      <Markdown
+        remarkPlugins={[remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        components={{
+          p: ({ children }) => (
+            <Typography
+              component="p"
+              display="inline"
+              sx={{
+                ...font,
+                ...(section
+                  ? {
+                      fontSize:
+                        font.fontSize *
+                        Math.max(1.6 * Math.pow(0.9, depth), 1.1),
+                      fontWeight: font.fontWeight * 1.5,
+                    }
+                  : {}),
+              }}
+            >
+              {children}
+            </Typography>
+          ),
+          code: ({ children }) => {
+            const inline =
+              typeof children === "string" && children.includes("\n");
+            const text = (
+              <Typography
+                variant="body1Monospace"
+                sx={
+                  inline
+                    ? {}
+                    : {
+                        backgroundColor: colours.ui,
+                        padding: 0.3,
+                        borderRadius: 1,
+                      }
+                }
+              >
+                {children}
+              </Typography>
+            );
+
+            return inline ? (
+              <Stack
+                direction="row"
+                alignItems="flex-start"
+                gap={1}
+                sx={{
+                  backgroundColor: colours.ui,
+                  padding: 1,
+                  borderRadius: 1,
+                  marginY: 0.5
+                }}
+              >
+                {text}
+
+                <CopyButton
+                  onClick={() =>
+                    // Remove the trailing new line, which occurs before the
+                    // closing backticks
+                    navigator.clipboard.writeText(children.slice(0, -1))
+                  }
+                />
+              </Stack>
+            ) : (
+              text
+            );
+          },
+        }}
+      >
+        {text ?? "No content"}
+      </Markdown>
+    );
+  }
+);

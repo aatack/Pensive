@@ -2,3 +2,8 @@
     font-family: 'SourceSans3';
     src: url('./SourceSans3-VariableFont_wght.ttf') format('truetype');
 }
+
+@font-face {
+    font-family: 'Fira Code';
+    src: url('FiraCode-VariableFont_wght.ttf') format('truetype');
+}

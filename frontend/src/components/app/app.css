@@ -1,18 +1,30 @@
 ::-webkit-scrollbar {
-    width: 20px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: rgb(183, 181, 172); /* tx3 */
-    border-radius: 20px;
-    border: 6px solid transparent;
-    background-clip: content-box;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(111, 110, 105); /* tx2 */
-  }
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(183, 181, 172); /* tx3 */
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(111, 110, 105); /* tx2 */
+}
+
+/* This hides elements rendered with `position: relative`, which
+  breaks the nested scroll bars in the tabs */
+.katex-mathml {
+  display: none;
+}
+
+/* Prevent spurious vertical spacing when rendering multiline
+  code blocks */
+pre {
+  margin: 0;
+}
