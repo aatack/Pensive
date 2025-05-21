@@ -16,7 +16,7 @@ export const EntityIndent = ({
 
   return (
     <Stack direction="row" gap={1}>
-      <Stack sx={{ width: 10 }}>
+      <Stack sx={{ width: 12 }}>
         {entity.open === true ? (
           <RadioButtonUncheckedIcon sx={iconStyle} />
         ) : entity.open === false ? (
