@@ -1,7 +1,9 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import { ReactNode } from "react";
-import { font } from "../../constants";
 import { EntityState } from "./entity";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import DoneIcon from "@mui/icons-material/Done";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 export const EntityIndent = ({
   children,
@@ -10,18 +12,18 @@ export const EntityIndent = ({
   children: ReactNode;
   entity: EntityState;
 }) => {
+  const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
+
   return (
     <Stack direction="row" gap={1}>
       <Stack sx={{ width: 10 }}>
-        <Typography sx={{ ...font, textWrap: "nowrap", userSelect: "none" }}>
-          {entity.open === true
-            ? "[ ]"
-            : entity.open === false
-            ? "[x]"
-            : entity.section
-            ? null
-            : ">"}
-        </Typography>
+        {entity.open === true ? (
+          <RadioButtonUncheckedIcon sx={iconStyle} />
+        ) : entity.open === false ? (
+          <DoneIcon sx={iconStyle} />
+        ) : entity.section ? null : (
+          <KeyboardArrowRightIcon sx={iconStyle} />
+        )}
       </Stack>
       {children}
     </Stack>
