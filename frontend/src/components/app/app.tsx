@@ -8,8 +8,6 @@ import { ProvideTool } from "../tool/tool";
 import { Tabs, TabsState } from "../tabs";
 import { MigrateTabsState } from "../../helpers/migration";
 import { ProvideHotkeys } from "../../providers/hotkeys";
-import { EditHotkeys } from "../settings/edit-hotkeys";
-import { useAtom } from "../../helpers/atoms";
 
 const App = () => {
   const migration: ((current: TabsState) => TabsState) | null = null;
