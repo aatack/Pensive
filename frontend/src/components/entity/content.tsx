@@ -137,7 +137,7 @@ const EntityText = memo(
         remarkPlugins={[remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{
-          p: (x) => (
+          p: ({ children }) => (
             <Typography
               component="p"
               display="inline"
@@ -153,22 +153,43 @@ const EntityText = memo(
                   : {}),
               }}
             >
-              {x.children}
+              {children}
             </Typography>
           ),
-          code: (x) => {
-            return (
+          code: ({ children }) => {
+            const inline =
+              typeof children === "string" && children.includes("\n");
+            const text = (
               <Typography
                 component="code"
                 variant="body1Monospace"
+                sx={
+                  inline
+                    ? {}
+                    : {
+                        backgroundColor: colours.ui,
+                        padding: 0.3,
+                        borderRadius: 1,
+                      }
+                }
+              >
+                {children}
+              </Typography>
+            );
+
+            return inline ? (
+              <Stack
                 sx={{
                   backgroundColor: colours.ui,
-                  padding: 0.3,
+                  padding: 1,
                   borderRadius: 1,
+                  margin: 0,
                 }}
               >
-                {x.children}
-              </Typography>
+                {text}
+              </Stack>
+            ) : (
+              text
             );
           },
         }}
