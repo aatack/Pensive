@@ -1,45 +1,27 @@
-import { useLayoutEffect, useRef, useState, ReactNode } from "react";
+import { useRef, ReactNode } from "react";
 import { useResource, useWrite } from "../../context/hooks";
 import { colours } from "../../constants";
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { generateUuid } from "../../helpers/uuid";
+import { CopyButton } from "./copy-button";
 
 export const RenderImage = ({ resourceUuid }: { resourceUuid: string }) => {
   const resource = useResource(resourceUuid);
-  const [containerRef] = useDimensions<HTMLImageElement>();
 
   const imageRef = useRef<HTMLImageElement>(null);
 
   return resource == null ? (
     <Typography sx={{ color: colours.tx2 }}>{"Loading image..."}</Typography>
   ) : (
-    <Box ref={containerRef}>
+    <Stack direction="row" gap={0.5} sx={{ marginBottom: 0.5 }}>
       <img
         ref={imageRef}
         style={{ width: 400, objectFit: "fill" }}
         src={resource}
       />
-    </Box>
+      <CopyButton onClick={() => {}} />
+    </Stack>
   );
-};
-
-const useDimensions = <T extends HTMLElement>() => {
-  const ref = useRef<T>();
-  const [dimensions, setDimensions] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
-  /* Note: this hook sometimes doesn't fire properly when the element being
-    measured is half on the screen and half off it.  Not really sure why that
-    is. */
-  useLayoutEffect(() => {
-    const current = ref.current;
-    if (current != null) {
-      const { width, height } = current.getBoundingClientRect();
-      setDimensions({ width, height });
-    }
-  }, [ref.current]);
-  return [ref, dimensions] as const;
 };
 
 export const PasteImage = ({
