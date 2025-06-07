@@ -1,9 +1,10 @@
 import { useRef, ReactNode } from "react";
 import { useResource, useWrite } from "../../context/hooks";
-import { colours } from "../../constants";
+import { colours, server } from "../../constants";
 import { Box, Stack, Typography } from "@mui/material";
 import { generateUuid } from "../../helpers/uuid";
 import { CopyButton } from "./copy-button";
+import { pensiveReadResource } from "../../api/endpoints";
 
 export const RenderImage = ({ resourceUuid }: { resourceUuid: string }) => {
   const resource = useResource(resourceUuid);
@@ -19,7 +20,26 @@ export const RenderImage = ({ resourceUuid }: { resourceUuid: string }) => {
         style={{ width: 400, objectFit: "fill" }}
         src={resource}
       />
-      <CopyButton onClick={() => {}} />
+      <CopyButton
+        onClick={async () => {
+          // Fetching the image from the object URL violates some security
+          // policy, so it needs to be loaded from the server again instead
+          fetch(`${server}/read-resource`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ uuid: resourceUuid }),
+          })
+            .then((response) => response.arrayBuffer())
+            .then((buffer) => new Blob([buffer], { type: "image/png" }))
+            .then((blob) =>
+              navigator.clipboard.write([
+                new ClipboardItem({
+                  [blob.type]: blob,
+                }),
+              ])
+            );
+        }}
+      />
     </Stack>
   );
 };
