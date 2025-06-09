@@ -75,11 +75,13 @@ export const EntityContent = ({
           <EditEntity />
         ) : (
           <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
-            <EntityText
-              text={entity.text}
-              section={entity.section}
-              depth={path.length}
-            />
+            {entity.image != null && entity.text == null ? null : (
+              <EntityText
+                text={entity.text}
+                section={entity.section}
+                depth={path.length}
+              />
+            )}
           </Stack>
         )}
         {hasHiddenChildren ? (

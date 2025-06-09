@@ -14,7 +14,7 @@ export const RenderImage = ({ resourceUuid }: { resourceUuid: string }) => {
   return resource == null ? (
     <Typography sx={{ color: colours.tx2 }}>{"Loading image..."}</Typography>
   ) : (
-    <Stack direction="row" gap={0.5} sx={{ marginBottom: 0.5 }}>
+    <Stack direction="row" gap={0.5} sx={{ marginY: 0.5 }}>
       <img
         ref={imageRef}
         style={{ width: 400, objectFit: "fill" }}
