@@ -238,15 +238,21 @@ export const exportResolvedQuery = (
       ),
     ].join("\n");
   } else {
-    const prefix = `${"  ".repeat(textIndent)}- ${
+    const indent = "  ".repeat(textIndent);
+    const prefix = `- ${
       resolvedQuery.entity.open == null
         ? ""
         : resolvedQuery.entity.open
         ? "[ ] "
         : "[x] "
     }`;
+
+    const lines = (resolvedQuery.entity.text ?? "").split("\n");
+
     return [
-      `${prefix}${resolvedQuery.entity.text ?? ""}`,
+      `${indent}${prefix}${lines.join(
+        "\n" + indent + " ".repeat(prefix.length)
+      )}`,
       ...children.map(({ value }) =>
         exportResolvedQuery(value, sectionIndent, textIndent + 1)
       ),
