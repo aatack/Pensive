@@ -49,3 +49,13 @@ export const pensiveReadResource = async (uuid: string) => {
     .then((response) => response.blob())
     .then((blob) => URL.createObjectURL(blob));
 };
+
+export const pensivePrompt = async (prompt: string) => {
+  fetch(`${server}/prompt`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+  })
+    .then((response) => response.json())
+    .then(({ data }) => data);
+};

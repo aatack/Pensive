@@ -4,6 +4,7 @@ import multer from "multer";
 import { array, Client, createClient, generateUuid } from "@pensive/common";
 import { json as bodyParserJson } from "body-parser";
 import { createStore } from "./database";
+import { runGeminiPrompt } from "./llms/gemini";
 
 const app = express();
 const upload = multer();
@@ -78,6 +79,12 @@ app.post("/read-resource", (req: Request, res: Response) => {
   const uuid: string = req.body.uuid;
   const resource = client.readResources([uuid])[uuid];
   res.send(resource);
+});
+
+app.post("/prompt", async (req: Request, res: Response) => {
+  const prompt: string = req.body.prompt;
+  const response = await runGeminiPrompt(prompt);
+  res.json({ data: response });
 });
 
 app.listen(PORT, () => {
