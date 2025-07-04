@@ -83,4 +83,6 @@ export const defaultHotkeys: Hotkeys = {
   removeConnection: "delete,backspace",
 
   exportEntity: "ctrl+e",
+
+  runPrompt: "#",
 };

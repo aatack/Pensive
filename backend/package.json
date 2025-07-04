@@ -9,6 +9,7 @@
     "start": "npx ts-node src/app.ts"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@pensive/common": "file:../common",
     "better-sqlite3": "^11.10.0",
     "cors": "^2.8.5",

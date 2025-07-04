@@ -52,6 +52,8 @@ export type Hotkeys = {
   removeConnection: string;
 
   exportEntity: string;
+
+  runPrompt: string;
 };
 
 export const ProvideHotkeys = ({ children }: { children: ReactNode }) => {

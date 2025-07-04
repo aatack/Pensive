@@ -21,6 +21,7 @@ import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
 import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/hotkeys";
+import { runGeminiPrompt } from "../../../backend/src/llms/gemini";
 
 export type TabState = {
   uuid: string;
@@ -124,6 +125,10 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
     },
     { enabled: selected }
   );
+
+  // useHotkey("runPrompt", () => {
+  //   runGeminiPrompt().then(console.log);
+  // });
 
   useHotkey(
     "removeConnection",

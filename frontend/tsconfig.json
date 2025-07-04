@@ -17,5 +17,5 @@
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src/**/*", "renderer.ts", "index.ts"]
+  "include": ["src/**/*", "renderer.ts", "index.ts", "../backend/src/llms"]
 }
