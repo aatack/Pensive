@@ -3,6 +3,7 @@ import { exportResolvedQuery, ResolvedQuery } from "./components/pensive";
 import { FrameState } from "./components/tab";
 import { useWrite } from "./context/hooks";
 import { last } from "./helpers/arrays";
+import { Atom } from "./helpers/atoms";
 import { generateUuid } from "./helpers/uuid";
 
 export type LlmContext = {
@@ -41,23 +42,26 @@ you.
 export const useRunPrompt = () => {
   const write = useWrite();
 
-  return async (resolvedQuery: ResolvedQuery, frame: FrameState) => {
+  return async (resolvedQuery: ResolvedQuery, frame: Atom<FrameState>) => {
     const context = exportResolvedQuery(resolvedQuery, 1, 0, SELECTED_MARKER);
 
     const childUuid = generateUuid();
-    const parentUuid = last(frame.selection) ?? frame.entityId;
+    const parentUuid = last(frame.value.selection) ?? frame.value.entityId;
 
     write({
       [childUuid]: {
         inbound: `+${parentUuid}`,
         llmContext: {
-          root: frame.entityId,
-          selection: frame.selection,
+          root: frame.value.entityId,
+          selection: frame.value.selection,
         } as LlmContext,
       },
       [parentUuid]: { outbound: `+${childUuid}` },
     });
-    // selection.reset([...createEntity.value.path, childUuid]);
+    frame.swap((current) => ({
+      ...current,
+      selection: [...current.selection, childUuid],
+    }));
 
     const response = await pensivePrompt(
       `${context}\n\n---\n\n${TASK_DESCRIPTION}`
