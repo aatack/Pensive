@@ -215,6 +215,8 @@ export const flattenResolvedQuery = (
   ];
 };
 
+const REDACTED = "<<< Redacted >>>";
+
 /**
  * Export a resolved query as a markdown string.
  */
@@ -228,10 +230,11 @@ export const exportResolvedQuery = (
     compareResolvedQueries
   );
 
-  const text =
-    (resolvedQuery.selected && selectionMarker != null
-      ? selectionMarker + " "
-      : "") + (resolvedQuery.entity.text ?? "");
+  const text = resolvedQuery.entity.redacted
+    ? REDACTED
+    : (resolvedQuery.selected && selectionMarker != null
+        ? selectionMarker + " "
+        : "") + (resolvedQuery.entity.text ?? "");
 
   if (resolvedQuery.entity.section) {
     const prefix = "#".repeat(sectionIndent);
