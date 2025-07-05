@@ -1,4 +1,5 @@
 import { useEntity } from "../../context/hooks";
+import { LlmContext } from "../../llms";
 import { ResolvedQuery } from "../pensive";
 import { RowEntity } from "./row-entity";
 import { TableEntity } from "./table-entity";
@@ -14,6 +15,8 @@ export type EntityState = Partial<{
   outbound: EntityId[] | null;
 
   image: boolean | null;
+
+  llmContext: LlmContext;
 }>;
 
 export type EntityId = string;

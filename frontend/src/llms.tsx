@@ -5,6 +5,11 @@ import { useWrite } from "./context/hooks";
 import { last } from "./helpers/arrays";
 import { generateUuid } from "./helpers/uuid";
 
+export type LlmContext = {
+  root: string;
+  selection: string[];
+};
+
 const SELECTED_MARKER = "<<< NOTE: this is the selected node >>>";
 const TASK_DESCRIPTION = `
 The above is an excerpt from a file of notes someone has written, structured
@@ -43,7 +48,13 @@ export const useRunPrompt = () => {
     const parentUuid = last(frame.selection) ?? frame.entityId;
 
     write({
-      [childUuid]: { inbound: `+${parentUuid}`, llmContext: frame },
+      [childUuid]: {
+        inbound: `+${parentUuid}`,
+        llmContext: {
+          root: frame.entityId,
+          selection: frame.selection,
+        } as LlmContext,
+      },
       [parentUuid]: { outbound: `+${childUuid}` },
     });
     // selection.reset([...createEntity.value.path, childUuid]);
