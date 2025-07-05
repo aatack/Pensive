@@ -21,8 +21,6 @@ import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
 import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/hotkeys";
-import { runGeminiPrompt } from "../../../backend/src/llms/gemini";
-import { pensivePrompt } from "../api/endpoints";
 import { useRunPrompt } from "../llms";
 
 export type TabState = {
