@@ -1,9 +1,10 @@
 import { Stack } from "@mui/material";
 import { ReactNode } from "react";
 import { EntityState } from "./entity";
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import DoneIcon from "@mui/icons-material/Done";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import LockIcon from "@mui/icons-material/Lock";
 
 export const EntityIndent = ({
   children,
@@ -17,7 +18,9 @@ export const EntityIndent = ({
   return (
     <Stack direction="row" gap={1}>
       <Stack sx={{ width: 12 }}>
-        {entity.open === true ? (
+        {entity.redacted ? (
+          <LockIcon sx={iconStyle} />
+        ) : entity.open === true ? (
           <CheckBoxOutlineBlankIcon sx={iconStyle} />
         ) : entity.open === false ? (
           <DoneIcon sx={iconStyle} />
