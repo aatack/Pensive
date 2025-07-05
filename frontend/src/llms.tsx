@@ -1,5 +1,9 @@
 import { pensivePrompt } from "./api/endpoints";
 import { exportResolvedQuery, ResolvedQuery } from "./components/pensive";
+import { FrameState } from "./components/tab";
+import { useWrite } from "./context/hooks";
+import { last } from "./helpers/arrays";
+import { generateUuid } from "./helpers/uuid";
 
 const SELECTED_MARKER = "<<< NOTE: this is the selected node >>>";
 const TASK_DESCRIPTION = `
@@ -29,9 +33,24 @@ answer will be formatted for you. Only the text of your answer is necessary.
 `;
 
 export const useRunPrompt = () => {
-  return (resolvedQuery: ResolvedQuery) => {
+  const write = useWrite();
+
+  return async (resolvedQuery: ResolvedQuery, frame: FrameState) => {
     const context = exportResolvedQuery(resolvedQuery, 1, 0, SELECTED_MARKER);
 
-    return pensivePrompt(`${context}\n\n---\n\n${TASK_DESCRIPTION}`);
+    const childUuid = generateUuid();
+    const parentUuid = last(frame.selection) ?? frame.entityId;
+
+    write({
+      [childUuid]: { inbound: `+${parentUuid}`, llmContext: frame },
+      [parentUuid]: { outbound: `+${childUuid}` },
+    });
+    // selection.reset([...createEntity.value.path, childUuid]);
+
+    const response = await pensivePrompt(
+      `${context}\n\n---\n\n${TASK_DESCRIPTION}`
+    );
+
+    write({ [childUuid]: { text: response } });
   };
 };

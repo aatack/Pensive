@@ -129,7 +129,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const runPrompt = useRunPrompt();
   useHotkey(
     "runPrompt",
-    () => runPrompt(tabData.resolvedQuery).then(console.log),
+    () => runPrompt(tabData.resolvedQuery, tab.value.frame),
     { enabled: selected, keyup: true }
   );
 
