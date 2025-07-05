@@ -227,11 +227,15 @@ export const exportResolvedQuery = (
     compareResolvedQueries
   );
 
+  const text =
+    (resolvedQuery.selected ? "<<< NOTE: this is the selected node >>> " : "") +
+    (resolvedQuery.entity.text ?? "");
+
   if (resolvedQuery.entity.section) {
     const prefix = "#".repeat(sectionIndent);
     return [
       "",
-      `${prefix} ${resolvedQuery.entity.text ?? "No title"}`,
+      `${prefix} ${text}`,
       "",
       ...children.map(({ value }) =>
         exportResolvedQuery(value, sectionIndent + 1, 0)
@@ -247,7 +251,7 @@ export const exportResolvedQuery = (
         : "[x] "
     }`;
 
-    const lines = (resolvedQuery.entity.text ?? "").split("\n");
+    const lines = text.split("\n");
 
     return [
       `${indent}${prefix}${lines.join(
