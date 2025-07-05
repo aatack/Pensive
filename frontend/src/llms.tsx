@@ -28,8 +28,9 @@ possible, use the same style as the other bullet points:
 - Use the same terminology that the user has used in other bullet points, where
   appropriate
 
-Do not include markdown syntax or an opening bullet point in your answer, as the
-answer will be formatted for you. Only the text of your answer is necessary.
+Feel free to include markdown syntax (like code blocks or bold bits) as needed,
+but do not include the leading bullet point: one will be added to the answer for
+you.
 `;
 
 export const useRunPrompt = () => {
