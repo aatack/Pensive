@@ -129,9 +129,13 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   );
 
   const runPrompt = useRunPrompt();
-  useHotkey("runPrompt", () => runPrompt(tabData.resolvedQuery), {
-    enabled: selected,
-  });
+  useHotkey(
+    "runPrompt",
+    () => runPrompt(tabData.resolvedQuery).then(console.log),
+    {
+      enabled: selected,
+    }
+  );
 
   useHotkey(
     "removeConnection",
