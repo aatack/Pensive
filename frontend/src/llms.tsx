@@ -16,10 +16,16 @@ The user has asked you to comment on the selected bullet point. For examples:
 - If the selected bullet point mentions a problem that the user is stuck on,
   suggest some solutions or things to try
 
-Where possible, be short and concise, and follow a conversational style. Using
-the same style as the other bullet points is best. Do not include markdown
-syntax or an opening bullet point in your answer, as the answer will be
-formatted for you. Only the text of your answer is necessary.
+Where possible, be short and concise, and follow a conversational style. Where
+possible, use the same style as the other bullet points:
+
+- Use the same kind of language as the user has in their other bullet points
+- Follow the same punctuation conventions
+- Use the same terminology that the user has used in other bullet points, where
+  appropriate
+
+Do not include markdown syntax or an opening bullet point in your answer, as the
+answer will be formatted for you. Only the text of your answer is necessary.
 `;
 
 export const useRunPrompt = () => {
