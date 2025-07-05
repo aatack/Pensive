@@ -130,7 +130,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useHotkey(
     "runPrompt",
     () => {
-      pensivePrompt("Hello world").then(console.log);
+      pensivePrompt("").then(console.log);
     },
     { enabled: selected }
   );

@@ -1,16 +1,39 @@
-import { GoogleGenerativeAI } from "@google/generative-ai/dist/generative-ai";
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? null;
-
-export const runGeminiPrompt = async (prompt: string) => {
-  if (GEMINI_API_KEY == null) {
+export const runGeminiPrompt = async (prompt: string): Promise<string> => {
+  if (!GEMINI_API_KEY) {
     throw new Error("Gemini API key is not specified");
   }
 
-  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const endpoint =
+    `https://generativelanguage.googleapis.com/v1beta/models/` +
+    `gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [{ text: prompt }],
+        },
+      ],
+    }),
+  });
 
-  const result = await model.generateContent(prompt);
-  return await result.response.text;
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Gemini API error: ${response.status} ${error}`);
+  }
+
+  const data = await response.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!text) {
+    throw new Error("No response text returned from Gemini");
+  }
+
+  return text;
 };
