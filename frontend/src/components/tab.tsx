@@ -23,6 +23,7 @@ import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/hotkeys";
 import { runGeminiPrompt } from "../../../backend/src/llms/gemini";
 import { pensivePrompt } from "../api/endpoints";
+import { useRunPrompt } from "../llms";
 
 export type TabState = {
   uuid: string;
@@ -127,13 +128,10 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
     { enabled: selected }
   );
 
-  useHotkey(
-    "runPrompt",
-    () => {
-      pensivePrompt("").then(console.log);
-    },
-    { enabled: selected }
-  );
+  const runPrompt = useRunPrompt();
+  useHotkey("runPrompt", () => runPrompt(tabData.resolvedQuery), {
+    enabled: selected,
+  });
 
   useHotkey(
     "removeConnection",

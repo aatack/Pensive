@@ -221,15 +221,17 @@ export const flattenResolvedQuery = (
 export const exportResolvedQuery = (
   resolvedQuery: ResolvedQuery,
   sectionIndent: number = 1,
-  textIndent: number = 0
+  textIndent: number = 0,
+  selectionMarker?: string
 ): string => {
   const children = [...(resolvedQuery.children ?? [])].sort(
     compareResolvedQueries
   );
 
   const text =
-    (resolvedQuery.selected ? "<<< NOTE: this is the selected node >>> " : "") +
-    (resolvedQuery.entity.text ?? "");
+    (resolvedQuery.selected && selectionMarker != null
+      ? selectionMarker + " "
+      : "") + (resolvedQuery.entity.text ?? "");
 
   if (resolvedQuery.entity.section) {
     const prefix = "#".repeat(sectionIndent);
@@ -238,7 +240,7 @@ export const exportResolvedQuery = (
       `${prefix} ${text}`,
       "",
       ...children.map(({ value }) =>
-        exportResolvedQuery(value, sectionIndent + 1, 0)
+        exportResolvedQuery(value, sectionIndent + 1, 0, selectionMarker)
       ),
     ].join("\n");
   } else {
@@ -258,7 +260,12 @@ export const exportResolvedQuery = (
         "\n" + indent + " ".repeat(prefix.length)
       )}`,
       ...children.map(({ value }) =>
-        exportResolvedQuery(value, sectionIndent, textIndent + 1)
+        exportResolvedQuery(
+          value,
+          sectionIndent,
+          textIndent + 1,
+          selectionMarker
+        )
       ),
     ].join("\n");
   }
