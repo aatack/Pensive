@@ -84,5 +84,6 @@ export const defaultHotkeys: Hotkeys = {
 
   exportEntity: "ctrl+e",
 
+  redact: "shift+1",
   runPrompt: "#",
 };

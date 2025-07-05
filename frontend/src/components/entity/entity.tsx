@@ -16,6 +16,7 @@ export type EntityState = Partial<{
 
   image: boolean | null;
 
+  redacted: boolean;
   llmContext: LlmContext;
 }>;
 

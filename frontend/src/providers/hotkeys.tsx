@@ -53,6 +53,7 @@ export type Hotkeys = {
 
   exportEntity: string;
 
+  redact: string;
   runPrompt: string;
 };
 
