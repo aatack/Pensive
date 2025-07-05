@@ -83,7 +83,8 @@ app.post("/read-resource", (req: Request, res: Response) => {
 
 app.post("/prompt", async (req: Request, res: Response) => {
   const prompt: string = req.body.prompt;
-  const response = await runGeminiPrompt(prompt);
+  // const response = await runGeminiPrompt(prompt);
+  const response = "Prompt: " + prompt;
   res.json({ data: response });
 });
 

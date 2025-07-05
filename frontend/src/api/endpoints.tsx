@@ -51,7 +51,7 @@ export const pensiveReadResource = async (uuid: string) => {
 };
 
 export const pensivePrompt = async (prompt: string) => {
-  fetch(`${server}/prompt`, {
+  return fetch(`${server}/prompt`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt }),
