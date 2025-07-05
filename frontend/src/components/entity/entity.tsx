@@ -16,8 +16,8 @@ export type EntityState = Partial<{
 
   image: boolean | null;
 
-  redacted: boolean;
-  llmContext: LlmContext;
+  redacted: boolean | null;
+  llmContext: LlmContext | null;
 }>;
 
 export type EntityId = string;

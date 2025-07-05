@@ -177,6 +177,14 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
       })),
     { enabled: selected, preventDefault: true }
   );
+  useHotkey(
+    "redact",
+    () =>
+      swapEntity(entityId, (current) => ({
+        redacted: current.redacted ? null : true,
+      })),
+    { enabled: selected, preventDefault: true }
+  );
 
   return tabData;
 };
