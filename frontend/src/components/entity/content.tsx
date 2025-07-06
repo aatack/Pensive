@@ -146,79 +146,81 @@ const EntityText = memo(
     defaultText?: string;
   }) => {
     return (
-      <Markdown
-        remarkPlugins={[remarkMath]}
-        rehypePlugins={[rehypeKatex]}
-        components={{
-          p: ({ children }) => (
-            <Typography
-              component="p"
-              display="inline"
-              sx={{
-                ...font,
-                ...(section
-                  ? {
-                      fontSize:
-                        font.fontSize *
-                        Math.max(1.6 * Math.pow(0.9, depth), 1.1),
-                      fontWeight: font.fontWeight * 1.5,
-                    }
-                  : {}),
-              }}
-            >
-              {children}
-            </Typography>
-          ),
-          code: ({ children }) => {
-            const inline =
-              typeof children === "string" && children.includes("\n");
-            const text = (
+      <Stack sx={{ ...font }}>
+        <Markdown
+          remarkPlugins={[remarkMath]}
+          rehypePlugins={[rehypeKatex]}
+          components={{
+            p: ({ children }) => (
               <Typography
-                variant="body1Monospace"
-                sx={
-                  inline
-                    ? {}
-                    : {
-                        backgroundColor: colours.ui,
-                        padding: 0.3,
-                        borderRadius: 1,
+                component="p"
+                display="inline"
+                sx={{
+                  ...font,
+                  ...(section
+                    ? {
+                        fontSize:
+                          font.fontSize *
+                          Math.max(1.6 * Math.pow(0.9, depth), 1.1),
+                        fontWeight: font.fontWeight * 1.5,
                       }
-                }
+                    : {}),
+                }}
               >
                 {children}
               </Typography>
-            );
-
-            return inline ? (
-              <Stack
-                direction="row"
-                alignItems="flex-start"
-                gap={1}
-                sx={{
-                  backgroundColor: colours.ui,
-                  padding: 1,
-                  borderRadius: 1,
-                  marginY: 0.5,
-                }}
-              >
-                {text}
-
-                <CopyButton
-                  onClick={() =>
-                    // Remove the trailing new line, which occurs before the
-                    // closing backticks
-                    navigator.clipboard.writeText(children.slice(0, -1))
+            ),
+            code: ({ children }) => {
+              const inline =
+                typeof children === "string" && children.includes("\n");
+              const text = (
+                <Typography
+                  variant="body1Monospace"
+                  sx={
+                    inline
+                      ? {}
+                      : {
+                          backgroundColor: colours.ui,
+                          padding: 0.3,
+                          borderRadius: 1,
+                        }
                   }
-                />
-              </Stack>
-            ) : (
-              text
-            );
-          },
-        }}
-      >
-        {text ?? defaultText}
-      </Markdown>
+                >
+                  {children}
+                </Typography>
+              );
+
+              return inline ? (
+                <Stack
+                  direction="row"
+                  alignItems="flex-start"
+                  gap={1}
+                  sx={{
+                    backgroundColor: colours.ui,
+                    padding: 1,
+                    borderRadius: 1,
+                    marginY: 0.5,
+                  }}
+                >
+                  {text}
+
+                  <CopyButton
+                    onClick={() =>
+                      // Remove the trailing new line, which occurs before the
+                      // closing backticks
+                      navigator.clipboard.writeText(children.slice(0, -1))
+                    }
+                  />
+                </Stack>
+              ) : (
+                text
+              );
+            },
+          }}
+        >
+          {text ?? defaultText}
+        </Markdown>
+      </Stack>
     );
   }
 );
