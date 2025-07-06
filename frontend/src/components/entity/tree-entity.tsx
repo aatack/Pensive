@@ -10,7 +10,7 @@ import { Entity } from "./entity";
 export const TreeEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {
     return (
-      <Stack>
+      <Stack gap={0.2}>
         {resolvedQuery.highlight ? (
           <EntityContent resolvedQuery={resolvedQuery} />
         ) : null}

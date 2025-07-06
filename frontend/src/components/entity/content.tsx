@@ -76,7 +76,20 @@ export const EntityContent = ({
         {editEntity ? (
           <EditEntity />
         ) : (
-          <Stack sx={{ opacity: collapsed ? 0.5 : undefined }}>
+          <Stack
+            sx={{
+              opacity: collapsed ? 0.5 : undefined,
+              "@keyframes fadeInOut": {
+                "0%": { opacity: 0.2 },
+                "50%": { opacity: 1.0 },
+                "100%": { opacity: 0.2 },
+              },
+              animation:
+                entity.llmContext != null && entity.text == null
+                  ? "fadeInOut 2s ease-in-out infinite"
+                  : null,
+            }}
+          >
             {entity.image != null && entity.text == null ? null : (
               <EntityText
                 text={entity.text}
