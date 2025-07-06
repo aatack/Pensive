@@ -95,6 +95,9 @@ export const EntityContent = ({
                 text={entity.text}
                 section={entity.section}
                 depth={path.length}
+                defaultText={
+                  entity.llmContext == null ? "No content" : "Generating..."
+                }
               />
             )}
           </Stack>
@@ -135,10 +138,12 @@ const EntityText = memo(
     text,
     section,
     depth,
+    defaultText,
   }: {
     text?: string | null;
     section?: boolean | null;
     depth: number;
+    defaultText?: string;
   }) => {
     return (
       <Markdown
@@ -212,7 +217,7 @@ const EntityText = memo(
           },
         }}
       >
-        {text ?? "No content"}
+        {text ?? defaultText}
       </Markdown>
     );
   }
