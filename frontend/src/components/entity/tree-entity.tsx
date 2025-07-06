@@ -10,10 +10,12 @@ import { Entity } from "./entity";
 export const TreeEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {
     return (
-      <Stack>
-        {resolvedQuery.highlight ? (
-          <EntityContent resolvedQuery={resolvedQuery} />
-        ) : null}
+      <Stack sx={{ overflowX: "auto" }}>
+        <Stack sx={{ overflowX: "auto" }}>
+          {resolvedQuery.highlight ? (
+            <EntityContent resolvedQuery={resolvedQuery} />
+          ) : null}
+        </Stack>
 
         {resolvedQuery.children.map(({ key, value }) => (
           <WrappedChild key={key} resolvedQuery={value} />
