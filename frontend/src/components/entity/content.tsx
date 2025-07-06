@@ -47,9 +47,11 @@ export const EntityContent = ({
         "&:hover":
           path == null || selected ? {} : { backgroundColor: colours.bg2 },
         borderRadius: 1,
-        paddingLeft: 0.5,
+        paddingLeft: entity.llmContext == null ? 0.5 : 0.5,
         paddingRight: 0.5,
         cursor: "pointer",
+        borderLeft:
+          entity.llmContext == null ? null : `6px solid ${colours.ui2}`,
       }}
       /* It's difficult/impossible to lazily read the value of a context in
         react.  Swapping the current frame's selection requires reading the
