@@ -216,7 +216,7 @@ const TabHeaders = ({
         }}
       />
 
-      {groupsLeft ? <Typography>+{groupsLeft}</Typography> : null}
+      {groupsLeft ? <MoreTabs count={groupsLeft} /> : null}
 
       {tabGroup.value.tabs.map((tab) => (
         <TabHeader
@@ -228,7 +228,11 @@ const TabHeaders = ({
         />
       ))}
 
-      {groupsRight ? <Typography>+{groupsRight}</Typography> : null}
+      {groupsRight ? (
+        <Stack sx={{ mx: 0.5 }}>
+          <MoreTabs count={groupsRight} />
+        </Stack>
+      ) : null}
 
       {lastGroup ? <WindowControls /> : null}
     </Stack>
@@ -272,6 +276,14 @@ const TabHeader = ({
         {entity.text ?? "No content"}
       </Typography>
     </Box>
+  );
+};
+
+const MoreTabs = ({ count }: { count: number }) => {
+  return (
+    <Typography sx={{ px: 1, backgroundColor: colours.ui3, borderRadius: 2 }}>
+      +{count}
+    </Typography>
   );
 };
 
