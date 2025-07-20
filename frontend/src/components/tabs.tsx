@@ -23,6 +23,7 @@ import { EditHotkeys } from "./settings/edit-hotkeys";
 export type TabsState = {
   tabGroups: TabGroupState[];
   selectedIndex: number;
+  maximised: boolean;
 };
 
 export type TabsData = {
@@ -58,9 +59,16 @@ const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
 
   useHotkey("selectNextTabGroup", selectNextTabGroup);
   useHotkey("selectPreviousTabGroup", selectPreviousTabGroup);
+  useHotkey("maximiseTabGroup", () =>
+    tabs.swap((current) => ({ ...current, maximised: !current.maximised }))
+  );
 };
 
-export const defaultTabsState: TabsState = { tabGroups: [], selectedIndex: 0 };
+export const defaultTabsState: TabsState = {
+  tabGroups: [],
+  selectedIndex: 0,
+  maximised: false,
+};
 
 export const useTabsState = () => useProvided("tabs");
 

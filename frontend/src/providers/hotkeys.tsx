@@ -20,6 +20,7 @@ export type Hotkeys = {
   selectPreviousTabGroup: string;
   incrementTabGroup: string;
   decrementTabGroup: string;
+  maximiseTabGroup: string;
 
   selectParent: string;
   selectFollowing: string;

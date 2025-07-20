@@ -51,6 +51,7 @@ export const defaultHotkeys: Hotkeys = {
   selectPreviousTabGroup: "alt+left",
   incrementTabGroup: "ctrl+alt+right",
   decrementTabGroup: "ctrl+alt+left",
+  maximiseTabGroup: "m",
 
   selectParent: "a",
   selectFollowing: "s",
