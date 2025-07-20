@@ -116,15 +116,15 @@ export const Tabs = () => {
                 overflowY: "clip",
               }}
             >
-              {arrayCursors(tabGroups).map((tabGroup, index) =>
-                tabs.value.maximised &&
-                index !== tabsData.selectedIndex ? null : (
+              {arrayCursors(tabGroups).map((tabGroup, index) => {
+                const selected = index === tabsData.selectedIndex;
+                const maximised = tabs.value.maximised;
+
+                return maximised && !selected ? null : (
                   <Grid
                     key={index}
                     item
-                    xs={
-                      12 / (tabs.value.maximised ? 1 : tabGroups.value.length)
-                    }
+                    xs={12 / (maximised ? 1 : tabGroups.value.length)}
                     sx={{ height: 1, pr: 0 }}
                   >
                     <TabGroup
@@ -137,10 +137,16 @@ export const Tabs = () => {
                         }))
                       }
                       lastGroup={index === tabGroups.value.length - 1}
+                      groupsLeft={maximised ? index : undefined}
+                      groupsRight={
+                        maximised
+                          ? tabGroups.value.length - 1 - index
+                          : undefined
+                      }
                     />
                   </Grid>
-                )
-              )}
+                );
+              })}
             </Grid>
           )}
           <StatusBar showSettings={showSettings} />

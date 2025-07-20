@@ -141,11 +141,15 @@ export const TabGroup = ({
   selected,
   select,
   lastGroup,
+  groupsLeft,
+  groupsRight,
 }: {
   tabGroup: Atom<TabGroupState>;
   selected: boolean;
   select: () => void;
   lastGroup: boolean;
+  groupsLeft?: number;
+  groupsRight?: number;
 }) => {
   const { selectedTab } = useTabGroupData(tabGroup);
   useTabGroupActions(tabGroup, selected);
@@ -157,6 +161,8 @@ export const TabGroup = ({
         selected={selected}
         select={select}
         lastGroup={lastGroup}
+        groupsLeft={groupsLeft}
+        groupsRight={groupsRight}
       />
 
       {tabGroup.value.tabs.length > 0 && (
@@ -175,11 +181,15 @@ const TabHeaders = ({
   selected,
   select,
   lastGroup,
+  groupsLeft,
+  groupsRight,
 }: {
   tabGroup: Atom<TabGroupState>;
   selected: boolean;
   select: () => void;
   lastGroup: boolean;
+  groupsLeft?: number;
+  groupsRight?: number;
 }) => {
   const { selectedTab } = useTabGroupData(tabGroup);
   const uuids = tabGroup.value.tabs.map((tab) => tab.uuid);
@@ -206,6 +216,8 @@ const TabHeaders = ({
         }}
       />
 
+      {groupsLeft ? <Typography>+{groupsLeft}</Typography> : null}
+
       {tabGroup.value.tabs.map((tab) => (
         <TabHeader
           key={tab.uuid}
@@ -215,6 +227,8 @@ const TabHeaders = ({
           uuids={uuids}
         />
       ))}
+
+      {groupsRight ? <Typography>+{groupsRight}</Typography> : null}
 
       {lastGroup ? <WindowControls /> : null}
     </Stack>
