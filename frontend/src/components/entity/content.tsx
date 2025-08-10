@@ -12,6 +12,7 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { CopyButton } from "../common/copy-button";
+import { invertColour } from "../../constants";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -42,7 +43,7 @@ export const EntityContent = ({
   return (
     <Stack
       sx={{
-        backgroundColor: selected ? "lightblue" : undefined,
+        backgroundColor: selected ? invertColour("lightblue") : undefined,
         transition: "background-color 0.15s ease",
         "&:hover":
           path == null || selected ? {} : { backgroundColor: colours.bg2 },
