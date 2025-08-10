@@ -97,7 +97,7 @@ export const Tabs = () => {
           getFocusedTab(getFocusedTabGroup(tabs.value))
         )}
       >
-        <Stack sx={{ height: "100vh", backgroundColor: colours.bg }}>
+        <Stack sx={{ height: "100vh", backgroundColor: colours.tx2 }}>
           {debugEntity.value == null ? null : (
             <DebugEntity
               entityUuid={debugEntity.value}
