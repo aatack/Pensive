@@ -13,6 +13,7 @@ import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { CopyButton } from "../common/copy-button";
 import { invertColour } from "../../constants";
+import { FormulaEntity } from "./formulae";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -105,6 +106,10 @@ export const EntityContent = ({
                 }
               />
             )}
+
+            {entity.formula ? (
+              <FormulaEntity text={entity.text ?? "{}"} />
+            ) : null}
           </Stack>
         )}
         {hasHiddenChildren ? (
