@@ -93,7 +93,11 @@ export const EntityContent = ({
           >
             {entity.image != null && entity.text == null ? null : (
               <EntityText
-                text={entity.text}
+                text={
+                  entity.formula
+                    ? "```\n" + (entity.text ?? "") + "\n```"
+                    : entity.text
+                }
                 section={entity.section}
                 depth={path.length}
                 defaultText={
