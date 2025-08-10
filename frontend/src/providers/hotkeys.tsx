@@ -33,6 +33,7 @@ export type Hotkeys = {
   addSection: string;
   addOpenEntity: string;
   addEntity: string;
+  addFormula: string;
   confirmAddEntity: string;
   cancelAddEntity: string;
 

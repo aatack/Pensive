@@ -10,6 +10,7 @@ export type EntityState = Partial<{
 
   open: boolean | null;
   section: boolean | null;
+  formula: boolean | null;
 
   inbound: EntityId[] | null;
   outbound: EntityId[] | null;
