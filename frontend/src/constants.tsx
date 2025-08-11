@@ -2,7 +2,7 @@ import { Hotkeys } from "./providers/hotkeys";
 
 export const server = "http://localhost:2998";
 
-const DARK_MODE = true;
+const DARK_MODE = false;
 
 export const invertColour = (colour: string): string => {
   if (!DARK_MODE) {
