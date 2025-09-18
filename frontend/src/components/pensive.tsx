@@ -226,9 +226,6 @@ export const exportResolvedQuery = (
   textIndent: number = 0,
   selectionMarker?: string
 ): string => {
-  const children = [...(resolvedQuery.children ?? [])].sort(
-    compareResolvedQueries
-  );
   const entity = resolvedQuery.entity;
 
   const newIndent = "  ".repeat(textIndent);
@@ -247,7 +244,7 @@ export const exportResolvedQuery = (
 
   return [
     `${newIndent}${newPrefix}${newText.split("\n").join("\n" + newIndent)}`,
-    ...children.map(({ value }) =>
+    ...resolvedQuery.children.map(({ value }) =>
       exportResolvedQuery(
         value,
         sectionIndent + (entity.section ? 1 : 0),
@@ -256,26 +253,4 @@ export const exportResolvedQuery = (
       )
     ),
   ].join("\n");
-};
-
-/**
- * Order resolved queries such that sections appear after non-sections.
- *
- * This makes the structure of the resolved query easier to parse visually when
- * laid out and rendered.
- */
-const compareResolvedQueries = (
-  { value: left }: { value: ResolvedQuery },
-  { value: right }: { value: ResolvedQuery }
-) => {
-  const leftSection = Boolean(left.entity.section);
-  const rightSection = Boolean(right.entity.section);
-
-  if ((leftSection && rightSection) || (!leftSection && !rightSection)) {
-    return 0;
-  } else if (leftSection) {
-    return 1;
-  } else {
-    return -1;
-  }
 };
