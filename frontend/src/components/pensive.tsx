@@ -229,49 +229,33 @@ export const exportResolvedQuery = (
   const children = [...(resolvedQuery.children ?? [])].sort(
     compareResolvedQueries
   );
+  const entity = resolvedQuery.entity;
 
-  const text = resolvedQuery.entity.redacted
+  const newIndent = "  ".repeat(textIndent);
+
+  const newPrefix =
+    "- " +
+    (entity.section ? "#".repeat(sectionIndent) + " " : "") +
+    (entity.open == null ? "" : entity.open ? "[ ] " : "[x] ");
+
+  const newText = entity.redacted
     ? REDACTED
     : (resolvedQuery.selected && selectionMarker != null
         ? selectionMarker + " "
-        : "") + (resolvedQuery.entity.text ?? "");
+        : "") +
+      (entity.image ? `image@${resolvedQuery.entityId}` : entity.text ?? "");
 
-  if (resolvedQuery.entity.section) {
-    const prefix = "#".repeat(sectionIndent);
-    return [
-      "",
-      `${prefix} ${text}`,
-      "",
-      ...children.map(({ value }) =>
-        exportResolvedQuery(value, sectionIndent + 1, 0, selectionMarker)
-      ),
-    ].join("\n");
-  } else {
-    const indent = "  ".repeat(textIndent);
-    const prefix = `- ${
-      resolvedQuery.entity.open == null
-        ? ""
-        : resolvedQuery.entity.open
-        ? "[ ] "
-        : "[x] "
-    }`;
-
-    const lines = text.split("\n");
-
-    return [
-      `${indent}${prefix}${lines.join(
-        "\n" + indent + " ".repeat(prefix.length)
-      )}`,
-      ...children.map(({ value }) =>
-        exportResolvedQuery(
-          value,
-          sectionIndent,
-          textIndent + 1,
-          selectionMarker
-        )
-      ),
-    ].join("\n");
-  }
+  return [
+    `${newIndent}${newPrefix}${newText.split("\n").join("\n" + newIndent)}`,
+    ...children.map(({ value }) =>
+      exportResolvedQuery(
+        value,
+        sectionIndent + (entity.section ? 1 : 0),
+        textIndent + 1,
+        selectionMarker
+      )
+    ),
+  ].join("\n");
 };
 
 /**
