@@ -38,6 +38,7 @@ const config: ForgeConfig = {
         ],
       },
       loggerPort: 3002,
+      port: 3003,
     }),
     new FusesPlugin({
       version: FuseVersion.V1,
