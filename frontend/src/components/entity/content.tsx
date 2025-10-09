@@ -151,6 +151,23 @@ const EntityText = memo(
           remarkPlugins={[remarkMath]}
           rehypePlugins={[rehypeKatex]}
           components={{
+            a: (content) => (
+              <a
+                onClick={(event) => {
+                  const isModifierPressed = event.ctrlKey || event.metaKey;
+
+                  if (isModifierPressed) {
+                    return true;
+                  } else {
+                    event.preventDefault();
+                    return false;
+                  }
+                }}
+                href={content.href}
+              >
+                {content.children}
+              </a>
+            ),
             p: ({ children }) => (
               <Typography
                 component="p"
