@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { memo, useEffect, useRef, useState } from "react";
 import { EditEntity } from "../tool/edit-entity";
-import { colours, font } from "../../constants";
+import { colours, font, invertColour } from "../../constants";
 import { RenderImage } from "../common/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { cursor } from "../../helpers/atoms";
@@ -12,7 +12,6 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { CopyButton } from "../common/copy-button";
-import { invertColour } from "../../constants";
 
 export const EntityContent = ({
   resolvedQuery: {
