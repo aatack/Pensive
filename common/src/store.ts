@@ -19,4 +19,5 @@ export type Store = {
   readEntities: (uuids: Uuid[]) => StoreEntity[];
   writeResources: (resources: StoreResource[]) => void;
   readResources: (uuids: Uuid[]) => StoreResource[];
+  removeTimestamp: (timestamp: Date) => void;
 };
