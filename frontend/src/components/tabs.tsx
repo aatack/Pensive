@@ -20,7 +20,7 @@ import { DebugEntity } from "./entity/debug-entity";
 import { useHotkey } from "../providers/hotkeys";
 import { EditHotkeys } from "./settings/edit-hotkeys";
 import { useHotkeys } from "react-hotkeys-hook/dist";
-import { useUndo } from "../context/hooks";
+import { useRedo, useUndo } from "../context/hooks";
 
 export type TabsState = {
   tabGroups: TabGroupState[];
@@ -59,6 +59,7 @@ const useTabsData = (tabs: Atom<TabsState>) => {
 const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   const { selectNextTabGroup, selectPreviousTabGroup } = tabsData;
   const undo = useUndo();
+  const redo = useRedo();
 
   useHotkey("selectNextTabGroup", selectNextTabGroup);
   useHotkey("selectPreviousTabGroup", selectPreviousTabGroup);
@@ -66,6 +67,7 @@ const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
     tabs.swap((current) => ({ ...current, maximised: !current.maximised }))
   );
   useHotkeys("z", undo);
+  useHotkeys("y", redo);
 };
 
 export const defaultTabsState: TabsState = {

@@ -152,12 +152,31 @@ export const useUndo = () => {
   return () => {
     const write = last(history.value.undo);
     if (write != null) {
-      pensiveUndo(write.timestamp);
+      pensiveUndo(write.timestamp).then(() =>
+        Object.keys(write.entities).forEach(syncEntity)
+      );
       history.swap((current) => ({
         undo: butLast(current.undo),
         redo: [...current.redo, write],
       }));
-      Object.keys(write.entities).forEach(syncEntity);
+    }
+  };
+};
+
+export const useRedo = () => {
+  const syncEntity = useSyncEntity();
+  const history = cursor(usePensive(), "history");
+
+  return () => {
+    const write = last(history.value.redo);
+    if (write != null) {
+      pensiveWrite(write).then(() =>
+        Object.keys(write.entities).forEach(syncEntity)
+      );
+      history.swap((current) => ({
+        undo: [...current.undo, write],
+        redo: butLast(current.redo),
+      }));
     }
   };
 };
