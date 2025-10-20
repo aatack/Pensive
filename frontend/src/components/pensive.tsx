@@ -34,6 +34,9 @@ export type PensiveState = {
    */
   resources: Mapping<string, Request & { url: string | null }>;
 
+  /**
+   * Locally tracks the history of recent edits so they can be undone if needed.
+   */
   history: { undo: PensiveWrite[]; redo: PensiveWrite[] };
 };
 
