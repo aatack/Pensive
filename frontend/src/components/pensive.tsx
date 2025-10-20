@@ -34,7 +34,13 @@ export type PensiveState = {
    */
   resources: Mapping<string, Request & { url: string | null }>;
 
-  timestamp: Date | null;
+  history: { undo: PensiveWrite[]; redo: PensiveWrite[] };
+};
+
+export type PensiveWrite = {
+  timestamp: Date;
+  entities: { [uuid: string]: { [key: string]: any } };
+  resources: { [uuid: string]: Blob };
 };
 
 export type Request = {
@@ -64,7 +70,7 @@ const usePensiveState = (): Atom<PensiveState> => {
       default: { status: "waiting", subscribers: 0, url: null },
       mapping: {},
     },
-    timestamp: null,
+    history: { undo: [], redo: [] },
   });
 
   return pensive;

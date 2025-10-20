@@ -9,6 +9,7 @@ import { cursor, mappingCursor } from "../helpers/atoms";
 import { usePensive } from "../components/pensive";
 import { EntityState } from "../components/entity/entity";
 import { useDeepMemo } from "../helpers/state";
+import { butLast, last } from "../helpers/arrays";
 
 export const useSyncEntity = () => {
   const pensive = usePensive();
@@ -121,29 +122,42 @@ export const useResource = (resourceUuid: string): string | null => {
 
 export const useWrite = () => {
   const syncEntity = useSyncEntity();
-  const lastWrite = cursor(usePensive(), "timestamp");
+  const history = cursor(usePensive(), "history");
 
   return (
     entities: { [uuid: string]: { [key: string]: any } },
     resources?: { [uuid: string]: Blob }
   ) => {
+    const write = {
+      timestamp: new Date(),
+      entities,
+      resources: resources ?? {},
+    };
     // At this point we could in principle partially apply the results locally,
     // to be corrected later once the full results from the backend return
-    const timestamp = new Date();
-    pensiveWrite(timestamp, entities, resources ?? {}).then(() => {
+    pensiveWrite(write).then(() => {
       Object.keys(entities).forEach(syncEntity);
     });
-    lastWrite.reset(timestamp);
+    history.swap((current) => ({
+      undo: [...current.undo, write],
+      redo: [],
+    }));
   };
 };
 
 export const useUndo = () => {
-  const lastWrite = cursor(usePensive(), "timestamp");
+  const syncEntity = useSyncEntity();
+  const history = cursor(usePensive(), "history");
 
   return () => {
-    console.log(lastWrite.value);
-    if (lastWrite.value != null) {
-      pensiveUndo(lastWrite.value);
+    const write = last(history.value.undo);
+    if (write != null) {
+      pensiveUndo(write.timestamp);
+      history.swap((current) => ({
+        undo: butLast(current.undo),
+        redo: [...current.redo, write],
+      }));
+      Object.keys(write.entities).forEach(syncEntity);
     }
   };
 };
