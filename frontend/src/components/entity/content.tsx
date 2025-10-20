@@ -34,7 +34,9 @@ export const EntityContent = ({
     if (selected) {
       if (ref.current != null) {
         // Cast the element to avoid an undefined reference error on the method
-        (ref.current as any).scrollIntoViewIfNeeded();
+        (
+          ref.current as unknown as { scrollIntoViewIfNeeded: () => void }
+        ).scrollIntoViewIfNeeded();
       }
     }
   }, [selected]);

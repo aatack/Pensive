@@ -4,7 +4,7 @@ import { TabsState } from "../components/tabs";
 export const MigrateTabsState = ({
   migration,
 }: {
-  migration: (current: TabsState | any) => TabsState;
+  migration: (current: TabsState) => TabsState;
 }) => {
   const current = JSON.parse(localStorage.getItem("tabsState") ?? "null");
   const migrated = migration(current);

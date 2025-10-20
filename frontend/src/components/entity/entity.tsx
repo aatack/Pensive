@@ -30,7 +30,7 @@ export const Entity = ({
   row?: boolean;
 }) => {
   // Make sure the entity stays loaded
-  const _ = useEntity(resolvedQuery.entityId);
+  useEntity(resolvedQuery.entityId);
 
   if (row) {
     return <RowEntity resolvedQuery={resolvedQuery} />;

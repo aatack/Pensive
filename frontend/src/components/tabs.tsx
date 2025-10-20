@@ -206,7 +206,9 @@ export const moveTab = (
 };
 
 export const getFocusedTabGroup = (tabs: TabsState) =>
-  tabs.tabGroups[clamp(tabs.selectedIndex, 0, tabs.tabGroups.length - 1)]!;
+  tabs.tabGroups[
+    clamp(tabs.selectedIndex, 0, tabs.tabGroups.length - 1)
+  ] as TabGroupState;
 
 const useVerifyTabs = () => {
   const metadata = useMetadata();
@@ -257,19 +259,3 @@ export const getTab = (tabs: TabsState, tabUuid: string) =>
   tabs.tabGroups
     .flatMap((group) => group.tabs)
     .find((tab) => tab.uuid === tabUuid) ?? null;
-
-export const duplicateTab = (tabs: TabsState, tabUuid: string): TabsState => ({
-  ...tabs,
-  tabGroups: tabs.tabGroups.map((tabGroup) => ({
-    ...tabGroup,
-    tabs: tabGroup.tabs.map((tab) => tab.uuid).includes(tabUuid)
-      ? [
-          ...tabGroup.tabs,
-          {
-            ...tabGroup.tabs.find((tab) => tab.uuid === tabUuid)!,
-            uuid: generateUuid(),
-          },
-        ]
-      : tabGroup.tabs,
-  })),
-});

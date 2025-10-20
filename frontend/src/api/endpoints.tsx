@@ -26,9 +26,12 @@ export const pensiveWrite = async (write: PensiveWrite): Promise<"OK"> => {
   form.append("timestamp", write.timestamp.toISOString());
   form.append("entities", JSON.stringify(write.entities));
   form.append("resource_uuids", JSON.stringify(resourceUuids));
-  resourceUuids.forEach((uuid) =>
-    form.append("resource_blobs", write.resources[uuid]!)
-  );
+  resourceUuids.forEach((uuid) => {
+    const blob = write.resources[uuid];
+    if (blob != null) {
+      form.append("resource_blobs", blob);
+    }
+  });
 
   return fetch(`${server}/write`, { method: "POST", body: form })
     .then((response) => response.json())

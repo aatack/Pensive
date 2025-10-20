@@ -4,6 +4,14 @@ export const server = "http://localhost:2998";
 
 const DARK_MODE = false;
 
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | Json[]
+  | { [key: string]: Json };
+
 export const invertColour = (colour: string): string => {
   if (!DARK_MODE) {
     return colour;
@@ -90,7 +98,7 @@ export const defaultHotkeys: Hotkeys = {
   editEntity: "e",
   toggleSection: "ctrl+/",
   toggleOpen: "shift+.",
-  
+
   undo: "ctrl+z",
   redo: "ctrl+y",
 

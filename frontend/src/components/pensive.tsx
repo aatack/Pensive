@@ -6,6 +6,7 @@ import { Provide, useProvided } from "../providers/provider";
 import { EntityState } from "./entity/entity";
 import { headTail, isEmptyArray } from "../helpers/arrays";
 import { LinearProgress } from "@mui/material";
+import { Json } from "../constants";
 
 export type PensiveState = {
   /**
@@ -42,7 +43,7 @@ export type PensiveState = {
 
 export type PensiveWrite = {
   timestamp: Date;
-  entities: { [uuid: string]: { [key: string]: any } };
+  entities: { [uuid: string]: { [key: string]: Json } };
   resources: { [uuid: string]: Blob };
 };
 
@@ -195,7 +196,7 @@ export const findQueryResolutionLimit = (
 
   const toExplore = [entityId];
   while (toExplore.length > 0 && included.size < limit) {
-    const current = toExplore.shift()!;
+    const current = toExplore.shift() ?? "";
     if (included.has(current)) {
       continue;
     }
@@ -234,8 +235,8 @@ const REDACTED = "<<< Redacted >>>";
  */
 export const exportResolvedQuery = (
   resolvedQuery: ResolvedQuery,
-  sectionIndent: number = 1,
-  textIndent: number = 0,
+  sectionIndent = 1,
+  textIndent = 0,
   selectionMarker?: string
 ): string => {
   const entity = resolvedQuery.entity;

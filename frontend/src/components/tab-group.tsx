@@ -292,15 +292,16 @@ const popFrameIntoTab = (
   tabUuid: string
 ): TabGroupState => {
   const frame = tabGroup.tabs.find((tab) => tab.uuid === tabUuid)?.frame;
+  const frameContext = frame?.context;
 
-  if (frame == null || frame.context == null) {
+  if (frame == null || frameContext == null) {
     return tabGroup;
   } else {
     return {
       ...tabGroup,
       tabs: [
         ...tabGroup.tabs.map((tab) =>
-          tab.uuid === tabUuid ? { ...tab, frame: frame.context! } : tab
+          tab.uuid === tabUuid ? { ...tab, frame: frameContext } : tab
         ),
         {
           uuid: generateUuid(),
@@ -315,4 +316,6 @@ const popFrameIntoTab = (
 };
 
 export const getFocusedTab = (tabGroup: TabGroupState) =>
-  tabGroup.tabs[clamp(tabGroup.selectedIndex, 0, tabGroup.tabs.length - 1)]!;
+  tabGroup.tabs[
+    clamp(tabGroup.selectedIndex, 0, tabGroup.tabs.length - 1)
+  ] as TabState;

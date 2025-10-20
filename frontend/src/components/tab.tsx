@@ -137,10 +137,10 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
     "removeConnection",
     () => {
       const path = [tab.value.frame.entityId, ...tab.value.frame.selection];
-      if (path.length >= 2) {
+      const parentUuid = path[path.length - 2];
+      const childUuid = path[path.length - 1];
+      if (parentUuid != null && childUuid != null) {
         tabData.selectPreceding();
-        const parentUuid = path[path.length - 2]!;
-        const childUuid = path[path.length - 1]!;
         write({
           [parentUuid]: { outbound: `-${childUuid}` },
           [childUuid]: { inbound: `-${parentUuid}` },

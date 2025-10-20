@@ -19,7 +19,7 @@ export const nullIfEmpty = <T,>(items: T[]): T[] | null =>
 export const headTail = <T,>(
   items: T[]
 ): { head: T | null; tail: T[] | null } => ({
-  head: items.length > 0 ? items[0]! : null,
+  head: items.length > 0 ? (items[0] as T) : null,
   tail: items.length > 0 ? items.slice(1) : null,
 });
 
