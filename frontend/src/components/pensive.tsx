@@ -33,6 +33,8 @@ export type PensiveState = {
    * around indefinitely.
    */
   resources: Mapping<string, Request & { url: string | null }>;
+
+  timestamp: Date | null;
 };
 
 export type Request = {
@@ -62,6 +64,7 @@ const usePensiveState = (): Atom<PensiveState> => {
       default: { status: "waiting", subscribers: 0, url: null },
       mapping: {},
     },
+    timestamp: null,
   });
 
   return pensive;

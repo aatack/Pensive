@@ -99,14 +99,14 @@ export const createStore = (storePath: string): Store => {
             timestamp
           )}`
         )
-        .all();
+        .run();
       database
         .prepare(
           `delete from resources where timestamp = ${serialiseTimestamp(
             timestamp
           )}`
         )
-        .all();
+        .run();
     },
   };
 };

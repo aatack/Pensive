@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import {
   pensiveRead,
   pensiveReadResource,
+  pensiveUndo,
   pensiveWrite,
 } from "../api/endpoints";
 import { cursor, mappingCursor } from "../helpers/atoms";
@@ -120,6 +121,7 @@ export const useResource = (resourceUuid: string): string | null => {
 
 export const useWrite = () => {
   const syncEntity = useSyncEntity();
+  const lastWrite = cursor(usePensive(), "timestamp");
 
   return (
     entities: { [uuid: string]: { [key: string]: any } },
@@ -127,9 +129,22 @@ export const useWrite = () => {
   ) => {
     // At this point we could in principle partially apply the results locally,
     // to be corrected later once the full results from the backend return
-    pensiveWrite(new Date(), entities, resources ?? {}).then(() => {
+    const timestamp = new Date();
+    pensiveWrite(timestamp, entities, resources ?? {}).then(() => {
       Object.keys(entities).forEach(syncEntity);
     });
+    lastWrite.reset(timestamp);
+  };
+};
+
+export const useUndo = () => {
+  const lastWrite = cursor(usePensive(), "timestamp");
+
+  return () => {
+    console.log(lastWrite.value);
+    if (lastWrite.value != null) {
+      pensiveUndo(lastWrite.value);
+    }
   };
 };
 
