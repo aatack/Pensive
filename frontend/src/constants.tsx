@@ -90,6 +90,9 @@ export const defaultHotkeys: Hotkeys = {
   editEntity: "e",
   toggleSection: "ctrl+/",
   toggleOpen: "shift+.",
+  
+  undo: "ctrl+z",
+  redo: "ctrl+y",
 
   collapseEntity: "left",
   expandEntity: "right",

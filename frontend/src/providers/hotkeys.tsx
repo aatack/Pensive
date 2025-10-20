@@ -40,6 +40,9 @@ export type Hotkeys = {
   toggleSection: string;
   toggleOpen: string;
 
+  undo: string;
+  redo: string;
+
   collapseEntity: string;
   expandEntity: string;
 

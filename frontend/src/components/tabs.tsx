@@ -19,7 +19,6 @@ import { useMetadata } from "./pensive";
 import { DebugEntity } from "./entity/debug-entity";
 import { useHotkey } from "../providers/hotkeys";
 import { EditHotkeys } from "./settings/edit-hotkeys";
-import { useHotkeys } from "react-hotkeys-hook/dist";
 import { useRedo, useUndo } from "../context/hooks";
 
 export type TabsState = {
@@ -66,8 +65,8 @@ const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   useHotkey("maximiseTabGroup", () =>
     tabs.swap((current) => ({ ...current, maximised: !current.maximised }))
   );
-  useHotkeys("z", undo);
-  useHotkeys("y", redo);
+  useHotkey("undo", undo);
+  useHotkey("redo", redo);
 };
 
 export const defaultTabsState: TabsState = {
