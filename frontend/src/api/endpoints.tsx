@@ -59,3 +59,12 @@ export const pensivePrompt = async (prompt: string) => {
     .then((response) => response.json())
     .then(({ data }) => data);
 };
+
+export const pensiveUndo = async (timestamp: Date) =>
+  fetch(`${server}/undo`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timestamp: timestamp.toISOString() }),
+  })
+    .then((response) => response.json())
+    .then(({ data }) => data);
