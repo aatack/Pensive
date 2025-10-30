@@ -282,11 +282,14 @@ const useFrameNavigation = (
   const pensive = usePensive();
   const tool = useToolState().value;
 
+  const direction = frame.value.direction ?? "outbound";
+
   const [resolvedQuery, flattenedQuery] = useMemo(() => {
     const limit = findQueryResolutionLimit(
       pensive.value.entities,
       frame.value.entityId,
-      200
+      200,
+      direction
     );
 
     const resolvedQuery = resolveQuery(
@@ -305,7 +308,10 @@ const useFrameNavigation = (
       tool?.type === "createEntity" && tool.tabUuid === tabUuid
         ? tool.path
         : null,
-      tool?.type === "editEntity" && tool.tabUuid === tabUuid ? tool.path : null
+      tool?.type === "editEntity" && tool.tabUuid === tabUuid
+        ? tool.path
+        : null,
+      direction
     );
     return [resolvedQuery, flattenResolvedQuery(resolvedQuery)];
   }, [
@@ -316,6 +322,7 @@ const useFrameNavigation = (
     collapsed,
     expanded,
     tool,
+    direction,
   ]);
 
   // Everything is joined with double underscores because you can't use arrays

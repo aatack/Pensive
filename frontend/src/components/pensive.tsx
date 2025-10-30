@@ -125,7 +125,8 @@ export const resolveQuery = (
   path: string[],
   selectionPath: string[] | null,
   createEntityPath: string[] | null,
-  editEntityPath: string[] | null
+  editEntityPath: string[] | null,
+  direction: "outbound" | "inbound"
 ): ResolvedQuery => {
   const entity = mappingGet(entities, entityId);
 
@@ -133,7 +134,7 @@ export const resolveQuery = (
   const entityCollapsed = collapsed.includes(entityId) && path.length > 0;
   const entityExpanded = expanded.includes(entityId);
 
-  const children = entity.outbound ?? [];
+  const children = entity[direction] ?? [];
   const includedChildren = children.filter((child) => limit.has(child));
 
   const selectionPathParts = headTail(selectionPath ?? []);
@@ -168,7 +169,8 @@ export const resolveQuery = (
                 : null,
               child === editEntityPathParts.head
                 ? editEntityPathParts.tail
-                : null
+                : null,
+              direction
             ),
           })),
     highlight: entityExpanded || highlight(entity),
@@ -190,7 +192,8 @@ export const resolveQuery = (
 export const findQueryResolutionLimit = (
   entities: Mapping<string, EntityState>,
   entityId: string,
-  limit: number
+  limit: number,
+  direction: "outbound" | "inbound"
 ): Set<string> => {
   const included = new Set<string>();
 
@@ -201,7 +204,7 @@ export const findQueryResolutionLimit = (
       continue;
     }
     included.add(current);
-    (mappingGet(entities, current).outbound ?? []).forEach((child) => {
+    (mappingGet(entities, current)[direction] ?? []).forEach((child) => {
       toExplore.push(child);
     });
   }
