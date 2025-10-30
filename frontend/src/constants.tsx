@@ -66,6 +66,7 @@ export const font = {
 // Set to `""` for no default
 export const defaultHotkeys: Hotkeys = {
   toggleSections: "q",
+  toggleDirection: "]",
 
   search: "ctrl+f",
   cancelSearch: "escape",

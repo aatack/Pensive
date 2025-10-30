@@ -47,6 +47,8 @@ export type FrameState = {
     text?: string;
     section?: boolean;
   };
+
+  direction?: "outbound" | "inbound"; // Default is outbound
 };
 
 export type TabData = {
