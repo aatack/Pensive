@@ -4,7 +4,6 @@ import { colours, server } from "../../constants";
 import { Box, Stack, Typography } from "@mui/material";
 import { generateUuid } from "../../helpers/uuid";
 import { CopyButton } from "./copy-button";
-import { pensiveReadResource } from "../../api/endpoints";
 
 export const RenderImage = ({ resourceUuid }: { resourceUuid: string }) => {
   const resource = useResource(resourceUuid);

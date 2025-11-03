@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { memo, useEffect, useRef, useState } from "react";
 import { EditEntity } from "../tool/edit-entity";
-import { colours, font } from "../../constants";
+import { colours, font, invertColour } from "../../constants";
 import { RenderImage } from "../common/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { cursor } from "../../helpers/atoms";
@@ -34,7 +34,9 @@ export const EntityContent = ({
     if (selected) {
       if (ref.current != null) {
         // Cast the element to avoid an undefined reference error on the method
-        (ref.current as any).scrollIntoViewIfNeeded();
+        (
+          ref.current as unknown as { scrollIntoViewIfNeeded: () => void }
+        ).scrollIntoViewIfNeeded();
       }
     }
   }, [selected]);
@@ -42,7 +44,7 @@ export const EntityContent = ({
   return (
     <Stack
       sx={{
-        backgroundColor: selected ? "lightblue" : undefined,
+        backgroundColor: selected ? invertColour("lightblue") : undefined,
         transition: "background-color 0.15s ease",
         "&:hover":
           path == null || selected ? {} : { backgroundColor: colours.bg2 },
@@ -151,6 +153,23 @@ const EntityText = memo(
           remarkPlugins={[remarkMath]}
           rehypePlugins={[rehypeKatex]}
           components={{
+            a: (content) => (
+              <a
+                onClick={(event) => {
+                  const isModifierPressed = event.ctrlKey || event.metaKey;
+
+                  if (isModifierPressed) {
+                    return true;
+                  } else {
+                    event.preventDefault();
+                    return false;
+                  }
+                }}
+                href={content.href}
+              >
+                {content.children}
+              </a>
+            ),
             p: ({ children }) => (
               <Typography
                 component="p"

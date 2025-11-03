@@ -14,6 +14,8 @@ export type Client = {
     entities: { [uuid: Uuid]: { [key: string]: Json } },
     resources: { [uuid: Uuid]: Buffer }
   ) => void;
+
+  undo: (timestamp: Date) => void;
 };
 
 export const createClient = (
@@ -80,6 +82,16 @@ export const createClient = (
           data,
         }))
       );
+    },
+
+    undo: (timestamp) => {
+      const now = new Date();
+
+      // Only allow the undoing (read: permanent deletion) of edits made in the
+      // last five minutes
+      if (now.getTime() - timestamp.getTime() < 300_000) {
+        rootStore.removeTimestamp(timestamp);
+      }
     },
   };
 };

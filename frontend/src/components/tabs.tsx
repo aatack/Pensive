@@ -19,6 +19,7 @@ import { useMetadata } from "./pensive";
 import { DebugEntity } from "./entity/debug-entity";
 import { useHotkey } from "../providers/hotkeys";
 import { EditHotkeys } from "./settings/edit-hotkeys";
+import { useRedo, useUndo } from "../context/hooks";
 
 export type TabsState = {
   tabGroups: TabGroupState[];
@@ -56,12 +57,16 @@ const useTabsData = (tabs: Atom<TabsState>) => {
 
 const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   const { selectNextTabGroup, selectPreviousTabGroup } = tabsData;
+  const undo = useUndo();
+  const redo = useRedo();
 
   useHotkey("selectNextTabGroup", selectNextTabGroup);
   useHotkey("selectPreviousTabGroup", selectPreviousTabGroup);
   useHotkey("maximiseTabGroup", () =>
     tabs.swap((current) => ({ ...current, maximised: !current.maximised }))
   );
+  useHotkey("undo", undo);
+  useHotkey("redo", redo);
 };
 
 export const defaultTabsState: TabsState = {
@@ -201,7 +206,9 @@ export const moveTab = (
 };
 
 export const getFocusedTabGroup = (tabs: TabsState) =>
-  tabs.tabGroups[clamp(tabs.selectedIndex, 0, tabs.tabGroups.length - 1)]!;
+  tabs.tabGroups[
+    clamp(tabs.selectedIndex, 0, tabs.tabGroups.length - 1)
+  ] as TabGroupState;
 
 const useVerifyTabs = () => {
   const metadata = useMetadata();
@@ -252,19 +259,3 @@ export const getTab = (tabs: TabsState, tabUuid: string) =>
   tabs.tabGroups
     .flatMap((group) => group.tabs)
     .find((tab) => tab.uuid === tabUuid) ?? null;
-
-export const duplicateTab = (tabs: TabsState, tabUuid: string): TabsState => ({
-  ...tabs,
-  tabGroups: tabs.tabGroups.map((tabGroup) => ({
-    ...tabGroup,
-    tabs: tabGroup.tabs.map((tab) => tab.uuid).includes(tabUuid)
-      ? [
-          ...tabGroup.tabs,
-          {
-            ...tabGroup.tabs.find((tab) => tab.uuid === tabUuid)!,
-            uuid: generateUuid(),
-          },
-        ]
-      : tabGroup.tabs,
-  })),
-});

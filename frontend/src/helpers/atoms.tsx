@@ -88,7 +88,7 @@ export const mappingCursor = <K extends string | number | symbol, V>(
 };
 
 export const arrayCursor = <T,>(atom: Atom<T[]>, index: number): Atom<T> => {
-  const value = atom.value[index]!;
+  const value = atom.value[index] as T;
   const swap = (update: (value: T) => T) =>
     atom.swap((current) =>
       current.map((item, itemIndex) =>

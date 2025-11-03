@@ -2,12 +2,15 @@ import { useEffect } from "react";
 import {
   pensiveRead,
   pensiveReadResource,
+  pensiveUndo,
   pensiveWrite,
 } from "../api/endpoints";
 import { cursor, mappingCursor } from "../helpers/atoms";
 import { usePensive } from "../components/pensive";
 import { EntityState } from "../components/entity/entity";
 import { useDeepMemo } from "../helpers/state";
+import { butLast, last } from "../helpers/arrays";
+import { Json } from "../constants";
 
 export const useSyncEntity = () => {
   const pensive = usePensive();
@@ -120,26 +123,63 @@ export const useResource = (resourceUuid: string): string | null => {
 
 export const useWrite = () => {
   const syncEntity = useSyncEntity();
+  const history = cursor(usePensive(), "history");
 
   return (
-    entities: { [uuid: string]: { [key: string]: any } },
+    entities: { [uuid: string]: { [key: string]: Json } },
     resources?: { [uuid: string]: Blob }
   ) => {
+    const write = {
+      timestamp: new Date(),
+      entities,
+      resources: resources ?? {},
+    };
     // At this point we could in principle partially apply the results locally,
     // to be corrected later once the full results from the backend return
-    pensiveWrite(new Date(), entities, resources ?? {}).then(() => {
+    pensiveWrite(write).then(() => {
       Object.keys(entities).forEach(syncEntity);
     });
+    history.swap((current) => ({
+      undo: [...current.undo, write],
+      redo: [],
+    }));
   };
 };
 
-/**
- * Remove any empty (undefined) keys from the entity object.
- */
-const tidyEntity = (entity: EntityState): EntityState => {
-  return Object.fromEntries(
-    Object.entries(entity).filter(([, value]) => value != null)
-  );
+export const useUndo = () => {
+  const syncEntity = useSyncEntity();
+  const history = cursor(usePensive(), "history");
+
+  return () => {
+    const write = last(history.value.undo);
+    if (write != null) {
+      pensiveUndo(write.timestamp).then(() =>
+        Object.keys(write.entities).forEach(syncEntity)
+      );
+      history.swap((current) => ({
+        undo: butLast(current.undo),
+        redo: [...current.redo, write],
+      }));
+    }
+  };
+};
+
+export const useRedo = () => {
+  const syncEntity = useSyncEntity();
+  const history = cursor(usePensive(), "history");
+
+  return () => {
+    const write = last(history.value.redo);
+    if (write != null) {
+      pensiveWrite(write).then(() =>
+        Object.keys(write.entities).forEach(syncEntity)
+      );
+      history.swap((current) => ({
+        undo: [...current.undo, write],
+        redo: butLast(current.redo),
+      }));
+    }
+  };
 };
 
 export const useSwapEntity = () => {

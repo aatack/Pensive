@@ -28,7 +28,7 @@ export const mappingFlush = <K extends string | number | symbol, V>(
   ...mapping,
   mapping: Object.fromEntries(
     Object.entries(mapping.mapping).filter(
-      ([_, value]) => !equal(value, mapping.default)
+      ([, value]) => !equal(value, mapping.default)
     )
   ) as { [key in K]: V },
 });

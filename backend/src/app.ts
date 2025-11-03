@@ -87,6 +87,12 @@ app.post("/prompt", async (req: Request, res: Response) => {
   res.json({ data: response });
 });
 
+app.post("/undo", async (req: Request, res: Response) => {
+  const timestamp: string = req.body.timestamp;
+  client.undo(new Date(timestamp));
+  res.json({ data: "OK" });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

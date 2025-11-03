@@ -1,4 +1,5 @@
 import { EntityState } from "../components/entity/entity";
+import { PensiveWrite } from "../components/pensive";
 import { server } from "../constants";
 import { sort } from "../helpers/sorting";
 
@@ -18,20 +19,19 @@ export const pensiveRead = async (uuid: string): Promise<EntityState> =>
     .then((response) => response.json())
     .then(({ data }) => data);
 
-export const pensiveWrite = async (
-  timestamp: Date,
-  entities: { [uuid: string]: { [key: string]: any } },
-  resources: { [uuid: string]: Blob }
-): Promise<"OK"> => {
-  const resourceUuids = sort(Object.keys(resources), (uuid) => uuid);
+export const pensiveWrite = async (write: PensiveWrite): Promise<"OK"> => {
+  const resourceUuids = sort(Object.keys(write.resources), (uuid) => uuid);
 
   const form = new FormData();
-  form.append("timestamp", timestamp.toISOString());
-  form.append("entities", JSON.stringify(entities));
+  form.append("timestamp", write.timestamp.toISOString());
+  form.append("entities", JSON.stringify(write.entities));
   form.append("resource_uuids", JSON.stringify(resourceUuids));
-  resourceUuids.forEach((uuid) =>
-    form.append("resource_blobs", resources[uuid]!)
-  );
+  resourceUuids.forEach((uuid) => {
+    const blob = write.resources[uuid];
+    if (blob != null) {
+      form.append("resource_blobs", blob);
+    }
+  });
 
   return fetch(`${server}/write`, { method: "POST", body: form })
     .then((response) => response.json())
@@ -59,3 +59,12 @@ export const pensivePrompt = async (prompt: string) => {
     .then((response) => response.json())
     .then(({ data }) => data);
 };
+
+export const pensiveUndo = async (timestamp: Date) =>
+  fetch(`${server}/undo`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ timestamp: timestamp.toISOString() }),
+  })
+    .then((response) => response.json())
+    .then(({ data }) => data);

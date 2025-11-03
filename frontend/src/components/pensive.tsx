@@ -6,6 +6,7 @@ import { Provide, useProvided } from "../providers/provider";
 import { EntityState } from "./entity/entity";
 import { headTail, isEmptyArray } from "../helpers/arrays";
 import { LinearProgress } from "@mui/material";
+import { Json } from "../constants";
 
 export type PensiveState = {
   /**
@@ -33,6 +34,17 @@ export type PensiveState = {
    * around indefinitely.
    */
   resources: Mapping<string, Request & { url: string | null }>;
+
+  /**
+   * Locally tracks the history of recent edits so they can be undone if needed.
+   */
+  history: { undo: PensiveWrite[]; redo: PensiveWrite[] };
+};
+
+export type PensiveWrite = {
+  timestamp: Date;
+  entities: { [uuid: string]: { [key: string]: Json } };
+  resources: { [uuid: string]: Blob };
 };
 
 export type Request = {
@@ -62,6 +74,7 @@ const usePensiveState = (): Atom<PensiveState> => {
       default: { status: "waiting", subscribers: 0, url: null },
       mapping: {},
     },
+    history: { undo: [], redo: [] },
   });
 
   return pensive;
@@ -112,7 +125,8 @@ export const resolveQuery = (
   path: string[],
   selectionPath: string[] | null,
   createEntityPath: string[] | null,
-  editEntityPath: string[] | null
+  editEntityPath: string[] | null,
+  direction: "outbound" | "inbound"
 ): ResolvedQuery => {
   const entity = mappingGet(entities, entityId);
 
@@ -120,7 +134,7 @@ export const resolveQuery = (
   const entityCollapsed = collapsed.includes(entityId) && path.length > 0;
   const entityExpanded = expanded.includes(entityId);
 
-  const children = entity.outbound ?? [];
+  const children = entity[direction] ?? [];
   const includedChildren = children.filter((child) => limit.has(child));
 
   const selectionPathParts = headTail(selectionPath ?? []);
@@ -155,7 +169,8 @@ export const resolveQuery = (
                 : null,
               child === editEntityPathParts.head
                 ? editEntityPathParts.tail
-                : null
+                : null,
+              direction
             ),
           })),
     highlight: entityExpanded || highlight(entity),
@@ -177,18 +192,19 @@ export const resolveQuery = (
 export const findQueryResolutionLimit = (
   entities: Mapping<string, EntityState>,
   entityId: string,
-  limit: number
+  limit: number,
+  direction: "outbound" | "inbound"
 ): Set<string> => {
   const included = new Set<string>();
 
   const toExplore = [entityId];
   while (toExplore.length > 0 && included.size < limit) {
-    const current = toExplore.shift()!;
+    const current = toExplore.shift() ?? "";
     if (included.has(current)) {
       continue;
     }
     included.add(current);
-    (mappingGet(entities, current).outbound ?? []).forEach((child) => {
+    (mappingGet(entities, current)[direction] ?? []).forEach((child) => {
       toExplore.push(child);
     });
   }
@@ -222,76 +238,35 @@ const REDACTED = "<<< Redacted >>>";
  */
 export const exportResolvedQuery = (
   resolvedQuery: ResolvedQuery,
-  sectionIndent: number = 1,
-  textIndent: number = 0,
+  sectionIndent = 1,
+  textIndent = 0,
   selectionMarker?: string
 ): string => {
-  const children = [...(resolvedQuery.children ?? [])].sort(
-    compareResolvedQueries
-  );
+  const entity = resolvedQuery.entity;
 
-  const text = resolvedQuery.entity.redacted
+  const newIndent = "  ".repeat(textIndent);
+
+  const newPrefix =
+    "- " +
+    (entity.section ? "#".repeat(sectionIndent) + " " : "") +
+    (entity.open == null ? "" : entity.open ? "[ ] " : "[x] ");
+
+  const newText = entity.redacted
     ? REDACTED
     : (resolvedQuery.selected && selectionMarker != null
         ? selectionMarker + " "
-        : "") + (resolvedQuery.entity.text ?? "");
+        : "") +
+      (entity.image ? `image@${resolvedQuery.entityId}` : entity.text ?? "");
 
-  if (resolvedQuery.entity.section) {
-    const prefix = "#".repeat(sectionIndent);
-    return [
-      "",
-      `${prefix} ${text}`,
-      "",
-      ...children.map(({ value }) =>
-        exportResolvedQuery(value, sectionIndent + 1, 0, selectionMarker)
-      ),
-    ].join("\n");
-  } else {
-    const indent = "  ".repeat(textIndent);
-    const prefix = `- ${
-      resolvedQuery.entity.open == null
-        ? ""
-        : resolvedQuery.entity.open
-        ? "[ ] "
-        : "[x] "
-    }`;
-
-    const lines = text.split("\n");
-
-    return [
-      `${indent}${prefix}${lines.join(
-        "\n" + indent + " ".repeat(prefix.length)
-      )}`,
-      ...children.map(({ value }) =>
-        exportResolvedQuery(
-          value,
-          sectionIndent,
-          textIndent + 1,
-          selectionMarker
-        )
-      ),
-    ].join("\n");
-  }
-};
-
-/**
- * Order resolved queries such that sections appear after non-sections.
- *
- * This makes the structure of the resolved query easier to parse visually when
- * laid out and rendered.
- */
-const compareResolvedQueries = (
-  { value: left }: { value: ResolvedQuery },
-  { value: right }: { value: ResolvedQuery }
-) => {
-  const leftSection = Boolean(left.entity.section);
-  const rightSection = Boolean(right.entity.section);
-
-  if ((leftSection && rightSection) || (!leftSection && !rightSection)) {
-    return 0;
-  } else if (leftSection) {
-    return 1;
-  } else {
-    return -1;
-  }
+  return [
+    `${newIndent}${newPrefix}${newText.split("\n").join("\n" + newIndent)}`,
+    ...resolvedQuery.children.map(({ value }) =>
+      exportResolvedQuery(
+        value,
+        sectionIndent + (entity.section ? 1 : 0),
+        textIndent + 1,
+        selectionMarker
+      )
+    ),
+  ].join("\n");
 };

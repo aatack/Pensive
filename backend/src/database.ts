@@ -91,6 +91,23 @@ export const createStore = (storePath: string): Store => {
         data: row.data,
       }));
     },
+
+    removeTimestamp: (timestamp) => {
+      database
+        .prepare(
+          `delete from entities where timestamp = ${serialiseTimestamp(
+            timestamp
+          )}`
+        )
+        .run();
+      database
+        .prepare(
+          `delete from resources where timestamp = ${serialiseTimestamp(
+            timestamp
+          )}`
+        )
+        .run();
+    },
   };
 };
 

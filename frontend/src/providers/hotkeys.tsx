@@ -7,6 +7,7 @@ import { defaultHotkeys } from "../constants";
 
 export type Hotkeys = {
   toggleSections: string;
+  toggleDirection: string;
 
   search: string;
   cancelSearch: string;
@@ -39,6 +40,9 @@ export type Hotkeys = {
   editEntity: string;
   toggleSection: string;
   toggleOpen: string;
+
+  undo: string;
+  redo: string;
 
   collapseEntity: string;
   expandEntity: string;

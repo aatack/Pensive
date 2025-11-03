@@ -48,8 +48,10 @@ export const useMoveEntityActions = (tab: TabState, enabled: boolean) => {
         confirm(getFocusedEntityId(tab));
       } else {
         const path = [tab.frame.entityId, ...tab.frame.selection];
-        if (path.length >= 2) {
-          initiate(path[path.length - 2]!, path[path.length - 1]!);
+        const lastItem = path[path.length - 1];
+        const penultimateItem = path[path.length - 2];
+        if (lastItem != null && penultimateItem != null) {
+          initiate(penultimateItem, lastItem);
         }
       }
     },
