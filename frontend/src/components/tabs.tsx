@@ -65,8 +65,8 @@ const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   useHotkey("maximiseTabGroup", () =>
     tabs.swap((current) => ({ ...current, maximised: !current.maximised }))
   );
-  useHotkey("undo", undo);
-  useHotkey("redo", redo);
+  useHotkey("undo", undo, { preventDefault: true });
+  useHotkey("redo", redo, { preventDefault: true });
 };
 
 export const defaultTabsState: TabsState = {
