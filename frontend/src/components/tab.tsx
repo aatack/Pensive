@@ -46,6 +46,7 @@ export type FrameState = {
   highlight: {
     text?: string;
     section?: boolean;
+    snoozed?: boolean;
   };
 
   direction?: "outbound" | "inbound"; // Default is outbound
@@ -183,8 +184,11 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
     "snoozeEntity",
     () =>
       swapEntity(entityId, (current) => {
+        const now = new Date();
         const timestamp =
-          current.snoozed == null ? new Date() : new Date(current.snoozed);
+          current.snoozed == null || new Date(current.snoozed) < now
+            ? now
+            : new Date(current.snoozed);
         return {
           // Advance the snooze date by a day
           snoozed: new Date(timestamp.getTime() + 86400 * 1000).toISOString(),
@@ -305,6 +309,8 @@ const useFrameNavigation = (
       direction
     );
 
+    const timestamp = new Date();
+
     const resolvedQuery = resolveQuery(
       pensive.value.entities,
       frame.value.entityId,
@@ -312,7 +318,10 @@ const useFrameNavigation = (
         (entity.text ?? "")
           .toLowerCase()
           .includes((frame.value.highlight.text ?? "").toLowerCase()) &&
-        Boolean(!frame.value.highlight.section || entity.section),
+        Boolean(!frame.value.highlight.section || entity.section) &&
+        (entity.snoozed == null ||
+          new Date(entity.snoozed) < timestamp ||
+          Boolean(frame.value.highlight.snoozed)),
       collapsed,
       expanded,
       limit,
