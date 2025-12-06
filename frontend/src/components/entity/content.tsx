@@ -102,6 +102,9 @@ export const EntityContent = ({
                 }
               />
             )}
+            {entity.image && collapsed ? (
+              <Typography sx={font}>Image collapsed</Typography>
+            ) : null}
           </Stack>
         )}
         {hasHiddenChildren ? (
@@ -112,7 +115,9 @@ export const EntityContent = ({
         ) : null}
       </Stack>
 
-      {entity.image ? <RenderImage resourceUuid={entityId} /> : null}
+      {entity.image && !collapsed ? (
+        <RenderImage resourceUuid={entityId} />
+      ) : null}
     </Stack>
   );
 };

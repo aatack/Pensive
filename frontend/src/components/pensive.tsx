@@ -244,7 +244,7 @@ export const exportResolvedQuery = (
 ): string => {
   const entity = resolvedQuery.entity;
 
-  const newIndent = "  ".repeat(textIndent);
+  const newIndent = "    ".repeat(textIndent);
 
   const newPrefix =
     "- " +
