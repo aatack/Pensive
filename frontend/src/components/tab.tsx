@@ -180,6 +180,19 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
     { enabled: selected, preventDefault: true }
   );
   useHotkey(
+    "snoozeEntity",
+    () =>
+      swapEntity(entityId, (current) => {
+        const timestamp =
+          current.snoozed == null ? new Date() : new Date(current.snoozed);
+        return {
+          // Advance the snooze date by a day
+          snoozed: new Date(timestamp.getTime() + 86400 * 1000).toISOString(),
+        };
+      }),
+    { enabled: selected, preventDefault: true }
+  );
+  useHotkey(
     "redact",
     () =>
       swapEntity(entityId, (current) => ({

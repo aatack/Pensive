@@ -40,6 +40,7 @@ export type Hotkeys = {
   editEntity: string;
   toggleSection: string;
   toggleOpen: string;
+  snoozeEntity: string;
 
   undo: string;
   redo: string;

@@ -17,6 +17,7 @@ export type EntityState = Partial<{
   image: boolean | null;
 
   redacted: boolean | null;
+  snoozed: string | null; // ISO format
   llmContext: LlmContext | null;
 }>;
 

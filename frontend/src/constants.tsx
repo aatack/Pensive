@@ -99,6 +99,7 @@ export const defaultHotkeys: Hotkeys = {
   editEntity: "e",
   toggleSection: "ctrl+/",
   toggleOpen: "shift+.",
+  snoozeEntity: "t",
 
   undo: "ctrl+z",
   redo: "ctrl+y",
