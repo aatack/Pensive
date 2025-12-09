@@ -95,7 +95,7 @@ const useTabGroupActions = (
       "ctx",
       "a",
       "b",
-      "{const inc = ctx.inc; return a + inc(b);}"
+      "{const inc = ctx.inc; return [1, 2, 3].map(f => f + a + inc(b));}"
     );
 
     console.log(dynamicFunction(scope, 1, 2));
