@@ -10,6 +10,7 @@ import { moveTab, useTabsState } from "./tabs";
 import { useEntity } from "../context/hooks";
 import { useMetadata } from "./pensive";
 import { useHotkey } from "../providers/hotkeys";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const padding = "4px";
 
@@ -84,6 +85,21 @@ const useTabGroupActions = (
 ) => {
   const tabGroupData = useTabGroupData(tabGroup);
   const metadata = useMetadata();
+
+  useHotkeys("n", () => {
+    const scope = {
+      inc: (x) => x + 1,
+    };
+
+    const dynamicFunction = new Function(
+      "ctx",
+      "a",
+      "b",
+      "{const inc = ctx.inc; return a + inc(b);}"
+    );
+
+    console.log(dynamicFunction(scope, 1, 2));
+  });
 
   useHotkey(
     "closeTab",
