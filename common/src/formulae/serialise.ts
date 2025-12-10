@@ -1,20 +1,17 @@
 import { switchFormulaType } from "./helpers";
 import { Formula } from "./types";
 
-export const serialiseFormula = (formula: Formula): string => {
+export const serialise = (formula: Formula): string => {
   return switchFormulaType(formula, {
     scope: (scope) => {
       const strings = scope
         .entrySeq()
-        .flatMap(([key, item]) => [
-          serialiseFormula(key),
-          serialiseFormula(item),
-        ]);
+        .flatMap(([key, item]) => [serialise(key), serialise(item)]);
       return `{ ${strings.join(" ")} }`;
     },
     expression: (expression) =>
-      `(${expression.expression.map(serialiseFormula).join(" ")})`,
-    vector: (vector) => `[${vector.map(serialiseFormula).join(" ")}]`,
+      `(${expression.expression.map(serialise).join(" ")})`,
+    vector: (vector) => `[${vector.map(serialise).join(" ")}]`,
     symbol: (symbol) => symbol.symbol,
     number: (number) => number.toString(),
     string: (string) => string,

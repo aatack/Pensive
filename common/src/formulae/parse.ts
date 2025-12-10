@@ -26,9 +26,9 @@ const isReserved = (character: string | null) =>
 const isNumeric = (character: string | null) =>
   character != null && "-.1234567890".includes(character);
 
-export const parseFormula = (
-  characters: Character[]
-): ParseResult<Formula | null> => {
+export const parse = (characters: string) => parseFormula(characters.split(""));
+
+const parseFormula = (characters: Character[]): ParseResult<Formula | null> => {
   const importantCharacters = dropWhile(characters, isWhitespace);
   if (importantCharacters.length === 0) {
     return { valid: true, value: null, remainingCharacters: [] };
