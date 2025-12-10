@@ -6,8 +6,10 @@ import {
   FormulaScope,
   FormulaSymbol,
   FormulaVector,
+  isFormulaScope,
   isFormulaSymbol,
   isFormulaVector,
+  wrapScope,
   wrapVector,
 } from "./types";
 import { serialise } from "./serialise";
@@ -66,6 +68,8 @@ export const transpile = (formula: Formula): string =>
       if (isFormulaSymbol(head)) {
         if (head.symbol === "fn") {
           return transpileFunction(body);
+        } else if (head.symbol === "let") {
+          return transpileLet(body);
         }
       }
 
@@ -91,4 +95,24 @@ const transpileFunction = (parameters: List<Formula>): string => {
   }
 
   return `((${args.map(transpile).join(", ")}) => (${transpile(body)}))`;
+};
+
+const transpileLet = (parameters: List<Formula>): string => {
+  const defs: Formula = parameters.get(0) ?? wrapScope([]);
+  const body: Formula = parameters.get(1) ?? null;
+
+  if (!isFormulaScope(defs) || !defs.keySeq().every(isFormulaSymbol)) {
+    throw new Error(`Invalid definitions: ${serialise(defs)}`);
+  }
+
+  const assignments = defs
+    .entrySeq()
+    .map(([key, value]) => `const ${transpile(key)} = ${transpile(value)};`)
+    .join("\n");
+
+  return `(() => {
+    ${assignments}
+
+    return ${transpile(body)};
+  })()`;
 };
