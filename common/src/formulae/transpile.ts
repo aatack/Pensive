@@ -3,7 +3,6 @@ import { switchFormulaType } from "./helpers";
 import {
   Formula,
   FormulaExpression,
-  FormulaFunction,
   FormulaScope,
   FormulaSymbol,
   FormulaVector,
@@ -13,8 +12,18 @@ import {
 } from "./types";
 import { serialise } from "./serialise";
 
-export const COMMON_CONTEXT = {
-  __plus: (left: number, right: number) => left + right,
+const ALIASES: { [key: string]: string } = {
+  "+": "__sum",
+  "-": "__subtract",
+  "/": "__divide",
+  "*": "__product",
+};
+
+const COMMON_CONTEXT = {
+  __sum: (left: number, right: number) => left + right,
+  __subtract: (left: number, right: number) => left - right,
+  __divide: (left: number, right: number) => left / right,
+  __product: (left: number, right: number) => left * right,
 };
 
 export const transpileAndRun = (
@@ -64,7 +73,7 @@ export const transpile = (formula: Formula): string =>
     },
     vector: (vector: FormulaVector) =>
       `__wrapVector([${vector.map(transpile).join(", ")}])`,
-    symbol: (symbol: FormulaSymbol) => symbol.symbol,
+    symbol: (symbol: FormulaSymbol) => ALIASES[symbol.symbol] ?? symbol.symbol,
     number: (number: number) => number.toString(),
     string: (string: string) => `"${string}"`, // Inner quotes aren't escaped
     fn: () => {
