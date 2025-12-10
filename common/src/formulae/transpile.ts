@@ -23,14 +23,14 @@ export const transpileAndRun = (
 ): Formula => {
   const localContext = { ...COMMON_CONTEXT, ...context };
   const variables = Object.keys(localContext)
-    .map((name) => `const ${name} = __context.${name}`)
+    .map((name) => `const ${name} = __context.${name};`)
     .join("\n");
 
   const code = `
     {
       ${variables}
 
-      return ${transpile(formula)}
+      return ${transpile(formula)};
     }
   `;
 
@@ -67,7 +67,7 @@ export const transpile = (formula: Formula): string =>
     symbol: (symbol: FormulaSymbol) => symbol.symbol,
     number: (number: number) => number.toString(),
     string: (string: string) => `"${string}"`, // Inner quotes aren't escaped
-    fn: (fn: FormulaFunction) => {
+    fn: () => {
       throw new Error("Can't transpile a function directly");
     },
     nil: () => "null",
