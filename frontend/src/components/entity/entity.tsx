@@ -5,13 +5,7 @@ import { ResolvedQuery } from "../pensive";
 import { RowEntity } from "./row-entity";
 import { TableEntity } from "./table-entity";
 import { TreeEntity } from "./tree-entity";
-import {
-  parse,
-  parseFormula,
-  serialise,
-  transpile,
-  transpileAndRun,
-} from "@pensive/common";
+import { parse, serialise, transpile } from "@pensive/common";
 
 export type EntityState = Partial<{
   text: string | null;
@@ -46,14 +40,9 @@ export const Entity = ({
     () => {
       const text = resolvedQuery.entity.text ?? "";
 
-      console.log(text);
-
       const result = parse(text);
-      console.log(result);
       if (result.valid) {
-        console.log(serialise(result.value));
-        console.log(transpile(result.value));
-        console.log(serialise(transpileAndRun(result.value)));
+        console.log(serialise(transpile(result.value)));
       }
     },
     { enabled: resolvedQuery.selected }
