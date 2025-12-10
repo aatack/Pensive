@@ -11,6 +11,20 @@ import { useEntity } from "../context/hooks";
 import { useMetadata } from "./pensive";
 import { useHotkey } from "../providers/hotkeys";
 import { useHotkeys } from "react-hotkeys-hook";
+import {
+  isFormulaExpression,
+  isFormulaFunction,
+  isFormulaNumber,
+  isFormulaScope,
+  isFormulaString,
+  isFormulaSymbol,
+  isFormulaVector,
+  isFormulaVoid,
+  wrapExpression,
+  wrapScope,
+  wrapSymbol,
+  wrapVector,
+} from "../../../common/src";
 
 const padding = "4px";
 
@@ -87,6 +101,16 @@ const useTabGroupActions = (
   const metadata = useMetadata();
 
   useHotkeys("n", () => {
+    const x = null;
+    console.log(isFormulaScope(x));
+    console.log(isFormulaExpression(x));
+    console.log(isFormulaVector(x));
+    console.log(isFormulaSymbol(x));
+    console.log(isFormulaNumber(x));
+    console.log(isFormulaString(x));
+    console.log(isFormulaFunction(x));
+    console.log(isFormulaVoid(x));
+
     const scope = {
       inc: (x) => x + 1,
     };
