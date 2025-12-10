@@ -8,7 +8,10 @@ import {
   FormulaSymbol,
   FormulaVector,
   isFormulaSymbol,
+  isFormulaVector,
+  wrapVector,
 } from "./types";
+import { serialise } from "./serialise";
 
 export const transpile = (formula: Formula): string =>
   switchFormulaType(formula, {
@@ -46,6 +49,13 @@ export const transpile = (formula: Formula): string =>
     nil: () => "null",
   });
 
-const transpileFunction = (body: List<Formula>): string => {
-  return "";
+const transpileFunction = (parameters: List<Formula>): string => {
+  const args: Formula = parameters.get(0) ?? wrapVector([]);
+  const body: Formula = parameters.get(1) ?? null;
+
+  if (!isFormulaVector(args) || !args.every(isFormulaSymbol)) {
+    throw new Error(`Invalid argument list: ${serialise(args)}`);
+  }
+
+  return `((${args.map(transpile).join(", ")}) => (${transpile(body)}))`;
 };
