@@ -19,6 +19,7 @@ const ALIASES: { [key: string]: string } = {
   "-": "__subtract",
   "/": "__divide",
   "*": "__product",
+  nil: "null",
 };
 
 const COMMON_CONTEXT = {
