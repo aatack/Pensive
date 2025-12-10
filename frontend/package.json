@@ -49,6 +49,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
+    "@pensive/common": "file:../common",
     "@types/node": "^20.12.7",
     "electron-squirrel-startup": "^1.0.0",
     "fast-deep-equal": "^3.1.3",
