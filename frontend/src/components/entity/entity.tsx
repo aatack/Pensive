@@ -5,6 +5,7 @@ import { ResolvedQuery } from "../pensive";
 import { RowEntity } from "./row-entity";
 import { TableEntity } from "./table-entity";
 import { TreeEntity } from "./tree-entity";
+import { parse, parseFormula, serialise } from "@pensive/common";
 
 export type EntityState = Partial<{
   text: string | null;
@@ -40,7 +41,12 @@ export const Entity = ({
       const text = resolvedQuery.entity.text ?? "";
 
       console.log(text);
-      console.log(parseFormula(text));
+
+      const result = parse(text);
+      console.log(result);
+      if (result.valid) {
+        console.log(serialise(result.value));
+      }
     },
     { enabled: resolvedQuery.selected }
   );
