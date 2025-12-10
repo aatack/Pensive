@@ -8,6 +8,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "immutable": "^5.1.4",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
