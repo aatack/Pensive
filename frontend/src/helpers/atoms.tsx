@@ -42,7 +42,7 @@ export const usePersistentAtom = <T,>(
 
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(atom.value));
-  }, [atom.value]);
+  }, [atom.value]); // Key probably doesn't need to be in this dependency array
 
   return atom;
 };
