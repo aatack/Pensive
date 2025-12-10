@@ -13,6 +13,30 @@ import {
 } from "./types";
 import { serialise } from "./serialise";
 
+export const COMMON_CONTEXT = {
+  __plus: (left: number, right: number) => left + right,
+};
+
+export const transpileAndRun = (
+  formula: Formula,
+  context?: { [name: string]: Formula }
+): Formula => {
+  const localContext = { ...COMMON_CONTEXT, ...context };
+  const variables = Object.keys(localContext)
+    .map((name) => `const ${name} = __context.${name}`)
+    .join("\n");
+
+  const code = `
+    {
+      ${variables}
+
+      return ${transpile(formula)}
+    }
+  `;
+
+  return new Function("__context", code)(localContext);
+};
+
 export const transpile = (formula: Formula): string =>
   switchFormulaType(formula, {
     scope: (scope: FormulaScope) => {
