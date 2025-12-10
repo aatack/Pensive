@@ -16,7 +16,7 @@ export type Formula =
   | FormulaNumber
   | FormulaString
   | FormulaFunction
-  | FormulaVoid;
+  | FormulaNil;
 
 export type FormulaScope = Map<Formula, Formula>;
 
@@ -70,7 +70,7 @@ export const isFormulaFunction = (
   formula: Formula
 ): formula is FormulaFunction => typeof formula === "function";
 
-export type FormulaVoid = null;
+export type FormulaNil = null;
 
-export const isFormulaVoid = (formula: Formula): formula is FormulaVoid =>
+export const isFormulaNil = (formula: Formula): formula is FormulaNil =>
   formula === null;

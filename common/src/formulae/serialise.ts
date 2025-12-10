@@ -1,38 +1,24 @@
+import { switchFormulaType } from "./helpers";
 import { Formula } from "./types";
 
-export const serialiseFormula = (value: Formula): string => {
-  switch (value.type) {
-    case "Scope":
-      const strings = value
+export const serialiseFormula = (formula: Formula): string => {
+  return switchFormulaType(formula, {
+    scope: (scope) => {
+      const strings = scope
         .entrySeq()
         .flatMap(([key, item]) => [
           serialiseFormula(key),
           serialiseFormula(item),
         ]);
-      return ["{", ...strings, "}"].join(" ");
-
-    case "Expression":
-    case "Vector":
-      return (
-        (value.type === "Expression" ? "(" : "[") +
-        value.values.map(serialiseFormula).join(" ") +
-        (value.type === "Expression" ? ")" : "]")
-      );
-
-    case "Core":
-      return "#" + value.value;
-
-    case "Number":
-      return value.value.toString();
-
-    case "Symbol":
-      return value.value;
-
-    case "String":
-      return `"${value.value.replace("\\", "\\\\").replace('"', '\\"')}"`;
-
-    default:
-      const [type, data] = inspect(value);
-      return `#(${serialiseFormula(type)} ${serialiseFormula(data)})`;
-  }
+      return `{ ${strings.join(" ")} }`;
+    },
+    expression: (expression) =>
+      `(${expression.expression.map(serialiseFormula).join(" ")})`,
+    vector: (vector) => `[${vector.map(serialiseFormula).join(" ")}]`,
+    symbol: (symbol) => symbol.symbol,
+    number: (number) => number.toString(),
+    string: (string) => string,
+    fn: (fn) => fn.toString(),
+    nil: () => "nil",
+  });
 };
