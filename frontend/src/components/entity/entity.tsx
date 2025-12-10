@@ -1,3 +1,4 @@
+import { useHotkeys } from "react-hotkeys-hook";
 import { useEntity } from "../../context/hooks";
 import { LlmContext } from "../../llms";
 import { ResolvedQuery } from "../pensive";
@@ -32,6 +33,17 @@ export const Entity = ({
 }) => {
   // Make sure the entity stays loaded
   useEntity(resolvedQuery.entityId);
+
+  useHotkeys(
+    "n",
+    () => {
+      const text = resolvedQuery.entity.text ?? "";
+
+      console.log(text);
+      console.log(parseFormula(text));
+    },
+    { enabled: resolvedQuery.selected }
+  );
 
   if (row) {
     return <RowEntity resolvedQuery={resolvedQuery} />;
