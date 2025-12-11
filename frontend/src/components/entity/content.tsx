@@ -27,6 +27,7 @@ export const EntityContent = ({
   resolvedQuery: ResolvedQuery;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const type = entity.image ? "image" : entity.type ?? "text";
 
   const [clickedPath, setClickedPath] = useState<string[] | null>(null);
 
@@ -75,38 +76,53 @@ export const EntityContent = ({
       )}
 
       <Stack direction="row" alignItems="flex-end" sx={{ width: 1 }}>
-        {editEntity ? (
-          <EditEntity />
-        ) : (
-          <Stack
-            sx={{
-              opacity: collapsed ? 0.5 : undefined,
-              "@keyframes fadeInOut": {
-                "0%": { opacity: 0.2 },
-                "50%": { opacity: 1.0 },
-                "100%": { opacity: 0.2 },
-              },
-              animation:
-                entity.llmContext != null && entity.text == null
-                  ? "fadeInOut 2s ease-in-out infinite"
-                  : null,
-            }}
-          >
-            {entity.image != null && entity.text == null ? null : (
-              <EntityText
-                text={entity.text}
-                section={entity.section}
-                depth={path.length}
-                defaultText={
-                  entity.llmContext == null ? "No content" : "Generating..."
-                }
-              />
-            )}
-            {entity.image && collapsed ? (
-              <Typography sx={font}>Image collapsed</Typography>
-            ) : null}
-          </Stack>
-        )}
+        {(() => {
+          switch (type) {
+            case "image":
+              return collapsed ? (
+                <Typography sx={font}>Image collapsed</Typography>
+              ) : (
+                <RenderImage resourceUuid={entityId} />
+              );
+
+            case "formula":
+            case "formulaTest":
+            case "table":
+            case "text":
+              return editEntity ? (
+                <EditEntity />
+              ) : (
+                <Stack
+                  sx={{
+                    opacity: collapsed ? 0.5 : undefined,
+                    "@keyframes fadeInOut": {
+                      "0%": { opacity: 0.2 },
+                      "50%": { opacity: 1.0 },
+                      "100%": { opacity: 0.2 },
+                    },
+                    animation:
+                      entity.llmContext != null && entity.text == null
+                        ? "fadeInOut 2s ease-in-out infinite"
+                        : null,
+                  }}
+                >
+                  {entity.text == null ? null : (
+                    <EntityText
+                      text={entity.text}
+                      section={entity.section}
+                      depth={path.length}
+                      defaultText={
+                        entity.llmContext == null
+                          ? "No content"
+                          : "Generating..."
+                      }
+                    />
+                  )}
+                </Stack>
+              );
+          }
+        })()}
+
         {hasHiddenChildren ? (
           <MoreHorizIcon
             fontSize="small"
@@ -114,10 +130,6 @@ export const EntityContent = ({
           />
         ) : null}
       </Stack>
-
-      {entity.image && !collapsed ? (
-        <RenderImage resourceUuid={entityId} />
-      ) : null}
     </Stack>
   );
 };
