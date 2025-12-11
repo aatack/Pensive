@@ -17,7 +17,7 @@ export type EntityState = Partial<{
   outbound: EntityId[] | null;
 
   image: boolean | null;
-  formula: "value" | "test" | null;
+  type: "table" | "formula" | "formulaTest" | null;
 
   redacted: boolean | null;
   snoozed: string | null; // ISO format
@@ -51,7 +51,7 @@ export const Entity = ({
 
   if (row) {
     return <RowEntity resolvedQuery={resolvedQuery} />;
-  } else if (resolvedQuery.entity.text === "TABLE") {
+  } else if (resolvedQuery.entity.type === "table") {
     return <TableEntity resolvedQuery={resolvedQuery} />;
   } else {
     return <TreeEntity resolvedQuery={resolvedQuery} />;
