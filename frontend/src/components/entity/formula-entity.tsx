@@ -1,7 +1,7 @@
 import { Divider, Stack, TextField, Typography } from "@mui/material";
 import { EntityState } from "./entity";
 import { useMemo, useRef, useState } from "react";
-import { colours, fontMonospace } from "../../constants";
+import { colours, font, fontMonospace } from "../../constants";
 import { useSwapEntity } from "../../context/hooks";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Formula, parse, serialise, transpile } from "@pensive/common";
@@ -26,6 +26,14 @@ export const FormulaEntityContent = ({
         <Typography variant="body1Monospace">
           {serialise(result.value)}
         </Typography>
+      )}
+
+      {result.type === "parseError" && (
+        <Typography sx={font}>Parser error: {result.message}</Typography>
+      )}
+
+      {result.type === "runtimeError" && (
+        <Typography sx={font}>{result.exception}</Typography>
       )}
     </Stack>
   );
