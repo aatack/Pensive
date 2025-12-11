@@ -52,6 +52,10 @@ export const useCreateEntityActions = (tab: TabState, selected: boolean) => {
     enabled: selected,
     preventDefault: true,
   });
+  useHotkey("addFormula", startCreating({ formula: "value" }), {
+    enabled: selected,
+    preventDefault: true,
+  });
 };
 
 export const CreateEntity = () => {

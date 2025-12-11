@@ -17,6 +17,7 @@ export type EntityState = Partial<{
   outbound: EntityId[] | null;
 
   image: boolean | null;
+  formula: "value" | "test" | null;
 
   redacted: boolean | null;
   snoozed: string | null; // ISO format

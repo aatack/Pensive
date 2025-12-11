@@ -92,6 +92,7 @@ export const defaultHotkeys: Hotkeys = {
 
   addSection: "/",
   addOpenEntity: "shift+slash",
+  addFormula: "shift+enter",
   addEntity: "enter",
   confirmAddEntity: "enter",
   cancelAddEntity: "escape",
