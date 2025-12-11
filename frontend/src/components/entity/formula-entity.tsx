@@ -1,9 +1,10 @@
-import { Stack, TextField } from "@mui/material";
+import { Divider, Stack, TextField, Typography } from "@mui/material";
 import { EntityState } from "./entity";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { colours, fontMonospace } from "../../constants";
 import { useSwapEntity } from "../../context/hooks";
 import { useHotkeys } from "react-hotkeys-hook";
+import { Formula, parse, serialise, transpile } from "@pensive/common";
 
 export const FormulaEntityContent = ({
   entity,
@@ -12,9 +13,20 @@ export const FormulaEntityContent = ({
   entity: EntityState;
   entityId: string;
 }) => {
+  const code = entity.text ?? "";
+  const result = useFormulaEvaluation(code);
+
   return (
     <Stack>
-      <CodeEditor text={entity.text ?? ""} entityId={entityId} />
+      <CodeEditor text={code} entityId={entityId} />
+
+      <Divider />
+
+      {result.type === "success" && (
+        <Typography variant="body1Monospace">
+          {serialise(result.value)}
+        </Typography>
+      )}
     </Stack>
   );
 };
@@ -60,3 +72,25 @@ const CodeEditor = ({ text, entityId }: { text: string; entityId: string }) => {
     />
   );
 };
+
+type FormulaEvaluation =
+  | { type: "success"; value: Formula }
+  | {
+      type: "parseError";
+      message: string;
+    }
+  | { type: "runtimeError"; exception: string };
+
+const useFormulaEvaluation = (code: string): FormulaEvaluation =>
+  useMemo(() => {
+    const result = parse(code);
+
+    if (!result.valid) {
+      return { type: "parseError", message: result.message };
+    }
+    try {
+      return { type: "success", value: transpile(result.value) };
+    } catch (e) {
+      return { type: "runtimeError", exception: e.toString() };
+    }
+  }, [code]);
