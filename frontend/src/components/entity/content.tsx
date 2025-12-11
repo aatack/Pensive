@@ -12,6 +12,7 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { CopyButton } from "../common/copy-button";
+import { FormulaEntityContent } from "./formula-entity";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -86,6 +87,10 @@ export const EntityContent = ({
               );
 
             case "formula":
+              return (
+                <FormulaEntityContent entity={entity} entityId={entityId} />
+              );
+
             case "formulaTest":
             case "table":
             case "text":

@@ -62,6 +62,12 @@ export const font = {
   fontFamily: "SourceSans3",
   fontSize: 14.5,
 };
+export const fontMonospace = {
+  fontSize: 12,
+  fontWeight: 400,
+  lineHeight: 1.6,
+  fontFamily: "Fira Code, monospace",
+};
 
 // Set to `""` for no default
 export const defaultHotkeys: Hotkeys = {
