@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { Stack, TextField } from "@mui/material";
 import { EntityState } from "./entity";
 import { useRef, useState } from "react";
 import { colours, fontMonospace } from "../../constants";
@@ -12,15 +12,21 @@ export const FormulaEntityContent = ({
   entity: EntityState;
   entityId: string;
 }) => {
-  const initial = entity.text ?? "";
-  const [text, setText] = useState(initial);
+  return (
+    <Stack>
+      <CodeEditor text={entity.text ?? ""} entityId={entityId} />
+    </Stack>
+  );
+};
+
+const CodeEditor = ({ text, entityId }: { text: string; entityId: string }) => {
+  const [editedText, setEditedText] = useState(text);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const swapEntity = useSwapEntity();
 
   const confirm = () => {
-    if (text !== (initial ?? "")) {
-      console.log(text);
-      swapEntity(entityId, () => ({ text }));
+    if (editedText !== (text ?? "")) {
+      swapEntity(entityId, () => ({ text: editedText }));
     }
   };
 
@@ -39,12 +45,12 @@ export const FormulaEntityContent = ({
       type="text"
       size="small"
       autoFocus
-      value={text}
+      value={editedText}
       variant="standard"
       fullWidth
       multiline
       hiddenLabel
-      onChange={(event) => setText(event.target.value)}
+      onChange={(event) => setEditedText(event.target.value)}
       inputRef={inputRef}
       inputProps={{
         sx: { p: 0.5, color: colours.tx, ...fontMonospace },
