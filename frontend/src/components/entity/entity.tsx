@@ -22,6 +22,12 @@ export type EntityState = Partial<{
   llmContext: LlmContext | null;
 }>;
 
+export type EntityLinkKey = {
+  [K in keyof EntityState]: NonNullable<EntityState[K]> extends string[]
+    ? K
+    : never;
+}[keyof EntityState];
+
 export type EntityId = string;
 
 export const Entity = ({

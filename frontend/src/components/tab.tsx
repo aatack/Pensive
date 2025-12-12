@@ -4,7 +4,7 @@ import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
 import { Provide, useProvided } from "../providers/provider";
 import { useToolState } from "./tool/tool";
-import { Entity } from "./entity/entity";
+import { Entity, EntityLinkKey } from "./entity/entity";
 import { EntityIndent } from "./entity/indent";
 import { EntityContent } from "./entity/content";
 import { useEffect, useMemo, useRef } from "react";
@@ -50,6 +50,10 @@ export type FrameState = {
   };
 
   direction?: "outbound" | "inbound"; // Default is outbound
+
+  pivots?: {
+    [entityId: string]: EntityLinkKey | null;
+  };
 };
 
 export type TabData = {

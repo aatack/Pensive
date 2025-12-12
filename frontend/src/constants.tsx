@@ -113,6 +113,7 @@ export const defaultHotkeys: Hotkeys = {
 
   collapseEntity: "left",
   expandEntity: "right",
+  pivotEntity: "f",
 
   debugEntity: "3",
 

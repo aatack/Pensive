@@ -25,3 +25,8 @@ export const headTail = <T,>(
 
 export const isEmptyArray = <T,>(items: T[] | null) =>
   items !== null && items.length === 0;
+
+export const nextInCycle = <T,>(cycle: T[], item: T): T => {
+  const index = cycle.indexOf(item);
+  return cycle[(index + 1) % cycle.length]!;
+};
