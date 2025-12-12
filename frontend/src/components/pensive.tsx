@@ -113,6 +113,8 @@ export type ResolvedQuery = {
   selected: boolean;
   createEntity: boolean;
   editEntity: boolean;
+
+  pivot?: EntityLinkKey;
 };
 
 export const resolveQuery = (
@@ -184,6 +186,7 @@ export const resolveQuery = (
     selected: isEmptyArray(selectionPath),
     createEntity: isEmptyArray(createEntityPath),
     editEntity: isEmptyArray(editEntityPath),
+    pivot: pivots[entityId] ?? undefined,
   };
 };
 
