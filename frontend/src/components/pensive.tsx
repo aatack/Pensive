@@ -135,9 +135,6 @@ export const resolveQuery = (
   const entityCollapsed = collapsed.includes(entityId) && path.length > 0;
   const entityExpanded = expanded.includes(entityId);
 
-  if (entityId in pivots) {
-    console.log(entityId, pivots[entityId]);
-  }
   const actualChildrenKey = pivots[entityId] ?? childrenKey ?? "outbound";
 
   const children = entity[actualChildrenKey] ?? [];
