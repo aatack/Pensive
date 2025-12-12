@@ -1,13 +1,17 @@
 import { useEntity } from "../../context/hooks";
 import { nextInCycle } from "../../helpers/arrays";
-import { cursor } from "../../helpers/atoms";
+import { Atom, cursor } from "../../helpers/atoms";
 import { useHotkey } from "../../providers/hotkeys";
 import { EntityLinkKey } from "../entity/entity";
-import { useTabState } from "../tab";
+import { TabState } from "../tab";
 
-export const usePivots = (entityId: string, enabled: boolean) => {
+export const usePivots = (
+  entityId: string,
+  tab: Atom<TabState>,
+  enabled: boolean
+) => {
   const entity = useEntity(entityId);
-  const pivots = cursor(cursor(useTabState(), "frame"), "pivots");
+  const pivots = cursor(cursor(tab, "frame"), "pivots");
 
   const keys: (EntityLinkKey | null)[] = [
     ...(["inbound", "outbound"] as const).filter((key) => entity[key] != null),

@@ -22,6 +22,7 @@ import { useMoveEntityActions } from "./tool/move-entity";
 import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/hotkeys";
 import { useRunPrompt } from "../llms";
+import { usePivots } from "./tool/pivots";
 
 export type TabState = {
   uuid: string;
@@ -167,6 +168,8 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useCollapsedExpandedActions(tab, selected);
 
   const entityId = last(tab.value.frame.selection) ?? tab.value.frame.entityId;
+
+  usePivots(entityId, tab, selected);
 
   useHotkey(
     "toggleSection",
