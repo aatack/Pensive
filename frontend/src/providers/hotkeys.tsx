@@ -7,7 +7,6 @@ import { defaultHotkeys } from "../constants";
 
 export type Hotkeys = {
   toggleSections: string;
-  toggleDirection: string;
 
   search: string;
   cancelSearch: string;

@@ -57,29 +57,10 @@ const Highlight = () => {
 
   return (
     <Stack direction="row" alignItems="center" gap={2}>
-      <ToggleDirection direction={cursor(frame, "direction")} />
-
       <HighlightSection section={cursor(highlight, "section")} />
 
       <HighlightText text={cursor(highlight, "text")} />
     </Stack>
-  );
-};
-
-const ToggleDirection = ({
-  direction,
-}: {
-  direction: Atom<"outbound" | "inbound" | undefined>;
-}) => {
-  const swap = () =>
-    direction.swap((current) =>
-      current === "inbound" ? "outbound" : "inbound"
-    );
-  useHotkey("toggleDirection", swap);
-  return (
-    <Button sx={{ textTransform: "none", ...font }} onClick={swap}>
-      {direction.value === "inbound" ? "Inbound" : "Outbound"}
-    </Button>
   );
 };
 

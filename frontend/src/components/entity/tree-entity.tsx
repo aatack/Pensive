@@ -20,15 +20,7 @@ export const TreeEntity = memo(
         </Stack>
 
         {pivot && (
-          <Typography
-            sx={{
-              ...font,
-              fontSize: 10,
-              fontWeight: 800,
-              ml: 1,
-              cursor: "pointer",
-            }}
-          >
+          <Typography sx={{ ...font, fontSize: 10, fontWeight: 800, ml: 1 }}>
             <u>{`${pivot[0]?.toUpperCase()}${pivot.slice(1)}`}</u>
           </Typography>
         )}

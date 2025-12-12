@@ -50,8 +50,6 @@ export type FrameState = {
     snoozed?: boolean;
   };
 
-  direction?: "outbound" | "inbound"; // Default is outbound
-
   pivots?: {
     [entityId: string]: EntityLinkKey | null;
   };
@@ -305,8 +303,6 @@ const useFrameNavigation = (
 ) => {
   const pensive = usePensive();
   const tool = useToolState().value;
-
-  const direction = frame.value.direction ?? "outbound";
 
   const [resolvedQuery, flattenedQuery] = useMemo(() => {
     const limit = findQueryResolutionLimit(
