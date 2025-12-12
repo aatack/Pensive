@@ -3,7 +3,7 @@ import { Metadata, pensiveMetadata } from "../api/endpoints";
 import { Atom, useAtom } from "../helpers/atoms";
 import { Mapping, mappingGet } from "../helpers/mapping";
 import { Provide, useProvided } from "../providers/provider";
-import { EntityState } from "./entity/entity";
+import { EntityLinkKey, EntityState } from "./entity/entity";
 import { headTail, isEmptyArray } from "../helpers/arrays";
 import { LinearProgress } from "@mui/material";
 import { Json } from "../constants";
@@ -126,7 +126,8 @@ export const resolveQuery = (
   selectionPath: string[] | null,
   createEntityPath: string[] | null,
   editEntityPath: string[] | null,
-  direction: "outbound" | "inbound"
+  pivots: { [entityId: string]: EntityLinkKey | null },
+  childrenKey: EntityLinkKey | null
 ): ResolvedQuery => {
   const entity = mappingGet(entities, entityId);
 
@@ -134,7 +135,12 @@ export const resolveQuery = (
   const entityCollapsed = collapsed.includes(entityId) && path.length > 0;
   const entityExpanded = expanded.includes(entityId);
 
-  const children = entity[direction] ?? [];
+  if (entityId in pivots) {
+    console.log(entityId, pivots[entityId]);
+  }
+  const actualChildrenKey = pivots[entityId] ?? childrenKey ?? "outbound";
+
+  const children = entity[actualChildrenKey] ?? [];
   const includedChildren = children.filter((child) => limit.has(child));
 
   const selectionPathParts = headTail(selectionPath ?? []);
@@ -170,7 +176,8 @@ export const resolveQuery = (
               child === editEntityPathParts.head
                 ? editEntityPathParts.tail
                 : null,
-              direction
+              pivots,
+              actualChildrenKey
             ),
           })),
     highlight: entityExpanded || highlight(entity),
@@ -193,20 +200,31 @@ export const findQueryResolutionLimit = (
   entities: Mapping<string, EntityState>,
   entityId: string,
   limit: number,
-  direction: "outbound" | "inbound"
+  pivots: { [entityId: string]: EntityLinkKey | null }
 ): Set<string> => {
   const included = new Set<string>();
 
-  const toExplore = [entityId];
+  const toExplore: { id: string; childrenKey: EntityLinkKey }[] = [
+    { id: entityId, childrenKey: pivots[entityId] ?? "outbound" },
+  ];
   while (toExplore.length > 0 && included.size < limit) {
-    const current = toExplore.shift() ?? "";
-    if (included.has(current)) {
+    const current = toExplore.shift();
+    if (current == null) {
+      break;
+    }
+    if (included.has(current.id)) {
       continue;
     }
-    included.add(current);
-    (mappingGet(entities, current)[direction] ?? []).forEach((child) => {
-      toExplore.push(child);
-    });
+    included.add(current.id);
+
+    const actualChildrenKey =
+      pivots[entityId] ?? current.childrenKey ?? "outbound";
+
+    (mappingGet(entities, current.id)[actualChildrenKey] ?? []).forEach(
+      (child) => {
+        toExplore.push({ id: child, childrenKey: actualChildrenKey });
+      }
+    );
   }
 
   return included;

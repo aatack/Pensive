@@ -313,7 +313,7 @@ const useFrameNavigation = (
       pensive.value.entities,
       frame.value.entityId,
       200,
-      direction
+      frame.value.pivots ?? {}
     );
 
     const timestamp = new Date();
@@ -340,7 +340,8 @@ const useFrameNavigation = (
       tool?.type === "editEntity" && tool.tabUuid === tabUuid
         ? tool.path
         : null,
-      direction
+      frame.value.pivots ?? {},
+      null
     );
     return [resolvedQuery, flattenResolvedQuery(resolvedQuery)];
   }, [
@@ -351,7 +352,7 @@ const useFrameNavigation = (
     collapsed,
     expanded,
     tool,
-    direction,
+    frame.value.pivots,
   ]);
 
   // Everything is joined with double underscores because you can't use arrays
