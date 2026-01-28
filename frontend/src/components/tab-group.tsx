@@ -28,11 +28,13 @@ export type TabGroupData = {
   decrementTabGroup: () => void;
 };
 
-const useTabGroupData = (tabGroup: Atom<TabGroupState>): TabGroupData => {
+export const useTabGroupData = (
+  tabGroup: Atom<TabGroupState>,
+): TabGroupData => {
   const selectedIndex = clamp(
     tabGroup.value.selectedIndex,
     0,
-    tabGroup.value.tabs.length - 1
+    tabGroup.value.tabs.length - 1,
   );
 
   const tabs = useTabsState();
@@ -69,18 +71,18 @@ const useTabGroupData = (tabGroup: Atom<TabGroupState>): TabGroupData => {
       })),
     incrementTabGroup: () =>
       tabs.swap((current) =>
-        moveTab(current, selectedTab.value.uuid, (index) => index + 1)
+        moveTab(current, selectedTab.value.uuid, (index) => index + 1),
       ),
     decrementTabGroup: () =>
       tabs.swap((current) =>
-        moveTab(current, selectedTab.value.uuid, (index) => index - 1)
+        moveTab(current, selectedTab.value.uuid, (index) => index - 1),
       ),
   };
 };
 
 const useTabGroupActions = (
   tabGroup: Atom<TabGroupState>,
-  selected: boolean
+  selected: boolean,
 ) => {
   const tabGroupData = useTabGroupData(tabGroup);
   const metadata = useMetadata();
@@ -91,7 +93,7 @@ const useTabGroupActions = (
     {
       preventDefault: true,
       enabled: selected,
-    }
+    },
   );
   useHotkey(
     "openTab",
@@ -110,7 +112,7 @@ const useTabGroupActions = (
     {
       preventDefault: true,
       enabled: selected,
-    }
+    },
   );
   useHotkey("selectNextTab", () => tabGroupData.selectNextTab(), {
     enabled: selected,
@@ -130,9 +132,9 @@ const useTabGroupActions = (
     "popFrameIntoTab",
     () =>
       tabGroup.swap((current) =>
-        popFrameIntoTab(current, tabGroupData.selectedTab.value.uuid)
+        popFrameIntoTab(current, tabGroupData.selectedTab.value.uuid),
       ),
-    { enabled: selected }
+    { enabled: selected },
   );
 };
 
@@ -289,7 +291,7 @@ const MoreTabs = ({ count }: { count: number }) => {
 
 const popFrameIntoTab = (
   tabGroup: TabGroupState,
-  tabUuid: string
+  tabUuid: string,
 ): TabGroupState => {
   const frame = tabGroup.tabs.find((tab) => tab.uuid === tabUuid)?.frame;
   const frameContext = frame?.context;
@@ -301,7 +303,7 @@ const popFrameIntoTab = (
       ...tabGroup,
       tabs: [
         ...tabGroup.tabs.map((tab) =>
-          tab.uuid === tabUuid ? { ...tab, frame: frameContext } : tab
+          tab.uuid === tabUuid ? { ...tab, frame: frameContext } : tab,
         ),
         {
           uuid: generateUuid(),

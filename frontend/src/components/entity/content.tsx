@@ -4,7 +4,7 @@ import { EditEntity } from "../tool/edit-entity";
 import { colours, font, invertColour } from "../../constants";
 import { RenderImage } from "../common/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { cursor } from "../../helpers/atoms";
+import { arrayCursor, cursor } from "../../helpers/atoms";
 import { useTabState } from "../tab";
 import { ResolvedQuery } from "../pensive";
 import Markdown from "react-markdown";
@@ -13,6 +13,10 @@ import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { CopyButton } from "../common/copy-button";
 import { FormulaEntityContent } from "./formula-entity";
+import { useTabsState } from "../tabs";
+import { clamp } from "../../helpers/maths";
+import { useTabGroupData } from "../tab-group";
+import { generateUuid } from "../../helpers/uuid";
 
 export const EntityContent = ({
   resolvedQuery: {
@@ -28,9 +32,10 @@ export const EntityContent = ({
   resolvedQuery: ResolvedQuery;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const type = entity.image ? "image" : entity.type ?? "text";
+  const type = entity.image ? "image" : (entity.type ?? "text");
 
   const [clickedPath, setClickedPath] = useState<string[] | null>(null);
+  const [middleClickedId, setMiddleClickedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (selected) {
@@ -67,12 +72,24 @@ export const EntityContent = ({
         render a component (`EntityContentClicked`) that accesses the tab state,
         swaps the selection, and then unrenders itself. */
       onClick={() => setClickedPath(path ?? null)}
+      onMouseDown={(event) => {
+        if (event.button === 1) {
+          // Middle click
+          setMiddleClickedId(entityId);
+        }
+      }}
       ref={ref}
     >
       {clickedPath == null ? null : (
         <EntityContentClicked
           path={clickedPath}
           then={() => setClickedPath(null)}
+        />
+      )}
+      {middleClickedId == null ? null : (
+        <EntityContentMiddleClicked
+          id={middleClickedId}
+          then={() => setMiddleClickedId(null)}
         />
       )}
 
@@ -152,6 +169,33 @@ export const EntityContentClicked = ({
     selection.reset(path);
     then();
   }, [path, then, selection]);
+
+  return null;
+};
+
+export const EntityContentMiddleClicked = ({
+  id,
+  then,
+}: {
+  id: string;
+  then: () => void;
+}) => {
+  const tabs = useTabsState();
+  const tabGroup = arrayCursor(
+    cursor(tabs, "tabGroups"),
+    clamp(tabs.value.selectedIndex, 0, tabs.value.tabGroups.length - 1),
+  );
+  const { openTab } = useTabGroupData(tabGroup);
+
+  useEffect(() => {
+    openTab({
+      uuid: generateUuid(),
+      frame: { entityId: id, selection: [], context: null, highlight: {} },
+      collapsed: [],
+      expanded: [],
+    });
+    then();
+  }, [id, then, openTab]);
 
   return null;
 };
@@ -263,5 +307,5 @@ const EntityText = memo(
         </Markdown>
       </Stack>
     );
-  }
+  },
 );
