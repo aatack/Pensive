@@ -1,21 +1,12 @@
 import { Box, Divider } from "@mui/material";
 import { useEntity, useSwapEntity, useWrite } from "../context/hooks";
-import { butLast, last } from "../helpers/arrays";
+import { last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
-import { Provide, useProvided } from "../providers/provider";
-import { useToolState } from "./tool/tool";
-import { Entity, EntityLinkKey } from "./entity/entity";
+import { Provide } from "../providers/provider";
 import { EntityIndent } from "./entity/indent";
 import { EntityContent } from "./entity/content";
-import { useEffect, useMemo, useRef } from "react";
-import {
-  exportResolvedQuery,
-  findQueryResolutionLimit,
-  flattenResolvedQuery,
-  ResolvedQuery,
-  resolveQuery,
-  usePensive,
-} from "./pensive";
+import { useEffect, useRef } from "react";
+import { exportResolvedQuery } from "./pensive";
 import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
@@ -23,95 +14,8 @@ import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/hotkeys";
 import { useRunPrompt } from "../llms";
 import { usePivots } from "./tool/pivots";
-
-export type TabState = {
-  uuid: string;
-  frame: FrameState;
-
-  // IDs of entities that have their children either always rendered or never
-  // rendered
-  collapsed: string[];
-  expanded: string[];
-
-  // Stored so that the scroll position is maintained when the tab is overlaid
-  // by another tab, or otherwise disappears
-  scrollPosition?: number;
-};
-
-export type FrameState = {
-  entityId: string;
-  selection: string[];
-  context: FrameState | null;
-
-  // Specifies entities that should be highlighted, while others are hidden
-  highlight: {
-    text?: string;
-    section?: boolean;
-    snoozed?: boolean;
-  };
-
-  pivots?: {
-    [entityId: string]: EntityLinkKey | null;
-  };
-};
-
-export type TabData = {
-  resolvedQuery: ResolvedQuery;
-  select: (path: string[] | null) => void;
-  selectParent: () => void;
-  selectFollowing: () => void;
-  selectPreceding: () => void;
-  pushFrame: () => void;
-  popFrame: () => void;
-};
-
-export const useTabState = () => useProvided("tab");
-
-const useTabData = (tab: Atom<TabState>): TabData => {
-  const frame = cursor(tab, "frame");
-
-  const select = (path: string[] | null) =>
-    frame.swap((current) => ({
-      ...current,
-      selection: path ?? current.selection,
-    }));
-
-  const { selectParent, selectFollowing, selectPreceding, resolvedQuery } =
-    useFrameNavigation(
-      frame,
-      tab.value.collapsed,
-      tab.value.expanded,
-      tab.value.uuid
-    );
-
-  return {
-    resolvedQuery,
-    select,
-    selectParent,
-    selectFollowing,
-    selectPreceding,
-    pushFrame: () =>
-      tab.swap((current) => {
-        const entityId = last(current.frame.selection);
-        return entityId == null
-          ? current
-          : ({
-              ...current,
-              frame: {
-                entityId,
-                selection: [],
-                context: current.frame,
-                highlight: {},
-              },
-            } as TabState);
-      }),
-    popFrame: () =>
-      tab.swap((current) => {
-        const context = current.frame.context;
-        return context == null ? current : { ...current, frame: context };
-      }),
-  };
-};
+import { FrameState, TabState, useTabData } from "./tab-hooks";
+import { Entity } from "./entity/render-entity";
 
 const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const tabData = useTabData(tab);
@@ -129,14 +33,14 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
       const markdown = exportResolvedQuery(tabData.resolvedQuery).trim();
       navigator.clipboard.writeText(markdown);
     },
-    { enabled: selected }
+    { enabled: selected },
   );
 
   const runPrompt = useRunPrompt();
   useHotkey(
     "runPrompt",
     () => runPrompt(tabData.resolvedQuery, cursor(tab, "frame")),
-    { enabled: selected, keyup: true }
+    { enabled: selected, keyup: true },
   );
 
   useHotkey(
@@ -153,7 +57,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
         });
       }
     },
-    { enabled: selected }
+    { enabled: selected },
   );
 
   useHotkey("pushFrame", tabData.pushFrame, { enabled: selected });
@@ -175,7 +79,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
       swapEntity(entityId, (current) => ({
         section: current.section ? null : true,
       })),
-    { enabled: selected, preventDefault: true }
+    { enabled: selected, preventDefault: true },
   );
   useHotkey(
     "toggleOpen",
@@ -183,7 +87,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
       swapEntity(entityId, (current) => ({
         open: current.open == null ? true : current.open ? false : null,
       })),
-    { enabled: selected, preventDefault: true }
+    { enabled: selected, preventDefault: true },
   );
   useHotkey(
     "snoozeEntity",
@@ -199,7 +103,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
           snoozed: new Date(timestamp.getTime() + 86400 * 1000).toISOString(),
         };
       }),
-    { enabled: selected, preventDefault: true }
+    { enabled: selected, preventDefault: true },
   );
   useHotkey(
     "redact",
@@ -207,7 +111,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
       swapEntity(entityId, (current) => ({
         redacted: current.redacted ? null : true,
       })),
-    { enabled: selected, preventDefault: true }
+    { enabled: selected, preventDefault: true },
   );
 
   return tabData;
@@ -292,94 +196,6 @@ const TabContextEntity = ({ entityId }: { entityId: string }) => {
   );
 };
 
-export const getFocusedEntityId = (tab: TabState) =>
-  last(tab.frame.selection) ?? tab.frame.entityId;
-
-const useFrameNavigation = (
-  frame: Atom<FrameState>,
-  collapsed: string[],
-  expanded: string[],
-  tabUuid: string
-) => {
-  const pensive = usePensive();
-  const tool = useToolState().value;
-
-  const [resolvedQuery, flattenedQuery] = useMemo(() => {
-    const limit = findQueryResolutionLimit(
-      pensive.value.entities,
-      frame.value.entityId,
-      200,
-      frame.value.pivots ?? {}
-    );
-
-    const timestamp = new Date();
-
-    const resolvedQuery = resolveQuery(
-      pensive.value.entities,
-      frame.value.entityId,
-      (entity) =>
-        (entity.text ?? "")
-          .toLowerCase()
-          .includes((frame.value.highlight.text ?? "").toLowerCase()) &&
-        Boolean(!frame.value.highlight.section || entity.section) &&
-        (entity.snoozed == null ||
-          new Date(entity.snoozed) < timestamp ||
-          Boolean(frame.value.highlight.snoozed)),
-      collapsed,
-      expanded,
-      limit,
-      [],
-      frame.value.selection,
-      tool?.type === "createEntity" && tool.tabUuid === tabUuid
-        ? tool.path
-        : null,
-      tool?.type === "editEntity" && tool.tabUuid === tabUuid
-        ? tool.path
-        : null,
-      frame.value.pivots ?? {},
-      null
-    );
-    return [resolvedQuery, flattenResolvedQuery(resolvedQuery)];
-  }, [
-    pensive.value.entities,
-    frame.value.entityId,
-    frame.value.highlight,
-    frame.value.selection,
-    collapsed,
-    expanded,
-    tool,
-    frame.value.pivots,
-  ]);
-
-  // Everything is joined with double underscores because you can't use arrays
-  // as dictionary keys
-  const index = flattenedQuery.indexOf(
-    [frame.value.entityId, ...frame.value.selection].join("__")
-  );
-
-  const selectIndex = (newIndex: number) => {
-    const joinedPath = flattenedQuery[newIndex];
-    if (joinedPath != null) {
-      return frame.swap((current) => ({
-        ...current,
-        selection: joinedPath.split("__").slice(1),
-      }));
-    }
-  };
-
-  return {
-    resolvedQuery,
-    flattenedQuery,
-    selectPreceding: () => selectIndex(index - 1),
-    selectFollowing: () => selectIndex(index + 1),
-    selectParent: () =>
-      frame.swap((current) => ({
-        ...current,
-        selection: butLast(current.selection),
-      })),
-  };
-};
-
 const useCollapsedExpandedActions = (tab: Atom<TabState>, enabled: boolean) => {
   useHotkey(
     "collapseEntity",
@@ -401,7 +217,7 @@ const useCollapsedExpandedActions = (tab: Atom<TabState>, enabled: boolean) => {
           : current.expanded,
       }));
     },
-    { enabled }
+    { enabled },
   );
   useHotkey(
     "expandEntity",
@@ -420,6 +236,6 @@ const useCollapsedExpandedActions = (tab: Atom<TabState>, enabled: boolean) => {
           : [...current.expanded.filter((item) => item !== entityId), entityId],
       }));
     },
-    { enabled }
+    { enabled },
   );
 };

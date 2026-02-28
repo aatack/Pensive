@@ -8,52 +8,24 @@ import {
   useAtom,
   usePersistentAtom,
 } from "../helpers/atoms";
-import { clamp } from "../helpers/maths";
-import { generateUuid } from "../helpers/uuid";
-import { Provide, useProvided } from "../providers/provider";
+import { Provide } from "../providers/provider";
 import { StatusBar } from "./status-bar";
-import { getFocusedTab, TabGroup, TabGroupState } from "./tab-group";
 import { PasteImage } from "./common/image";
-import { getFocusedEntityId, TabState } from "./tab";
-import { useMetadata } from "./pensive";
 import { DebugEntity } from "./entity/debug-entity";
 import { useHotkey } from "../providers/hotkeys";
 import { EditHotkeys } from "./settings/edit-hotkeys";
 import { useRedo, useUndo } from "../context/hooks";
-
-export type TabsState = {
-  tabGroups: TabGroupState[];
-  selectedIndex: number;
-  maximised: boolean;
-};
-
-export type TabsData = {
-  selectedIndex: number;
-  selectNextTabGroup: () => void;
-  selectPreviousTabGroup: () => void;
-};
-
-const useTabsData = (tabs: Atom<TabsState>) => {
-  const selectedIndex = clamp(
-    tabs.value.selectedIndex,
-    0,
-    tabs.value.tabGroups.length - 1
-  );
-
-  return {
-    selectedIndex,
-    selectNextTabGroup: () =>
-      tabs.swap((current) => ({
-        ...current,
-        selectedIndex: selectedIndex + 1,
-      })),
-    selectPreviousTabGroup: () =>
-      tabs.swap((current) => ({
-        ...current,
-        selectedIndex: selectedIndex - 1,
-      })),
-  };
-};
+import {
+  defaultTabsState,
+  getFocusedTabGroup,
+  TabsData,
+  TabsState,
+  useTabsData,
+  useVerifyTabs,
+} from "./tabs-hooks";
+import { getFocusedTab } from "./tab-group-hooks";
+import { getFocusedEntityId } from "./tab-hooks";
+import { TabGroup } from "./tab-group";
 
 const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   const { selectNextTabGroup, selectPreviousTabGroup } = tabsData;
@@ -63,19 +35,11 @@ const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   useHotkey("selectNextTabGroup", selectNextTabGroup);
   useHotkey("selectPreviousTabGroup", selectPreviousTabGroup);
   useHotkey("maximiseTabGroup", () =>
-    tabs.swap((current) => ({ ...current, maximised: !current.maximised }))
+    tabs.swap((current) => ({ ...current, maximised: !current.maximised })),
   );
   useHotkey("undo", undo, { preventDefault: true });
   useHotkey("redo", redo, { preventDefault: true });
 };
-
-export const defaultTabsState: TabsState = {
-  tabGroups: [],
-  selectedIndex: 0,
-  maximised: false,
-};
-
-export const useTabsState = () => useProvided("tabs");
 
 export const Tabs = () => {
   const tabs = usePersistentAtom("tabsState", defaultTabsState, {
@@ -89,8 +53,8 @@ export const Tabs = () => {
   const debugEntity = useAtom<string | null>(null);
   useHotkey("debugEntity", () =>
     debugEntity.reset(
-      getFocusedEntityId(getFocusedTab(getFocusedTabGroup(tabs.value)))
-    )
+      getFocusedEntityId(getFocusedTab(getFocusedTabGroup(tabs.value))),
+    ),
   );
 
   const showSettings = useAtom(false);
@@ -99,7 +63,7 @@ export const Tabs = () => {
     <Provide values={{ tabs }}>
       <PasteImage
         entityUuid={getFocusedEntityId(
-          getFocusedTab(getFocusedTabGroup(tabs.value))
+          getFocusedTab(getFocusedTabGroup(tabs.value)),
         )}
       >
         <Stack sx={{ height: "100vh", backgroundColor: colours.bg }}>
@@ -160,102 +124,3 @@ export const Tabs = () => {
     </Provide>
   );
 };
-
-export const moveTab = (
-  tabs: TabsState,
-  tabUuid: string,
-  updateTabGroupIndex: (index: number) => number
-): TabsState => {
-  const currentTab = tabs.tabGroups
-    .flatMap((tabGroup, index) => tabGroup.tabs.map((tab) => ({ index, tab })))
-    .find((item) => item.tab.uuid === tabUuid);
-
-  if (currentTab == null) {
-    return tabs;
-  } else {
-    const newIndex = clamp(
-      updateTabGroupIndex(currentTab.index),
-      0,
-      tabs.tabGroups.length
-    );
-
-    return {
-      ...tabs,
-      tabGroups: [
-        ...tabs.tabGroups,
-        ...(newIndex === tabs.tabGroups.length
-          ? [{ tabs: [], selectedIndex: 0 }]
-          : []),
-      ]
-        .map((tabGroup) => ({
-          ...tabGroup,
-          tabs: tabGroup.tabs.filter((tab) => tab.uuid !== tabUuid),
-        }))
-        .map((tabGroup, index) =>
-          index === newIndex
-            ? {
-                ...tabGroup,
-                tabs: [...tabGroup.tabs, currentTab.tab],
-                selectedIndex: tabGroup.tabs.length,
-              }
-            : tabGroup
-        ),
-      selectedIndex: newIndex,
-    };
-  }
-};
-
-export const getFocusedTabGroup = (tabs: TabsState) =>
-  tabs.tabGroups[
-    clamp(tabs.selectedIndex, 0, tabs.tabGroups.length - 1)
-  ] as TabGroupState;
-
-const useVerifyTabs = () => {
-  const metadata = useMetadata();
-
-  return (tabs: TabsState): TabsState => {
-    const tabGroups = tabs.tabGroups.filter(
-      (tabGroup) => tabGroup.tabs.length > 0
-    );
-    return {
-      ...tabs,
-      tabGroups:
-        tabGroups.length === 0
-          ? [
-              {
-                tabs: [
-                  {
-                    uuid: generateUuid(),
-                    frame: {
-                      entityId: metadata.root,
-                      selection: [],
-                      context: null,
-                      highlight: {},
-                    },
-                    collapsed: [],
-                    expanded: [],
-                  },
-                ],
-                selectedIndex: 0,
-              },
-            ]
-          : tabGroups,
-    };
-  };
-};
-
-export const mapTabs = (
-  tabs: TabsState,
-  tabFunction: (tab: TabState) => TabState
-): TabsState => ({
-  ...tabs,
-  tabGroups: tabs.tabGroups.map((tabGroup) => ({
-    ...tabGroup,
-    tabs: tabGroup.tabs.map(tabFunction),
-  })),
-});
-
-export const getTab = (tabs: TabsState, tabUuid: string) =>
-  tabs.tabGroups
-    .flatMap((group) => group.tabs)
-    .find((tab) => tab.uuid === tabUuid) ?? null;

@@ -1,11 +1,7 @@
-import { ReactNode, useEffect } from "react";
-import { Metadata, pensiveMetadata } from "../api/endpoints";
-import { Atom, useAtom } from "../helpers/atoms";
 import { Mapping, mappingGet } from "../helpers/mapping";
-import { Provide, useProvided } from "../providers/provider";
+import { useProvided } from "../providers/provider";
 import { EntityLinkKey, EntityState } from "./entity/entity";
 import { headTail, isEmptyArray } from "../helpers/arrays";
-import { LinearProgress } from "@mui/material";
 import { Json } from "../constants";
 
 export type PensiveState = {
@@ -66,37 +62,6 @@ export type Request = {
   subscribers: number;
 };
 
-const usePensiveState = (): Atom<PensiveState> => {
-  const pensive = useAtom<PensiveState>({
-    entities: { default: {}, mapping: {} },
-    queries: { default: { status: "waiting", subscribers: 0 }, mapping: {} },
-    resources: {
-      default: { status: "waiting", subscribers: 0, url: null },
-      mapping: {},
-    },
-    history: { undo: [], redo: [] },
-  });
-
-  return pensive;
-};
-
-export const ProvidePensive = ({ children }: { children: ReactNode }) => {
-  const metadata = useAtom<Metadata | null>(null);
-  const pensiveState = usePensiveState();
-
-  useEffect(() => {
-    pensiveMetadata().then(metadata.reset);
-  }, []);
-
-  return metadata.value == null ? (
-    <LinearProgress />
-  ) : (
-    <Provide values={{ pensive: pensiveState, metadata: metadata.value }}>
-      {children}
-    </Provide>
-  );
-};
-
 export const usePensive = () => useProvided("pensive");
 
 export const useMetadata = () => useProvided("metadata");
@@ -129,7 +94,7 @@ export const resolveQuery = (
   createEntityPath: string[] | null,
   editEntityPath: string[] | null,
   pivots: { [entityId: string]: EntityLinkKey | null },
-  childrenKey: EntityLinkKey | null
+  childrenKey: EntityLinkKey | null,
 ): ResolvedQuery => {
   const entity = mappingGet(entities, entityId);
 
@@ -176,7 +141,7 @@ export const resolveQuery = (
                 ? editEntityPathParts.tail
                 : null,
               pivots,
-              actualChildrenKey
+              actualChildrenKey,
             ),
           })),
     highlight: entityExpanded || highlight(entity),
@@ -200,7 +165,7 @@ export const findQueryResolutionLimit = (
   entities: Mapping<string, EntityState>,
   entityId: string,
   limit: number,
-  pivots: { [entityId: string]: EntityLinkKey | null }
+  pivots: { [entityId: string]: EntityLinkKey | null },
 ): Set<string> => {
   const included = new Set<string>();
 
@@ -223,7 +188,7 @@ export const findQueryResolutionLimit = (
     (mappingGet(entities, current.id)[actualChildrenKey] ?? []).forEach(
       (child) => {
         toExplore.push({ id: child, childrenKey: actualChildrenKey });
-      }
+      },
     );
   }
 
@@ -238,13 +203,13 @@ export const findQueryResolutionLimit = (
  */
 export const flattenResolvedQuery = (
   resolvedQuery: ResolvedQuery,
-  path?: string[]
+  path?: string[],
 ): string[] => {
   const nextPath = [...(path ?? []), resolvedQuery.entityId];
   return [
     ...(resolvedQuery.highlight ? [nextPath.join("__")] : []),
     ...resolvedQuery.children.flatMap((child) =>
-      flattenResolvedQuery(child.value, nextPath)
+      flattenResolvedQuery(child.value, nextPath),
     ),
   ];
 };
@@ -258,7 +223,7 @@ export const exportResolvedQuery = (
   resolvedQuery: ResolvedQuery,
   sectionIndent = 1,
   textIndent = 0,
-  selectionMarker?: string
+  selectionMarker?: string,
 ): string => {
   const entity = resolvedQuery.entity;
 
@@ -274,7 +239,7 @@ export const exportResolvedQuery = (
     : (resolvedQuery.selected && selectionMarker != null
         ? selectionMarker + " "
         : "") +
-      (entity.image ? `image@${resolvedQuery.entityId}` : entity.text ?? "");
+      (entity.image ? `image@${resolvedQuery.entityId}` : (entity.text ?? ""));
 
   return [
     `${newIndent}${newPrefix}${newText.split("\n").join("\n" + newIndent)}`,
@@ -283,8 +248,8 @@ export const exportResolvedQuery = (
         value,
         sectionIndent + (entity.section ? 1 : 0),
         textIndent + 1,
-        selectionMarker
-      )
+        selectionMarker,
+      ),
     ),
   ].join("\n");
 };
