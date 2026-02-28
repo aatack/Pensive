@@ -112,18 +112,17 @@ export const useResolvedQuery = (
 ) => {
   const pensive = usePensive();
 
-  const { data: resolvedQuery, ids } = useMemo(
-    () =>
-      resolveQuery({
-        query: { type: "links", key: "outbound" },
-        entityId: frame.value.entityId,
-        collapsed: {},
-        overrides: {},
-        lookup: pensive.value.entities,
-        path: [],
-      }),
-    [frame.value.entityId, pensive.value.entities],
-  );
+  const { data: resolvedQuery, ids } = useMemo(() => {
+    console.log("Changing");
+    return resolveQuery({
+      query: { type: "links", key: "outbound" },
+      entityId: frame.value.entityId,
+      collapsed: {},
+      overrides: {},
+      lookup: pensive.value.entities,
+      path: [],
+    });
+  }, [frame.value.entityId, pensive.value.entities]);
 
   const flattenedQuery = useMemo(
     () => flattenQuery(resolvedQuery, []),

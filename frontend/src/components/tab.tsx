@@ -160,6 +160,7 @@ export const Tab = ({
 
 const Placeholder = ({ data }: { data: FlattenedResolvedQuery }) => {
   useEntity(data.entityId); // Make sure it's loaded
+
   return (
     <Stack sx={{ ml: data.path.length * 2 }}>
       <EntityContent

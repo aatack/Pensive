@@ -17,54 +17,56 @@ import { useTabState } from "../tab-hooks";
 import { useTabsState } from "../tabs-hooks";
 import { useTabGroupData } from "../tab-group-hooks";
 import { EntityState } from "./entity";
+import equal from "fast-deep-equal";
 
-export const EntityContent = ({
-  entityId,
-  entity,
-  collapsed,
-  path,
-  selected,
-  editing,
-}: {
-  entityId: string;
-  entity: EntityState;
-  collapsed: boolean;
-  path: string[];
-  selected: boolean;
-  editing: boolean;
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const type = entity.image ? "image" : (entity.type ?? "text");
+export const EntityContent = memo(
+  ({
+    entityId,
+    entity,
+    collapsed,
+    path,
+    selected,
+    editing,
+  }: {
+    entityId: string;
+    entity: EntityState;
+    collapsed: boolean;
+    path: string[];
+    selected: boolean;
+    editing: boolean;
+  }) => {
+    const ref = useRef<HTMLDivElement>(null);
+    const type = entity.image ? "image" : (entity.type ?? "text");
 
-  const [clickedPath, setClickedPath] = useState<string[] | null>(null);
-  const [middleClickedId, setMiddleClickedId] = useState<string | null>(null);
+    const [clickedPath, setClickedPath] = useState<string[] | null>(null);
+    const [middleClickedId, setMiddleClickedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (selected) {
-      if (ref.current != null) {
-        // Cast the element to avoid an undefined reference error on the method
-        (
-          ref.current as unknown as { scrollIntoViewIfNeeded: () => void }
-        ).scrollIntoViewIfNeeded();
+    useEffect(() => {
+      if (selected) {
+        if (ref.current != null) {
+          // Cast the element to avoid an undefined reference error on the method
+          (
+            ref.current as unknown as { scrollIntoViewIfNeeded: () => void }
+          ).scrollIntoViewIfNeeded();
+        }
       }
-    }
-  }, [selected]);
+    }, [selected]);
 
-  return (
-    <Stack
-      sx={{
-        backgroundColor: selected ? invertColour("lightblue") : undefined,
-        transition: "background-color 0.15s ease",
-        "&:hover":
-          path == null || selected ? {} : { backgroundColor: colours.bg2 },
-        borderRadius: 1,
-        paddingLeft: entity.llmContext == null ? 0.5 : 0.5,
-        paddingRight: 0.5,
-        cursor: "pointer",
-        borderLeft:
-          entity.llmContext == null ? null : `6px solid ${colours.ui2}`,
-      }}
-      /* It's difficult/impossible to lazily read the value of a context in
+    return (
+      <Stack
+        sx={{
+          backgroundColor: selected ? invertColour("lightblue") : undefined,
+          transition: "background-color 0.15s ease",
+          "&:hover":
+            path == null || selected ? {} : { backgroundColor: colours.bg2 },
+          borderRadius: 1,
+          paddingLeft: entity.llmContext == null ? 0.5 : 0.5,
+          paddingRight: 0.5,
+          cursor: "pointer",
+          borderLeft:
+            entity.llmContext == null ? null : `6px solid ${colours.ui2}`,
+        }}
+        /* It's difficult/impossible to lazily read the value of a context in
         react.  Swapping the current frame's selection requires reading the
         value of the state context, which means that every single entity content
         element will re-render every time the selection changes.  This is much
@@ -73,90 +75,92 @@ export const EntityContent = ({
         be selected on click.  Then, if there's a path waiting to be selected,
         render a component (`EntityContentClicked`) that accesses the tab state,
         swaps the selection, and then unrenders itself. */
-      onClick={() => setClickedPath(path ?? null)}
-      onMouseDown={(event) => {
-        if (event.button === 1) {
-          // Middle click
-          setMiddleClickedId(entityId);
-        }
-      }}
-      ref={ref}
-    >
-      {clickedPath == null ? null : (
-        <EntityContentClicked
-          path={clickedPath}
-          then={() => setClickedPath(null)}
-        />
-      )}
-      {middleClickedId == null ? null : (
-        <EntityContentMiddleClicked
-          id={middleClickedId}
-          then={() => setMiddleClickedId(null)}
-        />
-      )}
-
-      <Stack direction="row" alignItems="flex-end" sx={{ width: 1 }}>
-        {(() => {
-          switch (type) {
-            case "image":
-              return collapsed ? (
-                <Typography sx={font}>Image collapsed</Typography>
-              ) : (
-                <RenderImage resourceUuid={entityId} />
-              );
-
-            case "formula":
-              return (
-                <FormulaEntityContent entity={entity} entityId={entityId} />
-              );
-
-            case "formulaTest":
-            case "table":
-            case "text":
-              return editing ? (
-                <EditEntity />
-              ) : (
-                <Stack
-                  sx={{
-                    opacity: collapsed ? 0.5 : undefined,
-                    "@keyframes fadeInOut": {
-                      "0%": { opacity: 0.2 },
-                      "50%": { opacity: 1.0 },
-                      "100%": { opacity: 0.2 },
-                    },
-                    animation:
-                      entity.llmContext != null && entity.text == null
-                        ? "fadeInOut 2s ease-in-out infinite"
-                        : null,
-                  }}
-                >
-                  {entity.text == null ? null : (
-                    <EntityText
-                      text={entity.text}
-                      section={entity.section}
-                      depth={path.length}
-                      defaultText={
-                        entity.llmContext == null
-                          ? "No content"
-                          : "Generating..."
-                      }
-                    />
-                  )}
-                </Stack>
-              );
+        onClick={() => setClickedPath(path ?? null)}
+        onMouseDown={(event) => {
+          if (event.button === 1) {
+            // Middle click
+            setMiddleClickedId(entityId);
           }
-        })()}
-
-        {collapsed ? (
-          <MoreHorizIcon
-            fontSize="small"
-            sx={{ color: colours.tx2, paddingLeft: 1 }}
+        }}
+        ref={ref}
+      >
+        {clickedPath == null ? null : (
+          <EntityContentClicked
+            path={clickedPath}
+            then={() => setClickedPath(null)}
           />
-        ) : null}
+        )}
+        {middleClickedId == null ? null : (
+          <EntityContentMiddleClicked
+            id={middleClickedId}
+            then={() => setMiddleClickedId(null)}
+          />
+        )}
+
+        <Stack direction="row" alignItems="flex-end" sx={{ width: 1 }}>
+          {(() => {
+            switch (type) {
+              case "image":
+                return collapsed ? (
+                  <Typography sx={font}>Image collapsed</Typography>
+                ) : (
+                  <RenderImage resourceUuid={entityId} />
+                );
+
+              case "formula":
+                return (
+                  <FormulaEntityContent entity={entity} entityId={entityId} />
+                );
+
+              case "formulaTest":
+              case "table":
+              case "text":
+                return editing ? (
+                  <EditEntity />
+                ) : (
+                  <Stack
+                    sx={{
+                      opacity: collapsed ? 0.5 : undefined,
+                      "@keyframes fadeInOut": {
+                        "0%": { opacity: 0.2 },
+                        "50%": { opacity: 1.0 },
+                        "100%": { opacity: 0.2 },
+                      },
+                      animation:
+                        entity.llmContext != null && entity.text == null
+                          ? "fadeInOut 2s ease-in-out infinite"
+                          : null,
+                    }}
+                  >
+                    {entity.text == null ? null : (
+                      <EntityText
+                        text={entity.text}
+                        section={entity.section}
+                        depth={path.length}
+                        defaultText={
+                          entity.llmContext == null
+                            ? "No content"
+                            : "Generating..."
+                        }
+                      />
+                    )}
+                  </Stack>
+                );
+            }
+          })()}
+
+          {collapsed ? (
+            <MoreHorizIcon
+              fontSize="small"
+              sx={{ color: colours.tx2, paddingLeft: 1 }}
+            />
+          ) : null}
+        </Stack>
       </Stack>
-    </Stack>
-  );
-};
+    );
+  },
+  (oldProps, newProps) => equal(oldProps, newProps),
+);
 
 export const EntityContentClicked = ({
   path,
