@@ -49,6 +49,7 @@ export type TabData = {
   selectParent: () => void;
   selectFollowing: () => void;
   selectPreceding: () => void;
+  selectedIndex: number;
   pushFrame: () => void;
   popFrame: () => void;
 };
@@ -70,6 +71,7 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
     selectPreceding,
     resolvedQuery,
     flattenedQuery,
+    index,
   } = useResolvedQuery(frame, tab.value.collapsed, tab.value.expanded);
 
   return {
@@ -79,6 +81,7 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
     selectParent,
     selectFollowing,
     selectPreceding,
+    selectedIndex: index,
     pushFrame: () =>
       tab.swap((current) => {
         const entityId = last(current.frame.selection);
@@ -113,7 +116,6 @@ export const useResolvedQuery = (
   const pensive = usePensive();
 
   const { data: resolvedQuery, ids } = useMemo(() => {
-    console.log("Changing");
     return resolveQuery({
       query: { type: "links", key: "outbound" },
       entityId: frame.value.entityId,
@@ -136,10 +138,7 @@ export const useResolvedQuery = (
     [flattenedQuery],
   );
   const index = useMemo(
-    () =>
-      paths.indexOf(
-        [frame.value.entityId, ...frame.value.selection].join("__"),
-      ),
+    () => paths.indexOf(frame.value.selection.join("__")),
     [paths, frame.value.entityId, frame.value.selection],
   );
 
@@ -149,7 +148,7 @@ export const useResolvedQuery = (
       if (joinedPath != null) {
         return frame.swap((current) => ({
           ...current,
-          selection: joinedPath.split("__").slice(1),
+          selection: joinedPath.split("__"),
         }));
       }
     },
@@ -181,6 +180,7 @@ export const useResolvedQuery = (
       selectFollowing,
       selectPreceding,
       selectParent,
+      index,
     }),
     [
       resolvedQuery,
@@ -189,6 +189,7 @@ export const useResolvedQuery = (
       selectFollowing,
       selectPreceding,
       selectParent,
+      index,
     ],
   );
 };

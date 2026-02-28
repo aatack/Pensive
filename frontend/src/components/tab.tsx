@@ -150,15 +150,25 @@ export const Tab = ({
 
         {tabData.flattenedQuery.length}
 
-        {tabData.flattenedQuery.map((item) => (
-          <Placeholder key={item.path.join("__")} data={item} />
+        {tabData.flattenedQuery.map((item, index) => (
+          <Placeholder
+            key={item.path.join("__")}
+            data={item}
+            selected={index === tabData.selectedIndex}
+          />
         ))}
       </Box>
     </Provide>
   );
 };
 
-const Placeholder = ({ data }: { data: FlattenedResolvedQuery }) => {
+const Placeholder = ({
+  data,
+  selected,
+}: {
+  data: FlattenedResolvedQuery;
+  selected: boolean;
+}) => {
   useEntity(data.entityId); // Make sure it's loaded
 
   return (
@@ -168,7 +178,7 @@ const Placeholder = ({ data }: { data: FlattenedResolvedQuery }) => {
         entity={data.entity}
         collapsed={data.collapsed}
         path={data.path}
-        selected={false}
+        selected={selected}
         editing={false}
       />
     </Stack>
