@@ -3,10 +3,10 @@ import { last } from "../../helpers/arrays";
 import { cursor } from "../../helpers/atoms";
 import { TextInput } from "../common/text";
 import { EntityIndent } from "../entity/indent";
-import { useTabState } from "../tab";
 import { generateUuid } from "../../helpers/uuid";
 import { useCreateEntityState } from "./create-entity";
 import { useEditEntityState } from "./edit-entity";
+import { useTabState } from "../tab-hooks";
 
 export const CreateEntity = () => {
   const createEntity = useCreateEntityState();

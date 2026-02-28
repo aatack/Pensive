@@ -7,9 +7,9 @@ import {
   Typography,
   Stack,
 } from "@mui/material";
-import { useProvided } from "../../providers/provider";
+import { useProvided } from "../../providers/use-provided";
 import { colours, defaultHotkeys, font } from "../../constants";
-import { Hotkeys } from "../../providers/hotkeys";
+import { Hotkeys } from "../../providers/use-hotkey";
 
 export const EditHotkeys = () => {
   const hotkeys = useProvided("hotkeys");

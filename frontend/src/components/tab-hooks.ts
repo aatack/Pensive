@@ -1,6 +1,6 @@
 import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
-import { useProvided } from "../providers/provider";
+import { useProvided } from "../providers/use-provided";
 import { useToolState } from "./tool/tool";
 import { EntityLinkKey } from "./entity/entity";
 import { useMemo } from "react";

@@ -6,7 +6,7 @@ import { colours, font } from "../constants";
 import { generateUuid } from "../helpers/uuid";
 import { useEntity } from "../context/hooks";
 import { useMetadata } from "./pensive";
-import { useHotkey } from "../providers/hotkeys";
+import { useHotkey } from "../providers/use-hotkey";
 import { TabGroupState, useTabGroupData } from "./tab-group-hooks";
 import { Atom } from "../helpers/atoms";
 import { TabState } from "./tab-hooks";

@@ -4,19 +4,19 @@ import { colours, font } from "../constants";
 import { arrayCursor, Atom, cursor } from "../helpers/atoms";
 import { clamp } from "../helpers/maths";
 import { LabelledCheckbox } from "./common/checkbox";
-import { useTabsState } from "./tabs";
 import { useToolState } from "./tool/tool";
-import { useHotkey } from "../providers/hotkeys";
+import { useHotkey } from "../providers/use-hotkey";
+import { useTabsState } from "./tabs-hooks";
 
 const useSelectedFrame = () => {
   const tabs = useTabsState();
   const tabGroup = arrayCursor(
     cursor(tabs, "tabGroups"),
-    clamp(tabs.value.selectedIndex, 0, tabs.value.tabGroups.length - 1)
+    clamp(tabs.value.selectedIndex, 0, tabs.value.tabGroups.length - 1),
   );
   const tab = arrayCursor(
     cursor(tabGroup, "tabs"),
-    clamp(tabGroup.value.selectedIndex, 0, tabGroup.value.tabs.length - 1)
+    clamp(tabGroup.value.selectedIndex, 0, tabGroup.value.tabs.length - 1),
   );
   return cursor(tab, "frame");
 };
@@ -89,7 +89,7 @@ const HighlightText = ({ text }: { text: Atom<string | undefined> }) => {
         text.reset("");
       }
     },
-    { enableOnFormTags: true }
+    { enableOnFormTags: true },
   );
   useHotkey(
     "confirmSearch",
@@ -98,7 +98,7 @@ const HighlightText = ({ text }: { text: Atom<string | undefined> }) => {
         inputRef.current.blur();
       }
     },
-    { enableOnFormTags: true }
+    { enableOnFormTags: true },
   );
 
   return (

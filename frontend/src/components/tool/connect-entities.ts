@@ -1,7 +1,7 @@
 import { useWrite } from "../../context/hooks";
-import { getFocusedEntityId, TabState } from "../tab";
+import { useHotkey } from "../../providers/use-hotkey";
+import { getFocusedEntityId, TabState } from "../tab-hooks";
 import { useToolState } from "./tool";
-import { useHotkey } from "../../providers/hotkeys";
 
 export type ConnectEntities = {
   kind: "create" | "remove";
@@ -40,7 +40,7 @@ export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
 
   const initiate = (
     sourceUuid: string | null,
-    destinationUuid: string | null
+    destinationUuid: string | null,
   ) => {
     if (tool.value.type === "noTool") {
       tool.reset({ type: "connectEntities", sourceUuid, destinationUuid });
@@ -76,7 +76,7 @@ export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
         initiate(uuid, null);
       }
     },
-    { enabled }
+    { enabled },
   );
 
   // Initiate connection with the current entity as the destination
@@ -90,7 +90,7 @@ export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
         initiate(null, uuid);
       }
     },
-    { enabled }
+    { enabled },
   );
 
   // Cancel the current connection
@@ -101,6 +101,6 @@ export const useConnectEntityActions = (tab: TabState, enabled: boolean) => {
         cancel();
       }
     },
-    { enabled }
+    { enabled },
   );
 };

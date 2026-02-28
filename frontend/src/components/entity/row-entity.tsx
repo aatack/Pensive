@@ -1,11 +1,11 @@
 import equal from "fast-deep-equal";
 import { ReactNode, memo } from "react";
-import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
 import { EntityContent } from "./content";
 import { TableCell } from "@mui/material";
 import { colours } from "../../constants";
 import { Entity } from "./render-entity";
+import { CreateEntity } from "../tool/tool-placeholders";
 
 export const RowEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {

@@ -1,12 +1,12 @@
 import { Stack, Typography } from "@mui/material";
 import equal from "fast-deep-equal";
 import { memo } from "react";
-import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
 import { EntityIndent } from "./indent";
 import { EntityContent } from "./content";
 import { font } from "../../constants";
 import { Entity } from "./render-entity";
+import { CreateEntity } from "../tool/tool-placeholders";
 
 export const TreeEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {

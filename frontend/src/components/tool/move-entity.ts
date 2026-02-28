@@ -1,7 +1,7 @@
 import { useWrite } from "../../context/hooks";
-import { getFocusedEntityId, TabState } from "../tab";
+import { useHotkey } from "../../providers/use-hotkey";
+import { TabState, getFocusedEntityId } from "../tab-hooks";
 import { useToolState } from "./tool";
-import { useHotkey } from "../../providers/hotkeys";
 
 export type MoveEntityState = {
   type: "moveEntity";
@@ -55,7 +55,7 @@ export const useMoveEntityActions = (tab: TabState, enabled: boolean) => {
         }
       }
     },
-    { enabled }
+    { enabled },
   );
   useHotkey(
     "cancelMoveConnection",
@@ -64,6 +64,6 @@ export const useMoveEntityActions = (tab: TabState, enabled: boolean) => {
         cancel();
       }
     },
-    { enabled }
+    { enabled },
   );
 };

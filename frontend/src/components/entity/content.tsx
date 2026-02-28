@@ -1,11 +1,9 @@
 import { Stack, Typography } from "@mui/material";
 import { memo, useEffect, useRef, useState } from "react";
-import { EditEntity } from "../tool/edit-entity";
 import { colours, font, invertColour } from "../../constants";
 import { RenderImage } from "../common/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { arrayCursor, cursor } from "../../helpers/atoms";
-import { useTabState } from "../tab";
 import { ResolvedQuery } from "../pensive";
 import Markdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
@@ -13,10 +11,12 @@ import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { CopyButton } from "../common/copy-button";
 import { FormulaEntityContent } from "./formula-entity";
-import { useTabsState } from "../tabs";
 import { clamp } from "../../helpers/maths";
-import { useTabGroupData } from "../tab-group";
 import { generateUuid } from "../../helpers/uuid";
+import { EditEntity } from "../tool/tool-placeholders";
+import { useTabState } from "../tab-hooks";
+import { useTabsState } from "../tabs-hooks";
+import { useTabGroupData } from "../tab-group-hooks";
 
 export const EntityContent = ({
   resolvedQuery: {

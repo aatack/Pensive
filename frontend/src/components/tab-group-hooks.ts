@@ -1,7 +1,7 @@
 import { arrayCursor, Atom, cursor } from "../helpers/atoms";
 import { clamp } from "../helpers/maths";
-import { TabState } from "./tab";
-import { moveTab, useTabsState } from "./tabs";
+import { TabState } from "./tab-hooks";
+import { useTabsState, moveTab } from "./tabs-hooks";
 
 export type TabGroupState = {
   tabs: TabState[];

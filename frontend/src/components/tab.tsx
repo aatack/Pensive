@@ -11,7 +11,7 @@ import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
 import { useConnectEntityActions } from "./tool/connect-entities";
-import { useHotkey } from "../providers/hotkeys";
+import { useHotkey } from "../providers/use-hotkey";
 import { useRunPrompt } from "../llms";
 import { usePivots } from "./tool/pivots";
 import { FrameState, TabState, useTabData } from "./tab-hooks";

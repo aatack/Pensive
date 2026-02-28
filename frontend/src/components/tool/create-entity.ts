@@ -1,8 +1,8 @@
 import { Atom } from "../../helpers/atoms";
+import { useHotkey } from "../../providers/use-hotkey";
 import { EntityState } from "../entity/entity";
-import { TabState } from "../tab";
+import { TabState } from "../tab-hooks";
 import { useToolState } from "./tool";
-import { useHotkey } from "../../providers/hotkeys";
 
 export type CreateEntityState = {
   type: "createEntity";

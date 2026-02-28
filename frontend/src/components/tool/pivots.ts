@@ -1,9 +1,9 @@
 import { useEntity } from "../../context/hooks";
 import { nextInCycle } from "../../helpers/arrays";
 import { Atom, cursor } from "../../helpers/atoms";
-import { useHotkey } from "../../providers/hotkeys";
+import { useHotkey } from "../../providers/use-hotkey";
 import { EntityLinkKey } from "../entity/entity";
-import { TabState } from "../tab";
+import { TabState } from "../tab-hooks";
 
 export const usePivots = (
   entityId: string,

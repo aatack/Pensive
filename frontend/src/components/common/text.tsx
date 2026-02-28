@@ -1,7 +1,7 @@
 import { TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { colours, font } from "../../constants";
-import { useHotkey } from "../../providers/hotkeys";
+import { useHotkey } from "../../providers/use-hotkey";
 
 export const TextInput = ({
   confirm,

@@ -1,7 +1,7 @@
 import { Atom } from "../helpers/atoms";
 import { clamp } from "../helpers/maths";
 import { generateUuid } from "../helpers/uuid";
-import { useProvided } from "../providers/provider";
+import { useProvided } from "../providers/use-provided";
 import { useMetadata } from "./pensive";
 import { TabGroupState } from "./tab-group-hooks";
 import { TabState } from "./tab-hooks";

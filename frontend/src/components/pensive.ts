@@ -1,5 +1,5 @@
 import { Mapping, mappingGet } from "../helpers/mapping";
-import { useProvided } from "../providers/provider";
+import { useProvided } from "../providers/use-provided";
 import { EntityLinkKey, EntityState } from "./entity/entity";
 import { headTail, isEmptyArray } from "../helpers/arrays";
 import { Json } from "../constants";

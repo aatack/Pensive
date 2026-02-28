@@ -7,10 +7,10 @@ import {
 } from "@mui/material";
 import equal from "fast-deep-equal";
 import { memo } from "react";
-import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
 import { EntityContent } from "./content";
 import { Entity } from "./render-entity";
+import { CreateEntity } from "../tool/tool-placeholders";
 
 export const TableEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {

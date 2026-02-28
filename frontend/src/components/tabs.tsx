@@ -12,7 +12,7 @@ import { Provide } from "../providers/provider";
 import { StatusBar } from "./status-bar";
 import { PasteImage } from "./common/image";
 import { DebugEntity } from "./entity/debug-entity";
-import { useHotkey } from "../providers/hotkeys";
+import { useHotkey } from "../providers/use-hotkey";
 import { EditHotkeys } from "./settings/edit-hotkeys";
 import { useRedo, useUndo } from "../context/hooks";
 import {

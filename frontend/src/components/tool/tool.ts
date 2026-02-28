@@ -1,4 +1,4 @@
-import { useProvided } from "../../providers/provider";
+import { useProvided } from "../../providers/use-provided";
 import { CreateEntityState } from "./create-entity";
 import { EditEntityState } from "./edit-entity";
 import { MoveEntityState } from "./move-entity";
