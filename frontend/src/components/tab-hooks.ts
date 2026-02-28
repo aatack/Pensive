@@ -11,6 +11,7 @@ import {
   resolveQuery,
   usePensive,
 } from "./pensive";
+import { resolveQuery as newResolveQuery } from "../queries/queries";
 
 export type TabState = {
   uuid: string;
@@ -103,6 +104,29 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
 
 export const getFocusedEntityId = (tab: TabState) =>
   last(tab.frame.selection) ?? tab.frame.entityId;
+
+export const useResolvedQuery = (
+  frame: Atom<FrameState>,
+  collapsed: string[],
+  expanded: string[],
+  tabUuid: string,
+) => {
+  const pensive = usePensive();
+  const tool = useToolState().value;
+
+  const { data, ids } = useMemo(
+    () =>
+      newResolveQuery({
+        query: { type: "links", key: "outbound" },
+        entityId: frame.value.entityId,
+        collapsed: {},
+        overrides: {},
+        lookup: pensive.value.entities,
+        path: [],
+      }),
+    [],
+  );
+};
 
 const useFrameNavigation = (
   frame: Atom<FrameState>,
