@@ -82,3 +82,28 @@ export const resolveQuery = (options: {
     }
   }
 };
+
+export type FlattenedResolvedQuery = {
+  entityId: string;
+  entity: EntityState;
+
+  collapsed: boolean;
+  path: string[];
+};
+
+export const flattenQuery = (
+  resolvedQuery: ResolvedQuery,
+  path: string[],
+): FlattenedResolvedQuery[] => {
+  return [
+    {
+      entityId: resolvedQuery.entityId,
+      entity: resolvedQuery.entity,
+      collapsed: resolvedQuery.collapsed,
+      path: path ?? [],
+    },
+    ...resolvedQuery.children.flatMap((child) =>
+      flattenQuery(child.value, [...(path ?? []), resolvedQuery.entityId]),
+    ),
+  ];
+};

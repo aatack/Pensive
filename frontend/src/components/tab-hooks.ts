@@ -11,7 +11,10 @@ import {
   resolveQuery,
   usePensive,
 } from "./pensive";
-import { resolveQuery as newResolveQuery } from "../queries/queries";
+import {
+  flattenQuery,
+  resolveQuery as newResolveQuery,
+} from "../queries/queries";
 
 export type TabState = {
   uuid: string;
@@ -114,7 +117,7 @@ export const useResolvedQuery = (
   const pensive = usePensive();
   const tool = useToolState().value;
 
-  const { data, ids } = useMemo(
+  const { data: resolvedQuery, ids } = useMemo(
     () =>
       newResolveQuery({
         query: { type: "links", key: "outbound" },
@@ -124,7 +127,17 @@ export const useResolvedQuery = (
         lookup: pensive.value.entities,
         path: [],
       }),
-    [],
+    [frame.value.entityId, pensive.value.entities],
+  );
+
+  const flattenedResolvedQuery = useMemo(
+    () => flattenQuery(resolvedQuery, []),
+    [resolvedQuery],
+  );
+
+  return useMemo(
+    () => ({ resolvedQuery, flattenedResolvedQuery, ids }),
+    [resolvedQuery, flattenedResolvedQuery, ids],
   );
 };
 
