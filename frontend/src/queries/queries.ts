@@ -32,7 +32,7 @@ export const resolveQuery = (options: {
     (options.collapsed[options.entityId] && options.path.length > 0) ||
     options.path.includes(options.entityId) ||
     (options.path.length > 4 && entity.section && !expanded) ||
-    (options.path.length > 4 && !expanded);
+    (options.path.length > 8 && !expanded);
 
   if (collapsed) {
     return {
@@ -103,7 +103,7 @@ export const flattenQuery = (
       path: path ?? [],
     },
     ...resolvedQuery.children.flatMap((child) =>
-      flattenQuery(child.value, [...(path ?? []), resolvedQuery.entityId]),
+      flattenQuery(child.value, [...(path ?? []), child.value.entityId]),
     ),
   ];
 };

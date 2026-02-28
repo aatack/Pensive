@@ -168,7 +168,7 @@ export const Tab = ({
 const Placeholder = ({ data }: { data: FlattenedResolvedQuery }) => {
   useEntity(data.entityId); // Make sure it's loaded
   return (
-    <p style={{ marginLeft: data.path.length * 17 }}>{data.entity.text}</p>
+    <p style={{ marginLeft: data.path.length * 24 }}>{data.entity.text}</p>
   );
 };
 
