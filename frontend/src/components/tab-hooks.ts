@@ -3,7 +3,7 @@ import { Atom, cursor } from "../helpers/atoms";
 import { useProvided } from "../providers/use-provided";
 import { useToolState } from "./tool/tool";
 import { EntityLinkKey } from "./entity/entity";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
   findQueryResolutionLimit,
   flattenResolvedQuery,
@@ -112,10 +112,8 @@ export const useResolvedQuery = (
   frame: Atom<FrameState>,
   collapsed: string[],
   expanded: string[],
-  tabUuid: string,
 ) => {
   const pensive = usePensive();
-  const tool = useToolState().value;
 
   const { data: resolvedQuery, ids } = useMemo(
     () =>
@@ -130,14 +128,72 @@ export const useResolvedQuery = (
     [frame.value.entityId, pensive.value.entities],
   );
 
-  const flattenedResolvedQuery = useMemo(
+  const flattenedQuery = useMemo(
     () => flattenQuery(resolvedQuery, []),
     [resolvedQuery],
   );
 
+  // Everything is joined with double underscores because you can't use arrays
+  // as dictionary keys
+  const paths = useMemo(
+    () => flattenedQuery.map((item) => item.path.join("__")),
+    [flattenedQuery],
+  );
+  const index = useMemo(
+    () =>
+      paths.indexOf(
+        [frame.value.entityId, ...frame.value.selection].join("__"),
+      ),
+    [paths, frame.value.entityId, frame.value.selection],
+  );
+
+  const selectIndex = useCallback(
+    (newIndex: number) => {
+      const joinedPath = paths[newIndex];
+      if (joinedPath != null) {
+        return frame.swap((current) => ({
+          ...current,
+          selection: joinedPath.split("__").slice(1),
+        }));
+      }
+    },
+    [paths, frame.swap],
+  );
+
+  const selectPreceding = useCallback(
+    () => selectIndex(index - 1),
+    [selectIndex, index],
+  );
+  const selectFollowing = useCallback(
+    () => selectIndex(index + 1),
+    [selectIndex, index],
+  );
+  const selectParent = useCallback(
+    () =>
+      frame.swap((current) => ({
+        ...current,
+        selection: butLast(current.selection),
+      })),
+    [frame.swap],
+  );
+
   return useMemo(
-    () => ({ resolvedQuery, flattenedResolvedQuery, ids }),
-    [resolvedQuery, flattenedResolvedQuery, ids],
+    () => ({
+      resolvedQuery,
+      flattenedQuery,
+      ids,
+      selectFollowing,
+      selectPreceding,
+      selectParent,
+    }),
+    [
+      resolvedQuery,
+      flattenedQuery,
+      ids,
+      selectFollowing,
+      selectPreceding,
+      selectParent,
+    ],
   );
 };
 
