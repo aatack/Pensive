@@ -107,3 +107,40 @@ export const flattenQuery = (
     ),
   ];
 };
+
+const REDACTED = "<<< Redacted >>>";
+
+/**
+ * Export a resolved query as a markdown string.
+ */
+export const exportResolvedQuery = (
+  resolvedQuery: ResolvedQuery,
+  sectionIndent = 1,
+  textIndent = 0,
+): string => {
+  const entity = resolvedQuery.entity;
+
+  const newIndent = "    ".repeat(textIndent);
+
+  const newPrefix =
+    "- " +
+    (entity.section ? "#".repeat(sectionIndent) + " " : "") +
+    (entity.open == null ? "" : entity.open ? "[ ] " : "[x] ");
+
+  const newText = entity.redacted
+    ? REDACTED
+    : entity.image
+      ? `image@${resolvedQuery.entityId}`
+      : (entity.text ?? "");
+
+  return [
+    `${newIndent}${newPrefix}${newText.split("\n").join("\n" + newIndent)}`,
+    ...resolvedQuery.children.map(({ value }) =>
+      exportResolvedQuery(
+        value,
+        sectionIndent + (entity.section ? 1 : 0),
+        textIndent + 1,
+      ),
+    ),
+  ].join("\n");
+};

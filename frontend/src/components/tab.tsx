@@ -1,22 +1,22 @@
 import { Box, Divider } from "@mui/material";
 import { useEntity, useSwapEntity, useWrite } from "../context/hooks";
 import { last } from "../helpers/arrays";
-import { Atom, cursor } from "../helpers/atoms";
+import { Atom } from "../helpers/atoms";
 import { Provide } from "../providers/provider";
 import { EntityIndent } from "./entity/indent";
 import { EntityContent } from "./entity/content";
 import { useEffect, useRef } from "react";
-import { exportResolvedQuery } from "./pensive";
 import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
 import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/use-hotkey";
-import { useRunPrompt } from "../llms";
 import { usePivots } from "./tool/pivots";
 import { FrameState, TabState, useTabData } from "./tab-hooks";
-import { Entity } from "./entity/render-entity";
-import { FlattenedResolvedQuery } from "../queries/queries";
+import {
+  exportResolvedQuery,
+  FlattenedResolvedQuery,
+} from "../queries/queries";
 
 const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const tabData = useTabData(tab);
@@ -28,21 +28,14 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useHotkey("selectFollowing", tabData.selectFollowing, { enabled: selected });
   useHotkey("selectPreceding", tabData.selectPreceding, { enabled: selected });
 
-  // useHotkey(
-  //   "exportEntity",
-  //   () => {
-  //     const markdown = exportResolvedQuery(tabData.resolvedQuery).trim();
-  //     navigator.clipboard.writeText(markdown);
-  //   },
-  //   { enabled: selected },
-  // );
-
-  // const runPrompt = useRunPrompt();
-  // useHotkey(
-  //   "runPrompt",
-  //   () => runPrompt(tabData.resolvedQuery, cursor(tab, "frame")),
-  //   { enabled: selected, keyup: true },
-  // );
+  useHotkey(
+    "exportEntity",
+    () => {
+      const markdown = exportResolvedQuery(tabData.resolvedQuery).trim();
+      navigator.clipboard.writeText(markdown);
+    },
+    { enabled: selected },
+  );
 
   useHotkey(
     "removeConnection",
