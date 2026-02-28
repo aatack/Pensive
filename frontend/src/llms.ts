@@ -1,6 +1,6 @@
 import { pensivePrompt } from "./api/endpoints";
 import { exportResolvedQuery, ResolvedQuery } from "./components/pensive";
-import { FrameState } from "./components/tab";
+import { FrameState } from "./components/tab-hooks";
 import { useWrite } from "./context/hooks";
 import { last } from "./helpers/arrays";
 import { Atom } from "./helpers/atoms";
@@ -64,7 +64,7 @@ export const useRunPrompt = () => {
     }));
 
     const response = await pensivePrompt(
-      `${context}\n\n---\n\n${TASK_DESCRIPTION}`
+      `${context}\n\n---\n\n${TASK_DESCRIPTION}`,
     );
 
     write({ [childUuid]: { text: response } });

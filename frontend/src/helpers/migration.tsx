@@ -1,5 +1,5 @@
 import { Button, Grid, Stack, Typography } from "@mui/material";
-import { TabsState } from "../components/tabs";
+import { TabsState } from "../components/tabs-hooks";
 
 export const MigrateTabsState = ({
   migration,

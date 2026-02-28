@@ -1,4 +1,4 @@
-import { Hotkeys } from "./providers/hotkeys";
+import { Hotkeys } from "./providers/use-hotkey";
 
 export const server = "http://localhost:2998";
 
