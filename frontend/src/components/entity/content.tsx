@@ -4,7 +4,6 @@ import { colours, font, invertColour } from "../../constants";
 import { RenderImage } from "../common/image";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { arrayCursor, cursor } from "../../helpers/atoms";
-import { ResolvedQuery } from "../pensive";
 import Markdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -17,19 +16,22 @@ import { EditEntity } from "../tool/tool-placeholders";
 import { useTabState } from "../tab-hooks";
 import { useTabsState } from "../tabs-hooks";
 import { useTabGroupData } from "../tab-group-hooks";
+import { EntityState } from "./entity";
 
 export const EntityContent = ({
-  resolvedQuery: {
-    selected,
-    path,
-    collapsed,
-    entity,
-    entityId,
-    hasHiddenChildren,
-    editEntity,
-  },
+  entityId,
+  entity,
+  collapsed,
+  path,
+  selected,
+  editing,
 }: {
-  resolvedQuery: ResolvedQuery;
+  entityId: string;
+  entity: EntityState;
+  collapsed: boolean;
+  path: string[];
+  selected: boolean;
+  editing: boolean;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const type = entity.image ? "image" : (entity.type ?? "text");
@@ -111,7 +113,7 @@ export const EntityContent = ({
             case "formulaTest":
             case "table":
             case "text":
-              return editEntity ? (
+              return editing ? (
                 <EditEntity />
               ) : (
                 <Stack
@@ -145,7 +147,7 @@ export const EntityContent = ({
           }
         })()}
 
-        {hasHiddenChildren ? (
+        {collapsed ? (
           <MoreHorizIcon
             fontSize="small"
             sx={{ color: colours.tx2, paddingLeft: 1 }}

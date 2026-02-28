@@ -1,4 +1,4 @@
-import { Box, Divider } from "@mui/material";
+import { Box, Divider, Stack } from "@mui/material";
 import { useEntity, useSwapEntity, useWrite } from "../context/hooks";
 import { last } from "../helpers/arrays";
 import { Atom } from "../helpers/atoms";
@@ -144,7 +144,7 @@ export const Tab = ({
           }
         }}
       >
-        <TabContext tab={tab.value} />
+        {/* <TabContext tab={tab.value} /> */}
 
         {/* <Entity resolvedQuery={tabData.resolvedQuery} /> */}
 
@@ -161,7 +161,16 @@ export const Tab = ({
 const Placeholder = ({ data }: { data: FlattenedResolvedQuery }) => {
   useEntity(data.entityId); // Make sure it's loaded
   return (
-    <p style={{ marginLeft: data.path.length * 24 }}>{data.entity.text}</p>
+    <Stack sx={{ ml: data.path.length * 2 }}>
+      <EntityContent
+        entityId={data.entityId}
+        entity={data.entity}
+        collapsed={data.collapsed}
+        path={data.path}
+        selected={false}
+        editing={false}
+      />
+    </Stack>
   );
 };
 
