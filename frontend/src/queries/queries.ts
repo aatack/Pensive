@@ -1,12 +1,12 @@
 import { EntityLinkKey, EntityState } from "../components/entity/entity";
 import { Mapping, mappingGet } from "../helpers/mapping";
 
-type Query = {
+export type Query = {
   type: "links";
   key: EntityLinkKey;
 };
 
-type ResolvedQuery = {
+export type ResolvedQuery = {
   entityId: string;
   entity: EntityState;
 
@@ -15,7 +15,7 @@ type ResolvedQuery = {
   children: { key: string; value: ResolvedQuery }[];
 };
 
-const resolveQuery = (options: {
+export const resolveQuery = (options: {
   query: Query;
   entityId: string;
   collapsed: { [entityId: string]: boolean };
@@ -81,6 +81,4 @@ const resolveQuery = (options: {
       };
     }
   }
-
-  throw new Error("Not yet implemented");
 };
