@@ -1,20 +1,10 @@
 import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
 import { useProvided } from "../providers/use-provided";
-import { useToolState } from "./tool/tool";
 import { EntityLinkKey } from "./entity/entity";
 import { useCallback, useMemo } from "react";
-import {
-  findQueryResolutionLimit,
-  flattenResolvedQuery,
-  ResolvedQuery,
-  resolveQuery,
-  usePensive,
-} from "./pensive";
-import {
-  flattenQuery,
-  resolveQuery as newResolveQuery,
-} from "../queries/queries";
+import { usePensive } from "./pensive";
+import { flattenQuery, resolveQuery, ResolvedQuery } from "../queries/queries";
 
 export type TabState = {
   uuid: string;
@@ -69,12 +59,7 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
     }));
 
   const { selectParent, selectFollowing, selectPreceding, resolvedQuery } =
-    useFrameNavigation(
-      frame,
-      tab.value.collapsed,
-      tab.value.expanded,
-      tab.value.uuid,
-    );
+    useResolvedQuery(frame, tab.value.collapsed, tab.value.expanded);
 
   return {
     resolvedQuery,
@@ -117,7 +102,7 @@ export const useResolvedQuery = (
 
   const { data: resolvedQuery, ids } = useMemo(
     () =>
-      newResolveQuery({
+      resolveQuery({
         query: { type: "links", key: "outbound" },
         entityId: frame.value.entityId,
         collapsed: {},
@@ -195,89 +180,4 @@ export const useResolvedQuery = (
       selectParent,
     ],
   );
-};
-
-const useFrameNavigation = (
-  frame: Atom<FrameState>,
-  collapsed: string[],
-  expanded: string[],
-  tabUuid: string,
-) => {
-  const pensive = usePensive();
-  const tool = useToolState().value;
-
-  const [resolvedQuery, flattenedQuery] = useMemo(() => {
-    const limit = findQueryResolutionLimit(
-      pensive.value.entities,
-      frame.value.entityId,
-      200,
-      frame.value.pivots ?? {},
-    );
-
-    const timestamp = new Date();
-
-    const resolvedQuery = resolveQuery(
-      pensive.value.entities,
-      frame.value.entityId,
-      (entity) =>
-        (entity.text ?? "")
-          .toLowerCase()
-          .includes((frame.value.highlight.text ?? "").toLowerCase()) &&
-        Boolean(!frame.value.highlight.section || entity.section) &&
-        (entity.snoozed == null ||
-          new Date(entity.snoozed) < timestamp ||
-          Boolean(frame.value.highlight.snoozed)),
-      collapsed,
-      expanded,
-      limit,
-      [],
-      frame.value.selection,
-      tool?.type === "createEntity" && tool.tabUuid === tabUuid
-        ? tool.path
-        : null,
-      tool?.type === "editEntity" && tool.tabUuid === tabUuid
-        ? tool.path
-        : null,
-      frame.value.pivots ?? {},
-      null,
-    );
-    return [resolvedQuery, flattenResolvedQuery(resolvedQuery)];
-  }, [
-    pensive.value.entities,
-    frame.value.entityId,
-    frame.value.highlight,
-    frame.value.selection,
-    collapsed,
-    expanded,
-    tool,
-    frame.value.pivots,
-  ]);
-
-  // Everything is joined with double underscores because you can't use arrays
-  // as dictionary keys
-  const index = flattenedQuery.indexOf(
-    [frame.value.entityId, ...frame.value.selection].join("__"),
-  );
-
-  const selectIndex = (newIndex: number) => {
-    const joinedPath = flattenedQuery[newIndex];
-    if (joinedPath != null) {
-      return frame.swap((current) => ({
-        ...current,
-        selection: joinedPath.split("__").slice(1),
-      }));
-    }
-  };
-
-  return {
-    resolvedQuery,
-    flattenedQuery,
-    selectPreceding: () => selectIndex(index - 1),
-    selectFollowing: () => selectIndex(index + 1),
-    selectParent: () =>
-      frame.swap((current) => ({
-        ...current,
-        selection: butLast(current.selection),
-      })),
-  };
 };
