@@ -127,7 +127,7 @@ export const useResolvedQuery = (
       lookup: pensive.value.entities,
       path: [],
     });
-  }, [frame.value.entityId, pensive.value.entities]);
+  }, [frame.value.entityId, pensive.value.entities, collapsed, expanded]);
 
   const flattenedQuery = useMemo(
     () => flattenQuery(resolvedQuery, []),
