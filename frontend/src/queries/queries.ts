@@ -27,10 +27,14 @@ const resolveQuery = (options: {
 
   // Always terminate here if the entity is collapsed or has already appeared in
   // this path, unless it's the root
-  if (
+  const expanded = options.collapsed[options.entityId] === false;
+  const collapsed =
     (options.collapsed[options.entityId] && options.path.length > 0) ||
-    options.path.includes(options.entityId)
-  ) {
+    options.path.includes(options.entityId) ||
+    (options.path.length > 4 && entity.section && !expanded) ||
+    (options.path.length > 8 && !expanded);
+
+  if (collapsed) {
     return {
       data: {
         entityId: options.entityId,
