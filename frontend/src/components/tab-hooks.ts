@@ -119,7 +119,10 @@ export const useResolvedQuery = (
     return resolveQuery({
       query: { type: "links", key: "outbound" },
       entityId: frame.value.entityId,
-      collapsed: {},
+      collapsed: {
+        ...Object.fromEntries(collapsed.map((id) => [id, true])),
+        ...Object.fromEntries(expanded.map((id) => [id, false])),
+      },
       overrides: {},
       lookup: pensive.value.entities,
       path: [],

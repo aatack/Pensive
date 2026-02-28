@@ -23,6 +23,8 @@ export const resolveQuery = (options: {
   lookup: Mapping<string, EntityState>;
   path: string[];
 }): { data: ResolvedQuery; ids: string[] } => {
+  if (options.path.length === 0) console.log(options.collapsed);
+
   const entity = mappingGet(options.lookup, options.entityId);
 
   // Always terminate here if the entity is collapsed or has already appeared in
