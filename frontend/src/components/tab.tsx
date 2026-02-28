@@ -16,6 +16,7 @@ import { useRunPrompt } from "../llms";
 import { usePivots } from "./tool/pivots";
 import { FrameState, TabState, useTabData } from "./tab-hooks";
 import { Entity } from "./entity/render-entity";
+import { FlattenedResolvedQuery } from "../queries/queries";
 
 const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const tabData = useTabData(tab);
@@ -27,21 +28,21 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useHotkey("selectFollowing", tabData.selectFollowing, { enabled: selected });
   useHotkey("selectPreceding", tabData.selectPreceding, { enabled: selected });
 
-  useHotkey(
-    "exportEntity",
-    () => {
-      const markdown = exportResolvedQuery(tabData.resolvedQuery).trim();
-      navigator.clipboard.writeText(markdown);
-    },
-    { enabled: selected },
-  );
+  // useHotkey(
+  //   "exportEntity",
+  //   () => {
+  //     const markdown = exportResolvedQuery(tabData.resolvedQuery).trim();
+  //     navigator.clipboard.writeText(markdown);
+  //   },
+  //   { enabled: selected },
+  // );
 
-  const runPrompt = useRunPrompt();
-  useHotkey(
-    "runPrompt",
-    () => runPrompt(tabData.resolvedQuery, cursor(tab, "frame")),
-    { enabled: selected, keyup: true },
-  );
+  // const runPrompt = useRunPrompt();
+  // useHotkey(
+  //   "runPrompt",
+  //   () => runPrompt(tabData.resolvedQuery, cursor(tab, "frame")),
+  //   { enabled: selected, keyup: true },
+  // );
 
   useHotkey(
     "removeConnection",
@@ -152,9 +153,22 @@ export const Tab = ({
       >
         <TabContext tab={tab.value} />
 
-        <Entity resolvedQuery={tabData.resolvedQuery} />
+        {/* <Entity resolvedQuery={tabData.resolvedQuery} /> */}
+
+        {tabData.flattenedQuery.length}
+
+        {tabData.flattenedQuery.map((item) => (
+          <Placeholder key={item.path.join("__")} data={item} />
+        ))}
       </Box>
     </Provide>
+  );
+};
+
+const Placeholder = ({ data }: { data: FlattenedResolvedQuery }) => {
+  useEntity(data.entityId); // Make sure it's loaded
+  return (
+    <p style={{ marginLeft: data.path.length * 17 }}>{data.entity.text}</p>
   );
 };
 

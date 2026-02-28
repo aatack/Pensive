@@ -4,7 +4,12 @@ import { useProvided } from "../providers/use-provided";
 import { EntityLinkKey } from "./entity/entity";
 import { useCallback, useMemo } from "react";
 import { usePensive } from "./pensive";
-import { flattenQuery, resolveQuery, ResolvedQuery } from "../queries/queries";
+import {
+  flattenQuery,
+  resolveQuery,
+  ResolvedQuery,
+  FlattenedResolvedQuery,
+} from "../queries/queries";
 
 export type TabState = {
   uuid: string;
@@ -39,6 +44,7 @@ export type FrameState = {
 
 export type TabData = {
   resolvedQuery: ResolvedQuery;
+  flattenedQuery: FlattenedResolvedQuery[];
   select: (path: string[] | null) => void;
   selectParent: () => void;
   selectFollowing: () => void;
@@ -58,11 +64,17 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
       selection: path ?? current.selection,
     }));
 
-  const { selectParent, selectFollowing, selectPreceding, resolvedQuery } =
-    useResolvedQuery(frame, tab.value.collapsed, tab.value.expanded);
+  const {
+    selectParent,
+    selectFollowing,
+    selectPreceding,
+    resolvedQuery,
+    flattenedQuery,
+  } = useResolvedQuery(frame, tab.value.collapsed, tab.value.expanded);
 
   return {
     resolvedQuery,
+    flattenedQuery,
     select,
     selectParent,
     selectFollowing,
