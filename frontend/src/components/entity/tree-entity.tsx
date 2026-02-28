@@ -5,8 +5,8 @@ import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
 import { EntityIndent } from "./indent";
 import { EntityContent } from "./content";
-import { Entity } from "./entity";
 import { font } from "../../constants";
+import { Entity } from "./render-entity";
 
 export const TreeEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {

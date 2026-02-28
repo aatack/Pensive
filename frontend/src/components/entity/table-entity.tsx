@@ -10,7 +10,7 @@ import { memo } from "react";
 import { CreateEntity } from "../tool/create-entity";
 import { ResolvedQuery } from "../pensive";
 import { EntityContent } from "./content";
-import { Entity } from "./entity";
+import { Entity } from "./render-entity";
 
 export const TableEntity = memo(
   ({ resolvedQuery }: { resolvedQuery: ResolvedQuery }) => {
