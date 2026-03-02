@@ -7,10 +7,8 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import LockIcon from "@mui/icons-material/Lock";
 
 export const EntityIndent = ({
-  children,
   entity,
 }: {
-  children: ReactNode;
   entity: EntityState;
 }) => {
   const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
@@ -28,7 +26,6 @@ export const EntityIndent = ({
           <KeyboardArrowRightIcon sx={iconStyle} />
         )}
       </Stack>
-      {children}
     </Stack>
   );
 };

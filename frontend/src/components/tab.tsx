@@ -5,7 +5,7 @@ import { Atom } from "../helpers/atoms";
 import { Provide } from "../providers/provider";
 import { EntityIndent } from "./entity/indent";
 import { EntityContent } from "./entity/content";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
@@ -13,10 +13,14 @@ import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/use-hotkey";
 import { usePivots } from "./tool/pivots";
 import { FrameState, TabState, useTabData } from "./tab-hooks";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import {
   exportResolvedQuery,
   FlattenedResolvedQuery,
 } from "../queries/queries";
+import equal from "fast-deep-equal";
+
+const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
 const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const tabData = useTabData(tab);
@@ -172,7 +176,9 @@ const Placeholder = ({
   useEntity(data.entityId); // Make sure it's loaded
 
   return (
-    <Stack sx={{ ml: data.path.length * 2 }}>
+    <Stack direction="row" sx={{ ml: data.path.length * 2 }}>
+      {/* Start here */}
+      <KeyboardArrowRightIcon sx={iconStyle} />
       <EntityContent
         entityId={data.entityId}
         entity={data.entity}
