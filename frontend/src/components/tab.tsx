@@ -25,6 +25,7 @@ import { EntityState } from "./entity/entity";
 import React from "react";
 import { EntityPill } from "./entity/entity-pill";
 import { font } from "../constants";
+import { HoverClickable } from "./common/hover-clickable";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -220,8 +221,6 @@ export const EntityIndent = ({
       {children}
     </Stack>
   );
-
-  return;
 };
 
 const contextEntities = (frame: FrameState | null): string[] =>
@@ -230,7 +229,13 @@ const contextEntities = (frame: FrameState | null): string[] =>
 const TabContext = ({ tab }: { tab: TabState }) => {
   const entityIds = contextEntities(tab.frame.context);
   return entityIds.length === 0 ? null : (
-    <Stack direction="row" gap={1} flexWrap="wrap" sx={{ opacity: 0.6 }}>
+    <Stack
+      direction="row"
+      gap={1}
+      flexWrap="wrap"
+      sx={{ opacity: 0.6 }}
+      alignItems="center"
+    >
       {entityIds.map((entityId, index) => (
         <React.Fragment key={`${index}-${entityId}`}>
           {index !== 0 && (
@@ -250,7 +255,11 @@ const TabContextEntity = ({ entityId }: { entityId: string }) => {
   return (
     <EntityIndent depth={0} entity={entity}>
       <Stack sx={{ maxWidth: 200 }}>
-        <EntityPill entity={entity} />
+        <HoverClickable>
+          <Stack sx={{ px: 0.5 }}>
+            <EntityPill entity={entity} />
+          </Stack>
+        </HoverClickable>
       </Stack>
       {/* <EntityContent
         entityId={entityId}
