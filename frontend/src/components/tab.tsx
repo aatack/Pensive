@@ -1,4 +1,4 @@
-import { Box, Divider, Stack } from "@mui/material";
+import { Box, Divider, Stack, Typography } from "@mui/material";
 import { useEntity, useSwapEntity, useWrite } from "../context/hooks";
 import { last } from "../helpers/arrays";
 import { Atom } from "../helpers/atoms";
@@ -22,6 +22,9 @@ import {
 } from "../queries/queries";
 import equal from "fast-deep-equal";
 import { EntityState } from "./entity/entity";
+import React from "react";
+import { EntityPill } from "./entity/entity-pill";
+import { font } from "../constants";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -227,13 +230,18 @@ const contextEntities = (frame: FrameState | null): string[] =>
 const TabContext = ({ tab }: { tab: TabState }) => {
   const entityIds = contextEntities(tab.frame.context);
   return entityIds.length === 0 ? null : (
-    <>
-      {entityIds.map((entityId) => (
-        <TabContextEntity key={entityId} entityId={entityId} />
+    <Stack direction="row" gap={1} flexWrap="wrap" sx={{ opacity: 0.6 }}>
+      {entityIds.map((entityId, index) => (
+        <React.Fragment key={`${index}-${entityId}`}>
+          {index !== 0 && (
+            <Typography style={{ ...font, fontWeight: 600 }}>{"/"}</Typography>
+          )}
+          <TabContextEntity entityId={entityId} />
+        </React.Fragment>
       ))}
 
       <Divider sx={{ m: 1 }} />
-    </>
+    </Stack>
   );
 };
 
@@ -241,14 +249,15 @@ const TabContextEntity = ({ entityId }: { entityId: string }) => {
   const entity = useEntity(entityId);
   return (
     <EntityIndent depth={0} entity={entity}>
-      <EntityContent
+      <EntityPill entity={entity} />
+      {/* <EntityContent
         entityId={entityId}
         entity={entity}
         collapsed={false}
         path={[]}
         selected={false}
         editing={false}
-      />
+      /> */}
     </EntityIndent>
   );
 };
