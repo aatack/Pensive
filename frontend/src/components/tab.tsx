@@ -4,7 +4,7 @@ import { last } from "../helpers/arrays";
 import { Atom } from "../helpers/atoms";
 import { Provide } from "../providers/provider";
 import { EntityContent } from "./entity/content";
-import { memo, ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
@@ -20,7 +20,6 @@ import {
   exportResolvedQuery,
   FlattenedResolvedQuery,
 } from "../queries/queries";
-import equal from "fast-deep-equal";
 import { EntityState } from "./entity/entity";
 import React from "react";
 import { EntityPill } from "./entity/entity-pill";
