@@ -249,7 +249,9 @@ const TabContextEntity = ({ entityId }: { entityId: string }) => {
   const entity = useEntity(entityId);
   return (
     <EntityIndent depth={0} entity={entity}>
-      <EntityPill entity={entity} />
+      <Stack sx={{ maxWidth: 200 }}>
+        <EntityPill entity={entity} />
+      </Stack>
       {/* <EntityContent
         entityId={entityId}
         entity={entity}
