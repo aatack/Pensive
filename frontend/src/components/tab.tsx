@@ -4,7 +4,7 @@ import { last } from "../helpers/arrays";
 import { Atom } from "../helpers/atoms";
 import { Provide } from "../providers/provider";
 import { EntityContent } from "./entity/content";
-import { ReactNode, useEffect, useRef } from "react";
+import { Fragment, ReactNode, useEffect, useRef } from "react";
 import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
@@ -26,6 +26,7 @@ import { EntityPill } from "./entity/entity-pill";
 import { font } from "../constants";
 import { HoverClickable } from "./common/hover-clickable";
 import { useOpenEntityInNewTab } from "./entity/entity-hooks";
+import { useToolState } from "./tool/tool";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -140,6 +141,8 @@ export const Tab = ({
     }
   }, [ref]);
 
+  const tool = useToolState();
+
   return (
     <Provide values={{ tab: { ...tab, selected } }}>
       <Box
@@ -158,11 +161,15 @@ export const Tab = ({
         <TabContext tab={tab.value} />
 
         {tabData.flattenedQuery.map((item, index) => (
-          <Entity
-            key={item.path.join("__")}
-            data={item}
-            selected={index === tabData.selectedIndex}
-          />
+          <Fragment key={item.path.join("__")}>
+            <Entity data={item} selected={index === tabData.selectedIndex} />
+
+            {tool.value.type === "createEntity" &&
+              tool.value.tabUuid === tab.value.uuid &&
+              tool.value.path.join(":") === item.path.join(":") && (
+                <p>Creating</p>
+              )}
+          </Fragment>
         ))}
       </Box>
     </Provide>
