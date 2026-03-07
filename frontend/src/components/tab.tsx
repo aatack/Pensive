@@ -3,9 +3,8 @@ import { useEntity, useSwapEntity, useWrite } from "../context/hooks";
 import { last } from "../helpers/arrays";
 import { Atom } from "../helpers/atoms";
 import { Provide } from "../providers/provider";
-import { EntityIndent } from "./entity/indent";
 import { EntityContent } from "./entity/content";
-import { memo, useEffect, useRef } from "react";
+import { memo, ReactNode, useEffect, useRef } from "react";
 import { useCreateEntityActions } from "./tool/create-entity";
 import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
@@ -22,6 +21,7 @@ import {
   FlattenedResolvedQuery,
 } from "../queries/queries";
 import equal from "fast-deep-equal";
+import { EntityState } from "./entity/entity";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -158,7 +158,7 @@ export const Tab = ({
         {tabData.flattenedQuery.length}
 
         {tabData.flattenedQuery.map((item, index) => (
-          <Placeholder
+          <Entity
             key={item.path.join("__")}
             data={item}
             selected={index === tabData.selectedIndex}
@@ -169,7 +169,7 @@ export const Tab = ({
   );
 };
 
-const Placeholder = ({
+const Entity = ({
   data,
   selected,
 }: {
@@ -180,8 +180,30 @@ const Placeholder = ({
   const entity = data.entity;
 
   return (
-    <Stack direction="row" sx={{ ml: data.path.length * 2 }}>
-      {/* Start here */}
+    <EntityIndent entity={entity} depth={data.path.length}>
+      <EntityContent
+        entityId={data.entityId}
+        entity={data.entity}
+        collapsed={data.collapsed}
+        path={data.path}
+        selected={selected}
+        editing={false}
+      />
+    </EntityIndent>
+  );
+};
+
+export const EntityIndent = ({
+  entity,
+  depth,
+  children,
+}: {
+  entity: EntityState;
+  depth: number;
+  children: ReactNode;
+}) => {
+  return (
+    <Stack direction="row" sx={{ ml: depth * 2 }}>
       {entity.redacted ? (
         <LockIcon sx={iconStyle} />
       ) : entity.open === true ? (
@@ -191,16 +213,12 @@ const Placeholder = ({
       ) : entity.section ? null : (
         <KeyboardArrowRightIcon sx={iconStyle} />
       )}
-      <EntityContent
-        entityId={data.entityId}
-        entity={data.entity}
-        collapsed={data.collapsed}
-        path={data.path}
-        selected={selected}
-        editing={false}
-      />
+
+      {children}
     </Stack>
   );
+
+  return;
 };
 
 const contextEntities = (frame: FrameState | null): string[] =>

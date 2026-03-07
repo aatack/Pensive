@@ -2,11 +2,11 @@ import { useSwapEntity, useWrite } from "../../context/hooks";
 import { last } from "../../helpers/arrays";
 import { cursor } from "../../helpers/atoms";
 import { TextInput } from "../common/text";
-import { EntityIndent } from "../entity/indent";
 import { generateUuid } from "../../helpers/uuid";
 import { useCreateEntityState } from "./create-entity";
 import { useEditEntityState } from "./edit-entity";
 import { useTabState } from "../tab-hooks";
+import { EntityIndent } from "../tab";
 
 export const CreateEntity = () => {
   const createEntity = useCreateEntityState();
