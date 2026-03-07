@@ -18,6 +18,7 @@ import { useTabsState } from "../tabs-hooks";
 import { useTabGroupData } from "../tab-group-hooks";
 import { EntityState } from "./entity";
 import equal from "fast-deep-equal";
+import { useOpenEntityInNewTab } from "./entity-hooks";
 
 export const EntityContent = memo(
   ({
@@ -186,22 +187,9 @@ export const EntityContentMiddleClicked = ({
   id: string;
   then: () => void;
 }) => {
-  const tabs = useTabsState();
-  const tabGroup = arrayCursor(
-    cursor(tabs, "tabGroups"),
-    clamp(tabs.value.selectedIndex, 0, tabs.value.tabGroups.length - 1),
-  );
-  const { openTab } = useTabGroupData(tabGroup);
+  const openEntityInNewTab = useOpenEntityInNewTab();
 
-  useEffect(() => {
-    openTab({
-      uuid: generateUuid(),
-      frame: { entityId: id, selection: [], context: null, highlight: {} },
-      collapsed: [],
-      expanded: [],
-    });
-    then();
-  }, [id, then, openTab]);
+  useEffect(() => openEntityInNewTab(id, then), [id, then, openEntityInNewTab]);
 
   return null;
 };
