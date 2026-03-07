@@ -10,6 +10,7 @@ import { useHotkey } from "../providers/use-hotkey";
 import { TabGroupState, useTabGroupData } from "./tab-group-hooks";
 import { Atom } from "../helpers/atoms";
 import { TabState } from "./tab-hooks";
+import { EntityPill } from "./entity/entity-pill";
 
 const padding = "4px";
 
@@ -207,9 +208,7 @@ const TabHeader = ({
         }))
       }
     >
-      <Typography sx={{ ...font }} noWrap>
-        {entity.text ?? "No content"}
-      </Typography>
+      <EntityPill entity={entity} />
     </Box>
   );
 };
