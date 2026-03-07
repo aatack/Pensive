@@ -13,7 +13,10 @@ import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/use-hotkey";
 import { usePivots } from "./tool/pivots";
 import { FrameState, TabState, useTabData } from "./tab-hooks";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import DoneIcon from "@mui/icons-material/Done";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import LockIcon from "@mui/icons-material/Lock";
 import {
   exportResolvedQuery,
   FlattenedResolvedQuery,
@@ -174,11 +177,20 @@ const Placeholder = ({
   selected: boolean;
 }) => {
   useEntity(data.entityId); // Make sure it's loaded
+  const entity = data.entity;
 
   return (
     <Stack direction="row" sx={{ ml: data.path.length * 2 }}>
       {/* Start here */}
-      <KeyboardArrowRightIcon sx={iconStyle} />
+      {entity.redacted ? (
+        <LockIcon sx={iconStyle} />
+      ) : entity.open === true ? (
+        <CheckBoxOutlineBlankIcon sx={iconStyle} />
+      ) : entity.open === false ? (
+        <DoneIcon sx={iconStyle} />
+      ) : entity.section ? null : (
+        <KeyboardArrowRightIcon sx={iconStyle} />
+      )}
       <EntityContent
         entityId={data.entityId}
         entity={data.entity}
