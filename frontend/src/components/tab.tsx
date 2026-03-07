@@ -151,7 +151,7 @@ export const Tab = ({
           }
         }}
       >
-        {/* <TabContext tab={tab.value} /> */}
+        <TabContext tab={tab.value} />
 
         {/* <Entity resolvedQuery={tabData.resolvedQuery} /> */}
 
@@ -240,20 +240,14 @@ const TabContext = ({ tab }: { tab: TabState }) => {
 const TabContextEntity = ({ entityId }: { entityId: string }) => {
   const entity = useEntity(entityId);
   return (
-    <EntityIndent entity={entity}>
+    <EntityIndent depth={0} entity={entity}>
       <EntityContent
-        resolvedQuery={{
-          entity,
-          entityId,
-          path: [],
-          children: [],
-          highlight: true,
-          collapsed: false,
-          hasHiddenChildren: false,
-          selected: false,
-          createEntity: false,
-          editEntity: false,
-        }}
+        entityId={entityId}
+        entity={entity}
+        collapsed={false}
+        path={[]}
+        selected={false}
+        editing={false}
       />
     </EntityIndent>
   );
