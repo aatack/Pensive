@@ -1,9 +1,14 @@
 import { usePersistentAtom } from "../../helpers/atoms";
 import { useCallback } from "react";
-import { exportResolvedQuery, ResolvedQuery } from "../pensive";
+import {
+  exportResolvedQuery,
+  flattenResolvedQuery,
+  ResolvedQuery,
+} from "../pensive";
 import { useWrite } from "../../context/hooks";
-import { addLineNumbers } from "@pensive/common/src";
+import { addLineNumbers, generateUuid } from "@pensive/common/src";
 import { SELECTED_MARKER } from "../../llms";
+import { last } from "../../helpers/arrays";
 
 export type Integration = {
   url: string;
@@ -24,11 +29,28 @@ export const useRunIntegration = () => {
       ),
     };
 
+    const flattened = flattenResolvedQuery(query);
+
     const writeReply = (
       lineNumber: number,
       text: string,
       open: boolean | null,
-    ) => {};
+    ) => {
+      const childUuid = generateUuid();
+      const parentUuid = last(flattened[lineNumber - 1]?.split("__") ?? []);
+      if (parentUuid == null) {
+        return;
+      }
+
+      write({
+        [childUuid]: {
+          inbound: `+${parentUuid}`,
+          text,
+          open,
+        },
+        [parentUuid]: { outbound: `+${childUuid}` },
+      });
+    };
 
     fetch(url, {
       method: "POST",
