@@ -13,7 +13,6 @@ import { StatusBar } from "./status-bar";
 import { PasteImage } from "./common/image";
 import { DebugEntity } from "./entity/debug-entity";
 import { useHotkey } from "../providers/use-hotkey";
-import { EditHotkeys } from "./settings/edit-hotkeys";
 import { useRedo, useUndo } from "../context/hooks";
 import {
   defaultTabsState,
@@ -26,6 +25,7 @@ import {
 import { getFocusedTab } from "./tab-group-hooks";
 import { getFocusedEntityId } from "./tab-hooks";
 import { TabGroup } from "./tab-group";
+import { SettingsPage } from "./settings/settings-page";
 
 const useTabsActions = (tabs: Atom<TabsState>, tabsData: TabsData) => {
   const { selectNextTabGroup, selectPreviousTabGroup } = tabsData;
@@ -75,7 +75,7 @@ export const Tabs = () => {
           )}
 
           {showSettings.value ? (
-            <EditHotkeys />
+            <SettingsPage />
           ) : (
             <Grid
               container
