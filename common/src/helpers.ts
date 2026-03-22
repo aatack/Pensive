@@ -45,7 +45,7 @@ export const addLineNumbers = (text: string) => {
       const indexString = (index + 1).toString();
       const indentString = " ".repeat(length - indexString.length);
 
-      return indentString + indexString + line;
+      return indentString + indexString + " " + line;
     })
     .join("\n");
 };
