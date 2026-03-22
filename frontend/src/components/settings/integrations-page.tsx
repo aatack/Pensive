@@ -1,7 +1,6 @@
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import { arrayCursors, Atom } from "../../helpers/atoms";
 import { Integration, useIntegrations } from "./integrations";
-import { TextInput } from "../common/text";
 import { colours, font } from "../../constants";
 
 export const IntegrationsPage = () => {

@@ -24,10 +24,34 @@ export const useRunIntegration = () => {
       ),
     };
 
-    const result = await fetch(url, {
+    const writeReply = (
+      lineNumber: number,
+      text: string,
+      open: boolean | null,
+    ) => {};
+
+    fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(content),
-    });
+    })
+      .then((response) => response.json())
+      .then(({ data }) => {
+        if (Array.isArray(data)) {
+          for (const item of data) {
+            const lineNumber = item.lineNumber;
+            const text = item.text;
+            const open = item.open;
+
+            if (
+              typeof lineNumber === "number" &&
+              typeof text === "string" &&
+              (open === null || typeof open === "boolean")
+            ) {
+              writeReply(lineNumber, text, open);
+            }
+          }
+        }
+      });
   }, []);
 };
