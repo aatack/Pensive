@@ -68,7 +68,7 @@ export const useRunIntegration = () => {
             if (
               typeof lineNumber === "number" &&
               typeof text === "string" &&
-              (open === null || typeof open === "boolean")
+              (open == null || typeof open === "boolean")
             ) {
               writeReply(lineNumber, text, open);
             }
