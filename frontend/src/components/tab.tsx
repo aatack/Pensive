@@ -16,6 +16,8 @@ import { useRunPrompt } from "../llms";
 import { usePivots } from "./tool/pivots";
 import { FrameState, TabState, useTabData } from "./tab-hooks";
 import { Entity } from "./entity/render-entity";
+import { useHotkeys } from "react-hotkeys-hook/dist";
+import { useRunIntegration } from "./settings/integrations";
 
 const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const tabData = useTabData(tab);
@@ -127,6 +129,16 @@ export const Tab = ({
   const ref = useRef<HTMLDivElement>();
 
   const tabData = useTabActions(tab, selected);
+  const runIntegration = useRunIntegration();
+
+  useHotkeys(
+    "ctrl+8",
+    () => {
+      console.log("Running integration");
+      runIntegration("http://0.0.0.0:8000/process", tabData.resolvedQuery);
+    },
+    { enabled: selected },
+  );
 
   useEffect(() => {
     // Restore the scroll position when the tab is brought back into view
