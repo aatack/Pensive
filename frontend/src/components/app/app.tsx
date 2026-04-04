@@ -9,6 +9,7 @@ import { ProvideHotkeys } from "../../providers/hotkeys";
 import { ProvidePensive } from "../provide-pensive";
 import { TabsState } from "../tabs-hooks";
 import { ProvideTool } from "../tool/provide-tool";
+import { ProvideTabRunning } from "../global-status/provide-tab-running";
 
 const App = () => {
   const migration: ((current: TabsState) => TabsState) | null = null;
@@ -19,7 +20,9 @@ const App = () => {
         <ProvidePensive>
           <ProvideHotkeys>
             <ProvideTool>
-              <Tabs />
+              <ProvideTabRunning>
+                <Tabs />
+              </ProvideTabRunning>
             </ProvideTool>
           </ProvideHotkeys>
         </ProvidePensive>
