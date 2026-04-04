@@ -141,6 +141,7 @@ export const Tab = ({
       <IntegrationsRunner
         resolvedQuery={tabData.resolvedQuery}
         enabled={selected}
+        tabUuid={tab.value.uuid}
       />
 
       <Box
