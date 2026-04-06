@@ -220,7 +220,10 @@ export const EntityIndent = ({
   children: ReactNode;
 }) => {
   return (
-    <Stack direction="row" sx={{ ml: depth * 2 }}>
+    <Stack
+      direction="row"
+      sx={{ ml: depth * 2, maxWidth: 1, overflowX: "auto" }}
+    >
       {entity.redacted ? (
         <LockIcon sx={iconStyle} />
       ) : entity.open === true ? (
