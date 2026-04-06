@@ -6,7 +6,11 @@ import { useCallback, useMemo } from "react";
 import { usePensive } from "./pensive";
 import { QueryResult, runQuery } from "../queries/queries";
 import { mappingGet } from "../helpers/mapping";
-import { flatten, FlattenedQueryResult } from "../queries/query-manipulation";
+import {
+  flatten,
+  FlattenedQueryResult,
+  prune,
+} from "../queries/query-manipulation";
 
 export type TabState = {
   uuid: string;
@@ -136,12 +140,19 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
       },
     );
 
-    return { result, queriedEntities };
+    const prunedResult = prune(result, (entity) =>
+      (entity.text ?? "")
+        .toLowerCase()
+        .includes(frame.value.highlight.text?.toLowerCase() ?? ""),
+    ).result;
+
+    return { result: prunedResult, queriedEntities };
   }, [
     frame.value.entityId,
     pensive.value.entities,
     collapsed,
     frame.value.pivots,
+    frame.value.highlight,
   ]);
 
   const flattenedResult = useMemo(() => flatten(result, []), [result]);
