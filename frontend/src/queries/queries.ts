@@ -1,8 +1,9 @@
 import { EntityState } from "../components/entity/entity";
 import { CollapseQuery, runCollapseQuery } from "./collapse-query";
 import { ExploreQuery, runExploreQuery } from "./explore-query";
+import { NestedQuery } from "./nested-query";
 
-export type Query = ExploreQuery | CollapseQuery;
+export type Query = ExploreQuery | CollapseQuery | NestedQuery;
 
 export type QueryContext = {
   getEntity: (entityId: string) => EntityState;
