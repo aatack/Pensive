@@ -74,6 +74,6 @@ const runLimitedExploreQuery = (
       children.length < childIds.length
         ? true
         : children.some((child) => child.result.complete),
-    children: [],
+    children: children,
   };
 };
