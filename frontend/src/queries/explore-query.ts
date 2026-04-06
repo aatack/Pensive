@@ -27,8 +27,11 @@ const expandResult = (
   depth: number,
   result: QueryResult,
 ): QueryResult => {
+  if (result.complete) {
+    return result;
+  }
   const expandedResult = runLimitedExploreQuery(query.link, context, depth + 1);
-  if (expandedResult.size <= 200 && !expandedResult.complete) {
+  if (expandedResult.size <= 200) {
     return expandResult(query, context, depth + 1, expandedResult);
   } else {
     return result;
