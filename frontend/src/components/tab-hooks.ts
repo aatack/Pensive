@@ -142,7 +142,13 @@ export const useQuery = (
     );
 
     return { result, queriedEntities };
-  }, [frame.value.entityId, pensive.value.entities, collapsed, expanded]);
+  }, [
+    frame.value.entityId,
+    pensive.value.entities,
+    collapsed,
+    expanded,
+    frame.value.pivots,
+  ]);
 
   const flattenedResult = useMemo(() => flatten(result, []), [result]);
 

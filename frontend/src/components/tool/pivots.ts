@@ -8,7 +8,7 @@ import { TabState } from "../tab-hooks";
 export const usePivots = (
   entityId: string,
   tab: Atom<TabState>,
-  enabled: boolean
+  enabled: boolean,
 ) => {
   const entity = useEntity(entityId);
   const pivots = cursor(cursor(tab, "frame"), "pivots");
@@ -26,6 +26,6 @@ export const usePivots = (
         [entityId]: nextInCycle(keys, current?.[entityId] ?? null),
       }));
     },
-    { enabled }
+    { enabled },
   );
 };
