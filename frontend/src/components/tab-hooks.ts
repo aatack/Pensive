@@ -127,7 +127,11 @@ export const useQuery = (
       {
         getEntity,
         entityId: frame.value.entityId,
-        overrides: {},
+        overrides: {
+          ...Object.fromEntries(
+            collapsed.map((id) => [id, { type: "collapse" }]),
+          ),
+        },
       },
     );
 
