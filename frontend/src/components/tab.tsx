@@ -172,7 +172,7 @@ export const Tab = ({
             {tool.value.type === "createEntity" &&
               tool.value.tabUuid === tab.value.uuid &&
               tool.value.path.join(":") === item.path.join(":") && (
-                <CreateEntity />
+                <CreateEntity depth={tool.value.path.length + 1} />
               )}
           </Fragment>
         ))}

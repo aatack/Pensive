@@ -8,7 +8,7 @@ import { useEditEntityState } from "./edit-entity";
 import { useTabState } from "../tab-hooks";
 import { EntityIndent } from "../tab";
 
-export const CreateEntity = () => {
+export const CreateEntity = ({ depth }: { depth: number }) => {
   const createEntity = useCreateEntityState();
   const frame = cursor(useTabState(), "frame");
   const selection = cursor(frame, "selection");
@@ -37,7 +37,7 @@ export const CreateEntity = () => {
 
   return (
     // Really this should update the tool state on every key press
-    <EntityIndent entity={createEntity.value.extraUpdates ?? {}}>
+    <EntityIndent entity={createEntity.value.extraUpdates ?? {}} depth={depth}>
       <TextInput confirm={confirm} cancel={createEntity.clear} />
     </EntityIndent>
   );
