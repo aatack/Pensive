@@ -1,7 +1,9 @@
 import { EntityState } from "../components/entity/entity";
-import { QueryResult } from "./queries";
+import { Query, QueryResult } from "./queries";
 
 export type FlattenedQueryResult = {
+  query: Query | null;
+
   entityId: string;
   entity: EntityState;
 
@@ -15,6 +17,7 @@ export const flatten = (
 ): FlattenedQueryResult[] => {
   return [
     {
+      query: result.query,
       entityId: result.entityId,
       entity: result.entity,
       complete: result.complete,

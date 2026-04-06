@@ -128,10 +128,12 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
         entityId: frame.value.entityId,
         overrides: {
           ...Object.fromEntries(
-            Object.entries(frame.value.pivots ?? {}).map(([id, link]) => [
-              id,
-              { type: "explore", link: link ?? undefined },
-            ]),
+            Object.entries(frame.value.pivots ?? {})
+              .map(
+                ([id, link]) =>
+                  [id, { type: "explore", link: link ?? undefined }] as const,
+              )
+              .filter((item) => item[1].link != null),
           ),
           ...Object.fromEntries(
             collapsed.map((id) => [id, { type: "collapse" }]),

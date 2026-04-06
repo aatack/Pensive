@@ -15,6 +15,8 @@ import { useTabState } from "../tab-hooks";
 import { EntityState } from "./entity";
 import equal from "fast-deep-equal";
 import { useOpenEntityInNewTab } from "./entity-hooks";
+import { Query } from "../../queries/queries";
+import { RenderedQuery } from "../../queries/rendered-query";
 
 export const EntityContent = memo(
   ({
@@ -24,6 +26,7 @@ export const EntityContent = memo(
     path,
     selected,
     editing,
+    pivot,
   }: {
     entityId: string;
     entity: EntityState;
@@ -31,6 +34,7 @@ export const EntityContent = memo(
     path: string[];
     selected: boolean;
     editing: boolean;
+    pivot?: Query;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
     const type = entity.image ? "image" : (entity.type ?? "text");
@@ -93,7 +97,6 @@ export const EntityContent = memo(
             then={() => setMiddleClickedId(null)}
           />
         )}
-
         <Stack direction="row" alignItems="flex-end" sx={{ width: 1 }}>
           {(() => {
             switch (type) {
@@ -153,6 +156,8 @@ export const EntityContent = memo(
             />
           ) : null}
         </Stack>
+
+        {pivot != null && <RenderedQuery query={pivot} />}
       </Stack>
     );
   },

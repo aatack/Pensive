@@ -10,15 +10,12 @@ export const runExploreQuery = (
   query: ExploreQuery,
   context: QueryContext,
 ): QueryResult => {
-  return {
-    ...expandResult(
-      query,
-      context,
-      0,
-      runLimitedExploreQuery(query.link, context, 0),
-    ),
+  return expandResult(
     query,
-  };
+    context,
+    0,
+    runLimitedExploreQuery(query.link, context, 0),
+  );
 };
 
 const expandResult = (
@@ -60,7 +57,10 @@ const runLimitedExploreQuery = (
                     { ...context, entityId: id },
                     depth - 1,
                   )
-                : runQuery(queryOverride, { ...context, entityId: id }),
+                : {
+                    ...runQuery(queryOverride, { ...context, entityId: id }),
+                    query: queryOverride,
+                  },
           };
         });
 

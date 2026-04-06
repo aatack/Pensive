@@ -29,6 +29,7 @@ import {
 import React from "react";
 import { CreateEntity } from "./tool/tool-placeholders";
 import { IntegrationsRunner } from "./settings/integrations-runner";
+import { Query } from "../queries/queries";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -182,6 +183,7 @@ export const Tab = ({
                 tool.value.tabUuid === tab.value.uuid &&
                 tool.value.path.join(":") === item.path.join(":")
               }
+              pivot={item.query ?? undefined}
             />
 
             {tool.value.type === "createEntity" &&
@@ -206,10 +208,12 @@ const Entity = ({
   data,
   selected,
   editing,
+  pivot,
 }: {
   data: FlattenedQueryResult;
   selected: boolean;
   editing: boolean;
+  pivot?: Query;
 }) => {
   const entity = data.entity;
 
@@ -222,6 +226,7 @@ const Entity = ({
         path={data.path}
         selected={selected}
         editing={editing}
+        pivot={pivot}
       />
     </EntityIndent>
   );
