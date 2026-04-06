@@ -140,10 +140,13 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
       },
     );
 
-    const prunedResult = prune(result, (entity) =>
-      (entity.text ?? "")
-        .toLowerCase()
-        .includes(frame.value.highlight.text?.toLowerCase() ?? ""),
+    const prunedResult = prune(
+      result,
+      (entity) =>
+        (entity.text ?? "")
+          .toLowerCase()
+          .includes(frame.value.highlight.text?.toLowerCase() ?? "") &&
+        (frame.value.highlight.section ? Boolean(entity.section) : true),
     ).result;
 
     return { result: prunedResult, queriedEntities };
