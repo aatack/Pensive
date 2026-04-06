@@ -11,7 +11,7 @@ export type LlmContext = {
   selection: string[];
 };
 
-const SELECTED_MARKER = "<<< NOTE: this is the selected node >>>";
+export const SELECTED_MARKER = "<<< NOTE: this is the selected node >>>";
 const TASK_DESCRIPTION = `
 The above is an excerpt from a file of notes someone has written, structured
 using nested bullet points in a markdown-like style. The user currently has one

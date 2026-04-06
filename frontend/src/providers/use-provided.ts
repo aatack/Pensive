@@ -16,6 +16,7 @@ export type PensiveContext = Partial<{
   tab: Atom<TabState> & { selected: boolean };
   tool: Atom<ToolState>;
   hotkeys: Atom<Partial<Hotkeys>>;
+  tabRunning: Atom<{ [tabId: string]: boolean }>;
 }>;
 
 export const useProvided = <K extends keyof PensiveContext>(

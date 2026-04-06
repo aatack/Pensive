@@ -28,6 +28,7 @@ import {
 } from "../queries/query-manipulation";
 import React from "react";
 import { CreateEntity } from "./tool/tool-placeholders";
+import { IntegrationsRunner } from "./settings/integrations-runner";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -146,6 +147,12 @@ export const Tab = ({
 
   return (
     <Provide values={{ tab: { ...tab, selected } }}>
+      <IntegrationsRunner
+        result={tabData.result}
+        enabled={selected}
+        tabUuid={tab.value.uuid}
+      />
+
       <Box
         ref={ref}
         sx={{ p: "4px", overflowY: "auto" }}

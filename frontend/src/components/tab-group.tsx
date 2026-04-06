@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { Tab } from "./tab";
 import CircleIcon from "@mui/icons-material/Circle";
 import { WindowControls } from "./window-controls";
@@ -11,6 +11,7 @@ import { TabGroupState, useTabGroupData } from "./tab-group-hooks";
 import { Atom } from "../helpers/atoms";
 import { TabState } from "./tab-hooks";
 import { EntityPill } from "./entity/entity-pill";
+import { useTabRunning } from "./global-status/tab-running";
 
 const padding = "4px";
 
@@ -186,10 +187,15 @@ const TabHeader = ({
   uuids: string[];
 }) => {
   const entity = useEntity(tab.frame.entityId);
+  const running = useTabRunning(tab.uuid);
 
   return (
     <Box
       sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
         pb: padding,
         backgroundColor: colours.bg,
         px: 1,
@@ -208,6 +214,8 @@ const TabHeader = ({
       }
     >
       <EntityPill entity={entity} />
+
+      {running && <CircularProgress size={14} sx={{ ml: 1 }} />}
     </Box>
   );
 };

@@ -50,6 +50,7 @@ export const exportMarkdown = (
   result: QueryResult,
   sectionIndent = 1,
   textIndent = 0,
+  selectedMarker?: string,
 ): string => {
   const entity = result.entity;
 
