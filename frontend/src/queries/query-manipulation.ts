@@ -26,6 +26,24 @@ export const flatten = (
   ];
 };
 
+export const prune = (
+  result: QueryResult,
+  predicate: (entity: EntityState) => boolean,
+): { result: QueryResult; hasAny: boolean } => {
+  const children = result.children
+    .map((child) => ({ key: child.key, ...prune(child.result, predicate) }))
+    .filter((child) => child.hasAny)
+    .map((child) => ({ key: child.key, result: child.result }));
+
+  return {
+    result: {
+      ...result,
+      children,
+    },
+    hasAny: children.length > 0 || predicate(result.entity),
+  };
+};
+
 const REDACTED = "<<< Redacted >>>";
 
 export const exportMarkdown = (
