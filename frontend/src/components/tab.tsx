@@ -27,6 +27,7 @@ import {
   FlattenedQueryResult,
 } from "../queries/query-manipulation";
 import React from "react";
+import { CreateEntity } from "./tool/tool-placeholders";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -171,7 +172,7 @@ export const Tab = ({
             {tool.value.type === "createEntity" &&
               tool.value.tabUuid === tab.value.uuid &&
               tool.value.path.join(":") === item.path.join(":") && (
-                <p>Creating</p>
+                <CreateEntity />
               )}
           </Fragment>
         ))}
