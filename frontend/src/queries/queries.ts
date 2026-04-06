@@ -1,7 +1,7 @@
 import { EntityState } from "../components/entity/entity";
 import { CollapseQuery, runCollapseQuery } from "./collapse-query";
 import { ExploreQuery, runExploreQuery } from "./explore-query";
-import { NestedQuery } from "./nested-query";
+import { NestedQuery, runNestedQuery } from "./nested-query";
 
 export type Query = ExploreQuery | CollapseQuery | NestedQuery;
 
@@ -30,5 +30,7 @@ export const runQuery = (query: Query, context: QueryContext): QueryResult => {
       return runExploreQuery(query, context);
     case "collapse":
       return runCollapseQuery(query, context);
+    case "nested":
+      return runNestedQuery(query, context);
   }
 };
