@@ -219,15 +219,17 @@ const Entity = ({
 
   return (
     <EntityIndent entity={entity} depth={data.path.length}>
-      <EntityContent
-        entityId={data.entityId}
-        entity={data.entity}
-        collapsed={!data.complete}
-        path={data.path}
-        selected={selected}
-        editing={editing}
-        pivot={pivot}
-      />
+      <div style={{ width: "100%" }}>
+        <EntityContent
+          entityId={data.entityId}
+          entity={data.entity}
+          collapsed={!data.complete}
+          path={data.path}
+          selected={selected}
+          editing={editing}
+          pivot={pivot}
+        />
+      </div>
     </EntityIndent>
   );
 };

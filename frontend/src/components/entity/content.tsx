@@ -18,6 +18,16 @@ import { useOpenEntityInNewTab } from "./entity-hooks";
 import { Query } from "../../queries/queries";
 import { RenderedQuery } from "../../queries/rendered-query";
 
+const background = (path: string[] | null, selected: boolean) => ({
+  backgroundColor: selected ? invertColour("lightblue") : undefined,
+  transition: "background-color 0.15s ease",
+  "&:hover": path == null || selected ? {} : { backgroundColor: colours.bg2 },
+  borderRadius: 1,
+  paddingLeft: 0.5,
+  paddingRight: 0.5,
+  cursor: "pointer",
+});
+
 export const EntityContent = memo(
   ({
     entityId,
@@ -55,18 +65,7 @@ export const EntityContent = memo(
 
     return (
       <Stack
-        sx={{
-          backgroundColor: selected ? invertColour("lightblue") : undefined,
-          transition: "background-color 0.15s ease",
-          "&:hover":
-            path == null || selected ? {} : { backgroundColor: colours.bg2 },
-          borderRadius: 1,
-          paddingLeft: entity.llmContext == null ? 0.5 : 0.5,
-          paddingRight: 0.5,
-          cursor: "pointer",
-          borderLeft:
-            entity.llmContext == null ? null : `6px solid ${colours.ui2}`,
-        }}
+        sx={background(path, selected)}
         /* It's difficult/impossible to lazily read the value of a context in
         react.  Swapping the current frame's selection requires reading the
         value of the state context, which means that every single entity content
@@ -112,9 +111,7 @@ export const EntityContent = memo(
                   <FormulaEntityContent entity={entity} entityId={entityId} />
                 );
 
-              case "formulaTest":
-              case "table":
-              case "text":
+              default:
                 return editing ? (
                   <EditEntity />
                 ) : (
