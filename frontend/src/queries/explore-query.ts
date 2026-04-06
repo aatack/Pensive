@@ -11,7 +11,7 @@ export const runExploreQuery = (
   context: QueryContext,
 ): QueryResult => {
   return {
-    ...runLimitedExploreQuery(query.link, context, 100),
+    ...runLimitedExploreQuery(query.link, context, 1),
     query,
   };
 };
@@ -71,7 +71,7 @@ const runLimitedExploreQuery = (
         .map((item) => (item.result.query == null ? item.result.size : 0))
         .reduce((left, right) => left + right, 0),
     complete:
-      children.length < childIds.length || childIds.length === 0
+      children.length === childIds.length || childIds.length === 0
         ? true
         : children.some((child) => child.result.complete),
     children: children,
