@@ -140,8 +140,9 @@ export const useQuery = (
   // as dictionary keys
   const paths = useMemo(
     () => flattenedResult.map((item) => item.path.join("__")),
-    [flatten],
+    [flattenedResult],
   );
+
   const index = useMemo(
     () => paths.indexOf(frame.value.selection.join("__")),
     [paths, frame.value.entityId, frame.value.selection],
