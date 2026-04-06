@@ -15,7 +15,6 @@ export type TabState = {
   // IDs of entities that have their children either always rendered or never
   // rendered
   collapsed: string[];
-  expanded: string[];
 
   // Stored so that the scroll position is maintained when the tab is overlaid
   // by another tab, or otherwise disappears
@@ -71,7 +70,7 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
     flattenedResult,
     index,
     queriedEntities,
-  } = useQuery(frame, tab.value.collapsed, tab.value.expanded);
+  } = useQuery(frame, tab.value.collapsed);
 
   return {
     result,
@@ -108,11 +107,7 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
 export const getFocusedEntityId = (tab: TabState) =>
   last(tab.frame.selection) ?? tab.frame.entityId;
 
-export const useQuery = (
-  frame: Atom<FrameState>,
-  collapsed: string[],
-  expanded: string[],
-) => {
+export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
   const pensive = usePensive();
 
   const { result, queriedEntities } = useMemo(() => {
@@ -146,7 +141,6 @@ export const useQuery = (
     frame.value.entityId,
     pensive.value.entities,
     collapsed,
-    expanded,
     frame.value.pivots,
   ]);
 

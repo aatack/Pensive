@@ -41,7 +41,6 @@ const useTabGroupActions = (
           highlight: {},
         },
         collapsed: [],
-        expanded: [],
       }),
     {
       preventDefault: true,
@@ -241,7 +240,6 @@ const popFrameIntoTab = (
           uuid: generateUuid(),
           frame: { ...frame, context: null },
           collapsed: [],
-          expanded: [],
         },
       ],
       selectedIndex: tabGroup.tabs.length,

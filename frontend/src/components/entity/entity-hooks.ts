@@ -19,7 +19,6 @@ export const useOpenEntityInNewTab = () => {
         uuid: generateUuid(),
         frame: { entityId, selection: [], context: null, highlight: {} },
         collapsed: [],
-        expanded: [],
       });
       then?.();
     },

@@ -73,7 +73,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useEditEntityActions(tab.value, selected);
   useMoveEntityActions(tab.value, selected);
   useConnectEntityActions(tab.value, selected);
-  useCollapsedExpandedActions(tab, selected);
+  useCollapseActions(tab, selected);
 
   const entityId = last(tab.value.frame.selection) ?? tab.value.frame.entityId;
 
@@ -282,25 +282,19 @@ const TabContextEntity = ({ entityId }: { entityId: string }) => {
   );
 };
 
-const useCollapsedExpandedActions = (tab: Atom<TabState>, enabled: boolean) => {
+const useCollapseActions = (tab: Atom<TabState>, enabled: boolean) => {
   useHotkey(
     "collapseEntity",
     () => {
       const entityId =
         last(tab.value.frame.selection) ?? tab.value.frame.entityId;
-      const expanded = tab.value.expanded.includes(entityId);
 
       return tab.swap((current) => ({
         ...current,
-        collapsed: expanded
-          ? current.collapsed
-          : [
-              ...current.collapsed.filter((item) => item !== entityId),
-              entityId,
-            ],
-        expanded: expanded
-          ? current.expanded.filter((item) => item !== entityId)
-          : current.expanded,
+        collapsed: [
+          ...current.collapsed.filter((item) => item !== entityId),
+          entityId,
+        ],
       }));
     },
     { enabled },
@@ -311,15 +305,9 @@ const useCollapsedExpandedActions = (tab: Atom<TabState>, enabled: boolean) => {
       const entityId =
         last(tab.value.frame.selection) ?? tab.value.frame.entityId;
 
-      const collapsed = tab.value.collapsed.includes(entityId);
       return tab.swap((current) => ({
         ...current,
-        collapsed: collapsed
-          ? current.collapsed.filter((item) => item !== entityId)
-          : current.collapsed,
-        expanded: collapsed
-          ? current.expanded
-          : [...current.expanded.filter((item) => item !== entityId), entityId],
+        collapsed: current.collapsed.filter((item) => item !== entityId),
       }));
     },
     { enabled },

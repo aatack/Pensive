@@ -120,7 +120,6 @@ export const useVerifyTabs = () => {
                       highlight: {},
                     },
                     collapsed: [],
-                    expanded: [],
                   },
                 ],
                 selectedIndex: 0,

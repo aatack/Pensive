@@ -67,5 +67,5 @@ Currently the keyboard shortcuts aren't documented in the app, and aren't config
 - `ctrl+f`: start editing the search text for the current tab
   - `enter`: unfocus the search text; go back to focusing the current tab
   - `escape`: remove and unfocus the search text
-- `left`: collapse the current entity, preventing its children from being rendered, or making the current filter apply to it if it is excluded from the filter
-- `right`: expand the current entity, allowing its children to be rendered, or forcing it to be rendered if it is hidden by the current filter
+- `left`: collapse the current entity, hiding its children
+- `right`: expand the current entity if it is collapsed
