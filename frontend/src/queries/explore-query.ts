@@ -11,12 +11,7 @@ export const runExploreQuery = (
   context: QueryContext,
 ): QueryResult => {
   return {
-    ...expandResult(
-      query,
-      context,
-      0,
-      runLimitedExploreQuery(query.link, context, 0),
-    ),
+    ...runLimitedExploreQuery(query.link, context, 3),
     query,
   };
 };

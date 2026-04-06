@@ -16,17 +16,17 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import DoneIcon from "@mui/icons-material/Done";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import LockIcon from "@mui/icons-material/Lock";
-import {
-  exportResolvedQuery,
-  FlattenedResolvedQuery,
-} from "../queries/queries";
 import { EntityState } from "./entity/entity";
-import React from "react";
 import { EntityPill } from "./entity/entity-pill";
 import { font } from "../constants";
 import { HoverClickable } from "./common/hover-clickable";
 import { useOpenEntityInNewTab } from "./entity/entity-hooks";
 import { useToolState } from "./tool/tool";
+import {
+  exportMarkdown,
+  FlattenedQueryResult,
+} from "../queries/query-manipulation";
+import React from "react";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -43,7 +43,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useHotkey(
     "exportEntity",
     () => {
-      const markdown = exportResolvedQuery(tabData.resolvedQuery).trim();
+      const markdown = exportMarkdown(tabData.result).trim();
       navigator.clipboard.writeText(markdown);
     },
     { enabled: selected },
@@ -160,7 +160,11 @@ export const Tab = ({
       >
         <TabContext tab={tab.value} />
 
-        {tabData.flattenedQuery.map((item, index) => (
+        {new Array(...tabData.queriedEntities).map((entityId) => (
+          <SubscribeEntity key={entityId} entityId={entityId} />
+        ))}
+
+        {tabData.flattenedResult.map((item, index) => (
           <Fragment key={item.path.join("__")}>
             <Entity data={item} selected={index === tabData.selectedIndex} />
 
@@ -176,14 +180,19 @@ export const Tab = ({
   );
 };
 
+const SubscribeEntity = ({ entityId }: { entityId: string }) => {
+  useEntity(entityId); // Make sure it's loaded
+
+  return null;
+};
+
 const Entity = ({
   data,
   selected,
 }: {
-  data: FlattenedResolvedQuery;
+  data: FlattenedQueryResult;
   selected: boolean;
 }) => {
-  useEntity(data.entityId); // Make sure it's loaded
   const entity = data.entity;
 
   return (
@@ -191,7 +200,7 @@ const Entity = ({
       <EntityContent
         entityId={data.entityId}
         entity={data.entity}
-        collapsed={data.collapsed}
+        collapsed={!data.complete}
         path={data.path}
         selected={selected}
         editing={false}

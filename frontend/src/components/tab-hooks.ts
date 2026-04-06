@@ -42,6 +42,7 @@ export type FrameState = {
 export type TabData = {
   result: QueryResult;
   flattenedResult: FlattenedQueryResult[];
+  queriedEntities: Set<string>;
   select: (path: string[] | null) => void;
   selectParent: () => void;
   selectFollowing: () => void;
@@ -69,6 +70,7 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
     result,
     flattenedResult,
     index,
+    queriedEntities,
   } = useQuery(frame, tab.value.collapsed, tab.value.expanded);
 
   return {
@@ -99,6 +101,7 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
         const context = current.frame.context;
         return context == null ? current : { ...current, frame: context };
       }),
+    queriedEntities,
   };
 };
 
