@@ -35,17 +35,3 @@ const compareKeys = (left: any[], right: any[]): -1 | 0 | 1 =>
       : left[0] < right[0]
         ? -1
         : 1;
-
-export const addLineNumbers = (text: string) => {
-  const lines = text.split("\n");
-  const length = lines.length.toString().length;
-
-  return lines
-    .map((line, index) => {
-      const indexString = (index + 1).toString();
-      const indentString = " ".repeat(length - indexString.length);
-
-      return indentString + indexString + " " + line;
-    })
-    .join("\n");
-};

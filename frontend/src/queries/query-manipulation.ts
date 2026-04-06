@@ -48,33 +48,48 @@ const REDACTED = "<<< Redacted >>>";
 
 export const exportMarkdown = (
   result: QueryResult,
-  sectionIndent = 1,
-  textIndent = 0,
-  selectedMarker?: string,
+  options?:
+    | { lineNumbers: false }
+    | { lineNumbers: true; selectedPath?: string[] },
 ): string => {
-  const entity = result.entity;
+  const flattened = flatten(result, []);
 
-  const newIndent = "    ".repeat(textIndent);
+  const length = flattened.length.toString().length;
 
-  const newPrefix =
-    "- " +
-    (entity.section ? "#".repeat(sectionIndent) + " " : "") +
-    (entity.open == null ? "" : entity.open ? "[ ] " : "[x] ");
+  return flattened
+    .map((line, index) => {
+      const selected =
+        options?.lineNumbers &&
+        options?.selectedPath != null &&
+        line.path.join(":") === options.selectedPath.join(":");
+      const indexString = (index + 1).toString();
+      const indentString = " ".repeat(length - indexString.length);
+      const lineNumber =
+        (selected ? "[" : " ") +
+        indentString +
+        indexString +
+        (selected ? "]" : " ") +
+        " ";
 
-  const newText = entity.redacted
-    ? REDACTED
-    : entity.image
-      ? `image@${result.entityId}`
-      : (entity.text ?? "");
+      const text = line.entity.redacted
+        ? REDACTED
+        : line.entity.image
+          ? `image@${line.entityId}`
+          : (line.entity.text ?? "");
 
-  return [
-    `${newIndent}${newPrefix}${newText.split("\n").join("\n" + newIndent)}`,
-    ...result.children.map(({ result }) =>
-      exportMarkdown(
-        result,
-        sectionIndent + (entity.section ? 1 : 0),
-        textIndent + 1,
-      ),
-    ),
-  ].join("\n");
+      const section = line.entity.section ? "# " : "";
+      const open =
+        line.entity.open == null ? "" : line.entity.open ? "[ ] " : "[x] ";
+
+      return (
+        (options?.lineNumbers ? lineNumber : "") +
+        "  ".repeat(line.path.length).toString() +
+        " - " +
+        section +
+        open +
+        text
+      );
+    })
+    .join("\n")
+    .trimEnd();
 };

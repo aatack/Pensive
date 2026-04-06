@@ -1,8 +1,7 @@
 import { usePersistentAtom } from "../../helpers/atoms";
 import { useCallback } from "react";
 import { useWrite } from "../../context/hooks";
-import { addLineNumbers, generateUuid } from "@pensive/common/src";
-import { SELECTED_MARKER } from "../../llms";
+import { generateUuid } from "@pensive/common/src";
 import { last } from "../../helpers/arrays";
 import { exportMarkdown, flatten } from "../../queries/query-manipulation";
 import { QueryResult } from "../../queries/queries";
@@ -21,9 +20,7 @@ export const useRunIntegration = () => {
 
   return useCallback(async (url: string, result: QueryResult) => {
     const content = {
-      context: addLineNumbers(
-        exportMarkdown(result, 1, 0, SELECTED_MARKER).trim(),
-      ),
+      context: exportMarkdown(result, { lineNumbers: true, selectedPath: [] }),
     };
 
     const flattened = flatten(result, []);

@@ -45,7 +45,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   useHotkey(
     "exportEntity",
     () => {
-      const markdown = exportMarkdown(tabData.result).trim();
+      const markdown = exportMarkdown(tabData.result);
       navigator.clipboard.writeText(markdown);
     },
     { enabled: selected },
