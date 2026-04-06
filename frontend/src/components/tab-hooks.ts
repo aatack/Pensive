@@ -129,6 +129,12 @@ export const useQuery = (
         entityId: frame.value.entityId,
         overrides: {
           ...Object.fromEntries(
+            Object.entries(frame.value.pivots ?? {}).map(([id, link]) => [
+              id,
+              { type: "explore", link: link ?? undefined },
+            ]),
+          ),
+          ...Object.fromEntries(
             collapsed.map((id) => [id, { type: "collapse" }]),
           ),
         },
