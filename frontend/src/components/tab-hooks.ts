@@ -117,7 +117,7 @@ export const useResolvedQuery = (
 
   const { data: resolvedQuery, ids } = useMemo(() => {
     return resolveQuery({
-      query: { type: "links", key: "outbound" },
+      query: { type: "links", linkType: "outbound" },
       entityId: frame.value.entityId,
       collapsed: {
         ...Object.fromEntries(collapsed.map((id) => [id, true])),

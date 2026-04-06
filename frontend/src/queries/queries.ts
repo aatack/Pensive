@@ -1,18 +1,79 @@
 import { EntityLinkKey, EntityState } from "../components/entity/entity";
 import { Mapping, mappingGet } from "../helpers/mapping";
+import { ExploreQuery } from "./explore-query";
 
-export type QueryType = "links" | "recent";
+export type Query = ExploreQuery;
 
-export type Query = {
-  type: "links";
+export type QueryContext = {
+  getEntity: (entityId: string) => EntityState;
   entityId: string;
-  key: EntityLinkKey;
+  overrides: { [entityId: string]: Query };
+};
 
-  resolution: null | {
-    data: EntityState;
-    children: { key: string; query: Query }[];
-    collapsed: boolean;
+export type QueryOverrides = { [entityId: string]: Query };
+
+export type QueryResult = {
+  query: Query | null;
+  entityId: string;
+
+  entity: EntityState;
+
+  size: number;
+  children: { key: string; result: QueryResult }[];
+};
+
+export const runQuery = (query: Query, context: QueryContext): QueryResult => {
+  throw new Error();
+};
+
+export const runLinksQuery = (
+  entityId: string,
+  linkType: EntityLinkKey,
+  overrides: QueryOverrides,
+  getEntity: (entityId: string) => EntityState,
+  depth: number,
+): QueryResult => {
+  const entity = getEntity(entityId);
+
+  const children: QueryResult["children"] =
+    depth === 0
+      ? []
+      : (entity[linkType ?? "outbound"] ?? []).map((id) => ({
+          key: id,
+          result: runLinksQuery(
+            entityId,
+            linkType,
+            overrides,
+            getEntity,
+            depth - 1,
+          ),
+        }));
+
+  return {
+    query: { type: "links", linkType },
+    entityId,
+    entity,
+
+    size:
+      1 +
+      children
+        .map((item) => item.result.size)
+        .reduce((left, right) => left + right, 0),
+    children: [],
   };
+};
+
+export const runSectionQuery = (
+  entityId: string,
+  query: Query,
+  segments: string[],
+  overrides: QueryOverrides,
+): QueryResult => {
+  if (segments.length === 0) {
+    return runQuery(query, entityId, overrides);
+  } else {
+    const result = runQuery({}, entityId);
+  }
 };
 
 export const resolveQuery = (options: {
