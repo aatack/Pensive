@@ -1,15 +1,12 @@
 import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
 import { useProvided } from "../providers/use-provided";
-import { EntityLinkKey } from "./entity/entity";
+import { EntityLinkKey, EntityState } from "./entity/entity";
 import { useCallback, useMemo } from "react";
 import { usePensive } from "./pensive";
-import {
-  flattenQuery,
-  resolveQuery,
-  ResolvedQuery,
-  FlattenedResolvedQuery,
-} from "../queries/queries";
+import { QueryResult, runQuery } from "../queries/queries";
+import { mappingGet } from "../helpers/mapping";
+import { flatten, FlattenedQueryResult } from "../queries/query-manipulation";
 
 export type TabState = {
   uuid: string;
@@ -43,8 +40,8 @@ export type FrameState = {
 };
 
 export type TabData = {
-  resolvedQuery: ResolvedQuery;
-  flattenedQuery: FlattenedResolvedQuery[];
+  result: QueryResult;
+  flattenedResult: FlattenedQueryResult[];
   select: (path: string[] | null) => void;
   selectParent: () => void;
   selectFollowing: () => void;
@@ -69,14 +66,14 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
     selectParent,
     selectFollowing,
     selectPreceding,
-    resolvedQuery,
-    flattenedQuery,
+    result,
+    flattenedResult,
     index,
-  } = useResolvedQuery(frame, tab.value.collapsed, tab.value.expanded);
+  } = useQuery(frame, tab.value.collapsed, tab.value.expanded);
 
   return {
-    resolvedQuery,
-    flattenedQuery,
+    result,
+    flattenedResult,
     select,
     selectParent,
     selectFollowing,
@@ -108,37 +105,39 @@ export const useTabData = (tab: Atom<TabState>): TabData => {
 export const getFocusedEntityId = (tab: TabState) =>
   last(tab.frame.selection) ?? tab.frame.entityId;
 
-export const useResolvedQuery = (
+export const useQuery = (
   frame: Atom<FrameState>,
   collapsed: string[],
   expanded: string[],
 ) => {
   const pensive = usePensive();
 
-  const { data: resolvedQuery, ids } = useMemo(() => {
-    return resolveQuery({
-      query: { type: "links", linkType: "outbound" },
-      entityId: frame.value.entityId,
-      collapsed: {
-        ...Object.fromEntries(collapsed.map((id) => [id, true])),
-        ...Object.fromEntries(expanded.map((id) => [id, false])),
+  const { result, queriedEntities } = useMemo(() => {
+    const queriedEntities = new Set<string>();
+    const getEntity = (entityId: string): EntityState => {
+      queriedEntities.add(entityId);
+      return mappingGet(pensive.value.entities, entityId);
+    };
+
+    const result = runQuery(
+      { type: "explore", link: undefined },
+      {
+        getEntity,
+        entityId: frame.value.entityId,
+        overrides: {},
       },
-      overrides: {},
-      lookup: pensive.value.entities,
-      path: [],
-    });
+    );
+
+    return { result, queriedEntities };
   }, [frame.value.entityId, pensive.value.entities, collapsed, expanded]);
 
-  const flattenedQuery = useMemo(
-    () => flattenQuery(resolvedQuery, []),
-    [resolvedQuery],
-  );
+  const flattenedResult = useMemo(() => flatten(result, []), [result]);
 
   // Everything is joined with double underscores because you can't use arrays
   // as dictionary keys
   const paths = useMemo(
-    () => flattenedQuery.map((item) => item.path.join("__")),
-    [flattenedQuery],
+    () => flattenedResult.map((item) => item.path.join("__")),
+    [flatten],
   );
   const index = useMemo(
     () => paths.indexOf(frame.value.selection.join("__")),
@@ -177,18 +176,18 @@ export const useResolvedQuery = (
 
   return useMemo(
     () => ({
-      resolvedQuery,
-      flattenedQuery,
-      ids,
+      result,
+      flattenedResult,
+      queriedEntities,
       selectFollowing,
       selectPreceding,
       selectParent,
       index,
     }),
     [
-      resolvedQuery,
-      flattenedQuery,
-      ids,
+      result,
+      flattenedResult,
+      queriedEntities,
       selectFollowing,
       selectPreceding,
       selectParent,

@@ -9,7 +9,7 @@ export type FlattenedQueryResult = {
   path: string[];
 };
 
-export const flattenQueryResult = (
+export const flatten = (
   result: QueryResult,
   path: string[],
 ): FlattenedQueryResult[] => {
@@ -21,17 +21,14 @@ export const flattenQueryResult = (
       path: path ?? [],
     },
     ...result.children.flatMap((child) =>
-      flattenQueryResult(child.result, [
-        ...(path ?? []),
-        child.result.entityId,
-      ]),
+      flatten(child.result, [...(path ?? []), child.result.entityId]),
     ),
   ];
 };
 
 const REDACTED = "<<< Redacted >>>";
 
-export const exportQueryResult = (
+export const exportMarkdown = (
   result: QueryResult,
   sectionIndent = 1,
   textIndent = 0,
@@ -54,7 +51,7 @@ export const exportQueryResult = (
   return [
     `${newIndent}${newPrefix}${newText.split("\n").join("\n" + newIndent)}`,
     ...result.children.map(({ result }) =>
-      exportQueryResult(
+      exportMarkdown(
         result,
         sectionIndent + (entity.section ? 1 : 0),
         textIndent + 1,
