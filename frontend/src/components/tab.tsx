@@ -167,7 +167,15 @@ export const Tab = ({
 
         {tabData.flattenedResult.map((item, index) => (
           <Fragment key={item.path.join("__")}>
-            <Entity data={item} selected={index === tabData.selectedIndex} />
+            <Entity
+              data={item}
+              selected={index === tabData.selectedIndex}
+              editing={
+                tool.value.type === "editEntity" &&
+                tool.value.tabUuid === tab.value.uuid &&
+                tool.value.path.join(":") === item.path.join(":")
+              }
+            />
 
             {tool.value.type === "createEntity" &&
               tool.value.tabUuid === tab.value.uuid &&
@@ -190,9 +198,11 @@ const SubscribeEntity = ({ entityId }: { entityId: string }) => {
 const Entity = ({
   data,
   selected,
+  editing,
 }: {
   data: FlattenedQueryResult;
   selected: boolean;
+  editing: boolean;
 }) => {
   const entity = data.entity;
 
@@ -204,7 +214,7 @@ const Entity = ({
         collapsed={!data.complete}
         path={data.path}
         selected={selected}
-        editing={false}
+        editing={editing}
       />
     </EntityIndent>
   );
