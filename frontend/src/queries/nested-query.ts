@@ -1,6 +1,6 @@
 import { runExploreQuery } from "./explore-query";
 import { QueryContext, QueryResult } from "./queries";
-import { prune } from "./query-manipulation";
+import { leaves, prune } from "./query-manipulation";
 
 export type NestedQuery = {
   type: "nested";
@@ -10,7 +10,7 @@ export type NestedQuery = {
 export const runNestedQuery = (
   query: NestedQuery,
   context: QueryContext,
-): QueryResult => {
+): { result: QueryResult; leaves: QueryResult[] } => {
   if (query.segments.length <= 1) {
     const terms = (query.segments[0] ?? "")
       .split(",")
@@ -19,10 +19,13 @@ export const runNestedQuery = (
       { type: "explore", link: "outbound" },
       context,
     );
-    return prune(result, (entity) => {
+    const prunedResult = prune(result, (entity) => {
       const text = (entity.text ?? "").toLowerCase();
       return terms.some((term) => text.includes(term));
     }).result;
+
+    return { result: prunedResult, leaves: leaves(prunedResult) };
+  } else {
+    throw new Error()
   }
-  return runExploreQuery({ type: "explore", link: "outbound" }, context);
 };

@@ -96,3 +96,9 @@ export const exportMarkdown = (
     .join("\n")
     .trimEnd();
 };
+
+export const leaves = (result: QueryResult): QueryResult[] => {
+  return result.children.length === 0
+    ? [result]
+    : result.children.flatMap((child) => leaves(child.result));
+};

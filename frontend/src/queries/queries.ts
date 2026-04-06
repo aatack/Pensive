@@ -31,6 +31,6 @@ export const runQuery = (query: Query, context: QueryContext): QueryResult => {
     case "collapse":
       return runCollapseQuery(query, context);
     case "nested":
-      return runNestedQuery(query, context);
+      return runNestedQuery(query, context).result;
   }
 };
