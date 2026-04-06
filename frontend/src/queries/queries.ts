@@ -1,88 +1,93 @@
 import { EntityLinkKey, EntityState } from "../components/entity/entity";
 import { Mapping, mappingGet } from "../helpers/mapping";
 
+export type QueryType = "links" | "recent";
+
 export type Query = {
   type: "links";
-  key: EntityLinkKey;
-};
-
-export type ResolvedQuery = {
   entityId: string;
-  entity: EntityState;
+  key: EntityLinkKey;
 
-  collapsed: boolean;
-
-  children: { key: string; value: ResolvedQuery }[];
+  resolution: null | {
+    data: EntityState;
+    children: { key: string; query: Query }[];
+    collapsed: boolean;
+  };
 };
 
 export const resolveQuery = (options: {
   query: Query;
-  entityId: string;
-  collapsed: { [entityId: string]: boolean };
-  overrides: { [entityId: string]: Query | null };
+  // collapsed: { [entityId: string]: boolean };
+  // overrides: { [entityId: string]: Query | null };
   lookup: Mapping<string, EntityState>;
-  path: string[];
-}): { data: ResolvedQuery; ids: string[] } => {
-  if (options.path.length === 0) console.log(options.collapsed);
+  budget: number;
+}): { resolvedQuery: Query; queriedEntities: Set<string> } => {
+  const queriedEntities = new Set<string>();
+  let queriedCount = 0;
 
-  const entity = mappingGet(options.lookup, options.entityId);
+  const getEntity = (entityId: string) => {
+    if (queriedCount >= options.budget) {
+      return null;
+    } else {
+      queriedCount += 1;
+      queriedEntities.add(entityId);
+      return mappingGet(options.lookup, entityId);
+    }
+  };
 
-  // Always terminate here if the entity is collapsed or has already appeared in
-  // this path, unless it's the root
-  const expanded = options.collapsed[options.entityId] === false;
-  const collapsed =
-    (options.collapsed[options.entityId] && options.path.length > 0) ||
-    options.path.includes(options.entityId) ||
-    (options.path.length > 4 && entity.section && !expanded) ||
-    (options.path.length > 8 && !expanded);
+  const resolveSingleQuery = (
+    query: Query,
+  ): {
+    data: EntityState;
+    children: { key: string; query: Query }[];
+  } | null => {
+    switch (query.type) {
+      case "links": {
+        const entity = getEntity(query.entityId);
+        if (entity == null) {
+          return null;
+        }
 
-  if (collapsed) {
-    return {
-      data: {
-        entityId: options.entityId,
-        entity,
-        collapsed: true,
-        children: [],
-      },
-      ids: [options.entityId],
-    };
-  }
+        return { data: entity, children: [] };
+      }
+    }
+  };
 
-  // If there is an override, return that instead
-  const override = options.overrides[options.entityId];
-  if (override != null) {
-    return resolveQuery({
-      ...options,
-      overrides: { ...options.overrides, [options.entityId]: null },
-      query: override,
-    });
-  }
+  const resolvedQuery: Query = { ...options.query, resolution: null };
 
-  switch (options.query.type) {
-    case "links": {
-      const key = options.query.key ?? "outbound";
-      const children = (entity[key] ?? []).map((id) =>
-        resolveQuery({
-          ...options,
-          entityId: id,
-          path: [...options.path, options.entityId],
-        }),
-      );
+  const queue: { query: Query; parent?: { query: Query; key: string } }[] = [
+    { query: resolvedQuery },
+  ];
+  while (queue.length > 0) {
+    const query = queue.shift();
+    if (query == null) {
+      break;
+    }
 
-      return {
-        data: {
-          entityId: options.entityId,
-          entity,
-          collapsed: false,
-          children: children.map((child) => ({
-            key: child.data.entityId,
-            value: child.data,
-          })),
-        },
-        ids: [options.entityId, ...children.flatMap((child) => child.ids)],
-      };
+    const result = resolveSingleQuery(query.query);
+    if (result == null) {
+      break;
+    }
+
+    const { data, children } = result;
+
+    if (query.parent != null) {
+      query.parent.query.resolution?.children.push({
+        key: query.parent.key,
+        query: query.query,
+      });
+    }
+
+    query.query.resolution = { data, children: [], collapsed: false };
+    for (const child of children) {
+      queue.push({
+        query: child.query,
+        parent: { query: query.query, key: child.key },
+      });
     }
   }
+
+  return { resolvedQuery, queriedEntities };
 };
 
 export type FlattenedResolvedQuery = {
