@@ -19,6 +19,7 @@ export type QueryResult = {
   entity: EntityState;
 
   size: number;
+  complete: boolean;
   children: { key: string; result: QueryResult }[];
 };
 

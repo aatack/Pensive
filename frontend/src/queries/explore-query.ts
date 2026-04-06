@@ -10,7 +10,29 @@ export const runExploreQuery = (
   query: ExploreQuery,
   context: QueryContext,
 ): QueryResult => {
-  return { ...runLimitedExploreQuery(query.link, context, 4), query };
+  return {
+    ...expandResult(
+      query,
+      context,
+      0,
+      runLimitedExploreQuery(query.link, context, 0),
+    ),
+    query,
+  };
+};
+
+const expandResult = (
+  query: ExploreQuery,
+  context: QueryContext,
+  depth: number,
+  result: QueryResult,
+): QueryResult => {
+  const expandedResult = runLimitedExploreQuery(query.link, context, depth + 1);
+  if (expandedResult.size <= 200 && !expandedResult.complete) {
+    return expandResult(query, context, depth + 1, expandedResult);
+  } else {
+    return result;
+  }
 };
 
 const runLimitedExploreQuery = (
@@ -19,11 +41,12 @@ const runLimitedExploreQuery = (
   depth: number,
 ): QueryResult => {
   const entity = context.getEntity(context.entityId);
+  const childIds = entity[link ?? "outbound"] ?? [];
 
   const children: QueryResult["children"] =
     depth === 0
       ? []
-      : (entity[link ?? "outbound"] ?? []).map((id) => {
+      : childIds.map((id) => {
           const queryOverride = context.overrides[id];
           return {
             key: id,
@@ -46,8 +69,13 @@ const runLimitedExploreQuery = (
     size:
       1 +
       children
-        .map((item) => item.result.size)
+        // Don't include overridden items in the size
+        .map((item) => (item.result.query == null ? item.result.size : 0))
         .reduce((left, right) => left + right, 0),
+    complete:
+      children.length < childIds.length
+        ? true
+        : children.some((child) => child.result.complete),
     children: [],
   };
 };
