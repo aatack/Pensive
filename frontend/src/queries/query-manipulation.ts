@@ -1,0 +1,64 @@
+import { EntityState } from "../components/entity/entity";
+import { QueryResult } from "./queries";
+
+export type FlattenedQueryResult = {
+  entityId: string;
+  entity: EntityState;
+
+  complete: boolean;
+  path: string[];
+};
+
+export const flattenQueryResult = (
+  result: QueryResult,
+  path: string[],
+): FlattenedQueryResult[] => {
+  return [
+    {
+      entityId: result.entityId,
+      entity: result.entity,
+      complete: result.complete,
+      path: path ?? [],
+    },
+    ...result.children.flatMap((child) =>
+      flattenQueryResult(child.result, [
+        ...(path ?? []),
+        child.result.entityId,
+      ]),
+    ),
+  ];
+};
+
+const REDACTED = "<<< Redacted >>>";
+
+export const exportQueryResult = (
+  result: QueryResult,
+  sectionIndent = 1,
+  textIndent = 0,
+): string => {
+  const entity = result.entity;
+
+  const newIndent = "    ".repeat(textIndent);
+
+  const newPrefix =
+    "- " +
+    (entity.section ? "#".repeat(sectionIndent) + " " : "") +
+    (entity.open == null ? "" : entity.open ? "[ ] " : "[x] ");
+
+  const newText = entity.redacted
+    ? REDACTED
+    : entity.image
+      ? `image@${result.entityId}`
+      : (entity.text ?? "");
+
+  return [
+    `${newIndent}${newPrefix}${newText.split("\n").join("\n" + newIndent)}`,
+    ...result.children.map(({ result }) =>
+      exportQueryResult(
+        result,
+        sectionIndent + (entity.section ? 1 : 0),
+        textIndent + 1,
+      ),
+    ),
+  ].join("\n");
+};
