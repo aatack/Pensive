@@ -1,8 +1,8 @@
-import { EntityLinkKey, EntityState } from "../components/entity/entity";
-import { Mapping, mappingGet } from "../helpers/mapping";
+import { EntityState } from "../components/entity/entity";
+import { CollapseQuery, runCollapseQuery } from "./collapse-query";
 import { ExploreQuery, runExploreQuery } from "./explore-query";
 
-export type Query = ExploreQuery;
+export type Query = ExploreQuery | CollapseQuery;
 
 export type QueryContext = {
   getEntity: (entityId: string) => EntityState;
@@ -27,5 +27,7 @@ export const runQuery = (query: Query, context: QueryContext): QueryResult => {
   switch (query.type) {
     case "explore":
       return runExploreQuery(query, context);
+    case "collapse":
+      return runCollapseQuery(query, context);
   }
 };
