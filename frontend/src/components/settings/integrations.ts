@@ -41,6 +41,7 @@ export const useRunIntegration = () => {
           inbound: `+${parentUuid}`,
           text,
           open,
+          ai: true
         },
         [parentUuid]: { outbound: `+${childUuid}` },
       });
