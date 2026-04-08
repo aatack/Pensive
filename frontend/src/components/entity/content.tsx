@@ -258,7 +258,7 @@ const EntityText = memo(
                     inline
                       ? {}
                       : {
-                          backgroundColor: colours.ui,
+                          backgroundColor: "rgba(200, 200, 200, 0.27)",
                           padding: 0.3,
                           borderRadius: 1,
                         }
