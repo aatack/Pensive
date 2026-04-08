@@ -31,7 +31,7 @@ export const useRunIntegration = () => {
       open: boolean | null,
     ) => {
       const childUuid = generateUuid();
-      const parentUuid = last(flattened[lineNumber - 1]?.path ?? []);
+      const parentUuid = flattened[lineNumber - 1]?.entityId;
       if (parentUuid == null) {
         return;
       }
@@ -41,7 +41,7 @@ export const useRunIntegration = () => {
           inbound: `+${parentUuid}`,
           text,
           open,
-          ai: true
+          ai: true,
         },
         [parentUuid]: { outbound: `+${childUuid}` },
       });
