@@ -1,31 +1,4 @@
-import { EntityState } from "../components/entity/entity";
 import { flatten, Result } from "./combined-query";
-import { Query, QueryResult } from "./queries";
-
-export type FlattenedQueryResult = {
-  query: Query | null;
-
-  entityId: string;
-  entity: EntityState;
-
-  complete: boolean;
-  path: string[];
-};
-
-export const prune = (
-  result: QueryResult,
-  predicate: (entity: EntityState) => boolean,
-): { result: QueryResult; hasAny: boolean } => {
-  const children = result.children
-    .map((child) => ({ key: child.key, ...prune(child.result, predicate) }))
-    .filter((child) => child.hasAny)
-    .map((child) => ({ key: child.key, result: child.result }));
-
-  return {
-    result: { ...result, children },
-    hasAny: children.length > 0 || predicate(result.entity),
-  };
-};
 
 const REDACTED = "<<< Redacted >>>";
 
@@ -77,8 +50,8 @@ export const exportMarkdown = (
     .trimEnd();
 };
 
-export const leaves = (result: QueryResult): QueryResult[] => {
+export const leaves = (result: Result): Result[] => {
   return result.children.length === 0
     ? [result]
-    : result.children.flatMap((child) => leaves(child.result));
+    : result.children.flatMap((child) => leaves(child));
 };
