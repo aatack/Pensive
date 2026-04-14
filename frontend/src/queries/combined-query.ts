@@ -1,4 +1,7 @@
+import { useMemo } from "react";
 import { EntityState } from "../components/entity/entity";
+import { usePensive } from "../components/pensive";
+import { mappingGet } from "../helpers/mapping";
 
 type Result = {
   entityId: string;
@@ -94,4 +97,32 @@ export const prune = (
     result: { ...result, children },
     hasAny: children.length > 0 || predicate(result.entity),
   };
+};
+
+const useQuery = (
+  rootId: string,
+  query: QueryFunction,
+  pivots: { [entityId: string]: QueryFunction },
+): { result: Result; ids: Set<string> } => {
+  const pensive = usePensive();
+
+  return useMemo(() => {
+    const ids = new Set<string>();
+    const getEntity = (entityId: string): EntityState => {
+      ids.add(entityId);
+      return mappingGet(pensive.value.entities, entityId);
+    };
+
+    const result: Result = {
+      entityId: rootId,
+      entity: getEntity(rootId),
+      children: [],
+      pivot: null,
+      complete: true,
+    };
+
+    populateQuery(result, query, getEntity, pivots);
+
+    return { result, ids };
+  }, [pensive.value.entities, rootId, query]);
 };
