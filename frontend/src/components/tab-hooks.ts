@@ -116,9 +116,7 @@ export const getFocusedEntityId = (tab: TabState) =>
   last(tab.frame.selection) ?? tab.frame.entityId;
 
 export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
-  const pensive = usePensive();
-
-  const x = usePopulatedQuery(
+  const { result, ids: queriedEntities } = usePopulatedQuery(
     frame.value.entityId,
     useMemo(() => buildQueryFunction({ type: "link", links: "outbound" }), []),
     useMemo(
@@ -138,53 +136,15 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
       }),
       [collapsed, frame.value.pivots],
     ),
-  );
-
-  const { result, queriedEntities } = useMemo(() => {
-    const queriedEntities = new Set<string>();
-    const getEntity = (entityId: string): EntityState => {
-      queriedEntities.add(entityId);
-      return mappingGet(pensive.value.entities, entityId);
-    };
-
-    const result = runQuery(
-      { type: "explore", link: undefined },
-      {
-        getEntity,
-        entityId: frame.value.entityId,
-        overrides: {
-          ...Object.fromEntries(
-            Object.entries(frame.value.pivots ?? {})
-              .map(
-                ([id, link]) =>
-                  [id, { type: "explore", link: link ?? undefined }] as const,
-              )
-              .filter((item) => item[1].link != null),
-          ),
-          ...Object.fromEntries(
-            collapsed.map((id) => [id, { type: "collapse" }]),
-          ),
-        },
-      },
-    );
-
-    const prunedResult = prune(
-      result,
+    useCallback(
       (entity) =>
         (entity.text ?? "")
           .toLowerCase()
           .includes(frame.value.highlight.text?.toLowerCase() ?? "") &&
         (frame.value.highlight.section ? Boolean(entity.section) : true),
-    ).result;
-
-    return { result: prunedResult, queriedEntities };
-  }, [
-    frame.value.entityId,
-    pensive.value.entities,
-    collapsed,
-    frame.value.pivots,
-    frame.value.highlight,
-  ]);
+      [frame.value.highlight],
+    ),
+  );
 
   const flattenedResult = useMemo(() => flatten(result, []), [result]);
 

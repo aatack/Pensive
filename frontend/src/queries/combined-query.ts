@@ -103,6 +103,7 @@ export const usePopulatedQuery = (
   rootId: string,
   query: QueryFunction,
   pivots: { [entityId: string]: QueryFunction },
+  prunePredicate: (entity: EntityState) => boolean,
 ): { result: Result; ids: Set<string> } => {
   const pensive = usePensive();
 
@@ -123,8 +124,8 @@ export const usePopulatedQuery = (
 
     populateQuery(result, query, getEntity, pivots);
 
-    return { result, ids };
-  }, [pensive.value.entities, rootId, query, pivots]);
+    return { result: prune(result, prunePredicate).result, ids };
+  }, [pensive.value.entities, rootId, query, pivots, prunePredicate]);
 };
 
 export const buildQueryFunction = (
