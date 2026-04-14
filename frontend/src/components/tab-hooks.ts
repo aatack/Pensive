@@ -11,6 +11,10 @@ import {
   FlattenedQueryResult,
   prune,
 } from "../queries/query-manipulation";
+import {
+  buildQueryFunction,
+  usePopulatedQuery,
+} from "../queries/combined-query";
 
 export type TabState = {
   uuid: string;
@@ -113,6 +117,12 @@ export const getFocusedEntityId = (tab: TabState) =>
 
 export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
   const pensive = usePensive();
+
+  const x = usePopulatedQuery(
+    frame.value.entityId,
+    useMemo(() => buildQueryFunction({ type: "link", links: "outbound" }), []),
+    useMemo(() => ({}), []),
+  );
 
   const { result, queriedEntities } = useMemo(() => {
     const queriedEntities = new Set<string>();

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { EntityState } from "../components/entity/entity";
+import { EntityLinkKey, EntityState } from "../components/entity/entity";
 import { usePensive } from "../components/pensive";
 import { mappingGet } from "../helpers/mapping";
 
@@ -99,7 +99,7 @@ export const prune = (
   };
 };
 
-const useQuery = (
+export const usePopulatedQuery = (
   rootId: string,
   query: QueryFunction,
   pivots: { [entityId: string]: QueryFunction },
@@ -125,4 +125,20 @@ const useQuery = (
 
     return { result, ids };
   }, [pensive.value.entities, rootId, query]);
+};
+
+export const buildQueryFunction = (
+  query: { type: "link"; links: EntityLinkKey } | { type: "collapse" },
+): QueryFunction => {
+  switch (query.type) {
+    case "link": {
+      return {
+        children: (entity) => entity[query.links ?? "outbound"] ?? [],
+        pivot: () => null,
+      };
+    }
+    case "collapse": {
+      return { children: () => [], pivot: () => null };
+    }
+  }
 };
