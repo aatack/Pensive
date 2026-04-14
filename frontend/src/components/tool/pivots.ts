@@ -2,7 +2,7 @@ import { useEntity } from "../../context/hooks";
 import { nextInCycle } from "../../helpers/arrays";
 import { Atom, cursor } from "../../helpers/atoms";
 import { useHotkey } from "../../providers/use-hotkey";
-import { EntityLinkKey } from "../entity/entity";
+import { LinkType } from "../../queries/types";
 import { TabState } from "../tab-hooks";
 
 export const usePivots = (
@@ -13,7 +13,7 @@ export const usePivots = (
   const entity = useEntity(entityId);
   const pivots = cursor(cursor(tab, "frame"), "pivots");
 
-  const keys: (EntityLinkKey | null)[] = [
+  const keys: (LinkType | null)[] = [
     ...(["inbound", "outbound"] as const).filter((key) => entity[key] != null),
     null,
   ];
@@ -27,5 +27,24 @@ export const usePivots = (
       }));
     },
     { enabled },
+  );
+};
+
+export const useNestedQueries = (
+  entityId: string,
+  tab: Atom<TabState>,
+  enabled: boolean,
+) => {
+  const nestedQueries = cursor(cursor(tab, "frame"), "nestedQueries");
+
+  useHotkey(
+    "nestedQuery",
+    () => {
+      nestedQueries.swap((current) => ({
+        ...current,
+        [entityId]: [],
+      }));
+    },
+    { enabled, preventDefault: true },
   );
 };

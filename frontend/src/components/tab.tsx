@@ -10,7 +10,7 @@ import { useEditEntityActions } from "./tool/edit-entity";
 import { useMoveEntityActions } from "./tool/move-entity";
 import { useConnectEntityActions } from "./tool/connect-entities";
 import { useHotkey } from "../providers/use-hotkey";
-import { usePivots } from "./tool/pivots";
+import { useNestedQueries, usePivots } from "./tool/pivots";
 import { FrameState, TabState, useTabData } from "./tab-hooks";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import DoneIcon from "@mui/icons-material/Done";
@@ -77,6 +77,7 @@ const useTabActions = (tab: Atom<TabState>, selected: boolean) => {
   const entityId = last(tab.value.frame.selection) ?? tab.value.frame.entityId;
 
   usePivots(entityId, tab, selected);
+  useNestedQueries(entityId, tab, selected);
 
   useHotkey(
     "toggleSection",

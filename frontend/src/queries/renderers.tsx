@@ -12,5 +12,7 @@ export const RenderedQuery = ({ query }: { query: Query }) => {
       );
     case "collapse":
       return null;
+    case "nested":
+      return <Typography>NESTED</Typography>;
   }
 };

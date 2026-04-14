@@ -46,6 +46,7 @@ export type Hotkeys = {
   collapseEntity: string;
   expandEntity: string;
   pivotEntity: string;
+  nestedQuery: string
 
   debugEntity: string;
 
