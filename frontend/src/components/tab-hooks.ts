@@ -123,19 +123,20 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
     useMemo(() => buildQueryFunction({ type: "link", links: "outbound" }), []),
     useMemo(
       () => ({
-        // ...Object.fromEntries(
-        //   Object.entries(frame.value.pivots ?? {})
-        //     .map(
-        //       ([id, link]) =>
-        //         [id, { type: "explore", link: link ?? undefined }] as const,
-        //     )
-        //     .filter((item) => item[1].link != null),
-        // ),
+        ...Object.fromEntries(
+          Object.entries(frame.value.pivots ?? {}).map(
+            ([id, link]) =>
+              [
+                id,
+                buildQueryFunction({ type: "link", links: link ?? undefined }),
+              ] as const,
+          ),
+        ),
         ...Object.fromEntries(
           collapsed.map((id) => [id, buildQueryFunction({ type: "collapse" })]),
         ),
       }),
-      [collapsed],
+      [collapsed, frame.value.pivots],
     ),
   );
 
