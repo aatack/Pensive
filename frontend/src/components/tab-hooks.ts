@@ -180,7 +180,7 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
       if (joinedPath != null) {
         return frame.swap((current) => ({
           ...current,
-          selection: joinedPath.split("__"),
+          selection: joinedPath === "" ? [] : joinedPath.split("__"),
         }));
       }
     },

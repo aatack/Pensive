@@ -18,7 +18,7 @@ import { useOpenEntityInNewTab } from "./entity-hooks";
 import { Query } from "../../queries/queries";
 import { RenderedQuery } from "../../queries/rendered-query";
 
-const background = (path: string[] | null, selected: boolean) => ({
+const background = (path: string[] | null, selected: boolean, ai: boolean) => ({
   backgroundColor: selected ? invertColour("lightblue") : undefined,
   transition: "background-color 0.15s ease",
   "&:hover": path == null || selected ? {} : { backgroundColor: colours.bg2 },
@@ -26,6 +26,7 @@ const background = (path: string[] | null, selected: boolean) => ({
   paddingLeft: 0.5,
   paddingRight: 0.5,
   cursor: "pointer",
+  borderLeft: ai ? "4px solid lightgrey" : undefined,
 });
 
 export const EntityContent = memo(
@@ -65,7 +66,7 @@ export const EntityContent = memo(
 
     return (
       <Stack
-        sx={background(path, selected)}
+        sx={background(path, selected, Boolean(entity.ai))}
         /* It's difficult/impossible to lazily read the value of a context in
         react.  Swapping the current frame's selection requires reading the
         value of the state context, which means that every single entity content
@@ -257,7 +258,7 @@ const EntityText = memo(
                     inline
                       ? {}
                       : {
-                          backgroundColor: colours.ui,
+                          backgroundColor: "rgba(200, 200, 200, 0.27)",
                           padding: 0.3,
                           borderRadius: 1,
                         }

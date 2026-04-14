@@ -11,10 +11,11 @@ export type FlattenedQueryResult = {
   path: string[];
 };
 
-export const flatten = (
+export const flatten = <T = never>(
   result: QueryResult,
   path: string[],
-): FlattenedQueryResult[] => {
+  marker?: (path: string[]) => [T] | null,
+): (FlattenedQueryResult | T)[] => {
   return [
     {
       query: result.query,
@@ -24,8 +25,9 @@ export const flatten = (
       path: path ?? [],
     },
     ...result.children.flatMap((child) =>
-      flatten(child.result, [...(path ?? []), child.result.entityId]),
+      flatten(child.result, [...(path ?? []), child.result.entityId], marker),
     ),
+    ...(marker?.(path ?? []) ?? []),
   ];
 };
 

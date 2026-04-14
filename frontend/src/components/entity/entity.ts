@@ -15,6 +15,7 @@ export type EntityState = Partial<{
   redacted: boolean | null;
   snoozed: string | null; // ISO format
   llmContext: LlmContext | null;
+  ai: boolean | null;
 }>;
 
 export type EntityLinkKey = {
