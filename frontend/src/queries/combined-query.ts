@@ -124,7 +124,7 @@ export const usePopulatedQuery = (
     populateQuery(result, query, getEntity, pivots);
 
     return { result, ids };
-  }, [pensive.value.entities, rootId, query]);
+  }, [pensive.value.entities, rootId, query, pivots]);
 };
 
 export const buildQueryFunction = (

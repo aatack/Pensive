@@ -121,7 +121,22 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
   const x = usePopulatedQuery(
     frame.value.entityId,
     useMemo(() => buildQueryFunction({ type: "link", links: "outbound" }), []),
-    useMemo(() => ({}), []),
+    useMemo(
+      () => ({
+        // ...Object.fromEntries(
+        //   Object.entries(frame.value.pivots ?? {})
+        //     .map(
+        //       ([id, link]) =>
+        //         [id, { type: "explore", link: link ?? undefined }] as const,
+        //     )
+        //     .filter((item) => item[1].link != null),
+        // ),
+        ...Object.fromEntries(
+          collapsed.map((id) => [id, buildQueryFunction({ type: "collapse" })]),
+        ),
+      }),
+      [collapsed],
+    ),
   );
 
   const { result, queriedEntities } = useMemo(() => {
@@ -169,6 +184,8 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
     frame.value.pivots,
     frame.value.highlight,
   ]);
+
+  console.log(x.ids.size, queriedEntities.size);
 
   const flattenedResult = useMemo(() => flatten(result, []), [result]);
 
