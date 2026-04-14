@@ -1,13 +1,13 @@
 import { Typography } from "@mui/material";
-import { Query } from "./queries";
 import { font } from "../constants";
+import { QueryFunction } from "./combined-query";
 
-export const RenderedQuery = ({ query }: { query: Query }) => {
+export const RenderedQuery = ({ query }: { query: QueryFunction }) => {
   switch (query.type) {
-    case "explore":
+    case "link":
       return (
         <Typography sx={{ ...font, fontSize: 12, fontWeight: 800 }}>
-          {"-->"} {query.link ?? "outbound"}
+          {"-->"} outbound
         </Typography>
       );
     case "collapse":

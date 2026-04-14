@@ -1,14 +1,14 @@
 import { useHotkeys } from "react-hotkeys-hook/dist";
 import { useIntegrations, useRunIntegration } from "./integrations";
 import { useSetTabRunning } from "../global-status/tab-running";
-import { QueryResult } from "../../queries/queries";
+import { Result } from "../../queries/combined-query";
 
 export const IntegrationsRunner = ({
   result,
   enabled,
   tabUuid,
 }: {
-  result: QueryResult;
+  result: Result;
   enabled: boolean;
   tabUuid: string;
 }) => {
@@ -41,7 +41,7 @@ const IntegrationRunner = ({
 }: {
   hotkey: string;
   url: string;
-  result: QueryResult;
+  result: Result;
   tabUuid: string;
 }) => {
   const runIntegration = useRunIntegration();

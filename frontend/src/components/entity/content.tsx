@@ -15,8 +15,8 @@ import { useTabState } from "../tab-hooks";
 import { EntityState } from "./entity";
 import equal from "fast-deep-equal";
 import { useOpenEntityInNewTab } from "./entity-hooks";
-import { Query } from "../../queries/queries";
 import { RenderedQuery } from "../../queries/rendered-query";
+import { QueryFunction } from "../../queries/combined-query";
 
 const background = (path: string[] | null, selected: boolean, ai: boolean) => ({
   backgroundColor: selected ? invertColour("lightblue") : undefined,
@@ -45,7 +45,7 @@ export const EntityContent = memo(
     path: string[];
     selected: boolean;
     editing: boolean;
-    pivot?: Query;
+    pivot?: QueryFunction;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
     const type = entity.image ? "image" : (entity.type ?? "text");

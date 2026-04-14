@@ -1,4 +1,5 @@
 import { EntityState } from "../components/entity/entity";
+import { flatten, Result } from "./combined-query";
 import { Query, QueryResult } from "./queries";
 
 export type FlattenedQueryResult = {
@@ -9,26 +10,6 @@ export type FlattenedQueryResult = {
 
   complete: boolean;
   path: string[];
-};
-
-export const flatten = <T = never>(
-  result: QueryResult,
-  path: string[],
-  marker?: (path: string[]) => [T] | null,
-): (FlattenedQueryResult | T)[] => {
-  return [
-    {
-      query: result.query,
-      entityId: result.entityId,
-      entity: result.entity,
-      complete: result.complete,
-      path: path ?? [],
-    },
-    ...result.children.flatMap((child) =>
-      flatten(child.result, [...(path ?? []), child.result.entityId], marker),
-    ),
-    ...(marker?.(path ?? []) ?? []),
-  ];
 };
 
 export const prune = (
@@ -49,7 +30,7 @@ export const prune = (
 const REDACTED = "<<< Redacted >>>";
 
 export const exportMarkdown = (
-  result: QueryResult,
+  result: Result,
   options?:
     | { lineNumbers: false }
     | { lineNumbers: true; selectedPath?: string[] },

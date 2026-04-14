@@ -15,9 +15,10 @@ export type Result = {
 
 export type FlattenedResult = Omit<Result, "children"> & { path: string[] };
 
-type QueryFunction = {
+export type QueryFunction = {
   children: (entity: EntityState) => string[];
   pivot: (entity: EntityState) => QueryFunction | null;
+  type: string;
 };
 
 const populateQuery = (
@@ -158,10 +159,11 @@ export const buildQueryFunction = (
       return {
         children: (entity) => entity[query.links ?? "outbound"] ?? [],
         pivot: () => null,
+        type: "link",
       };
     }
     case "collapse": {
-      return { children: () => [], pivot: () => null };
+      return { children: () => [], pivot: () => null, type: "collapse" };
     }
   }
 };

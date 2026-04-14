@@ -3,8 +3,9 @@ import { useCallback } from "react";
 import { useWrite } from "../../context/hooks";
 import { generateUuid } from "@pensive/common/src";
 import { last } from "../../helpers/arrays";
-import { exportMarkdown, flatten } from "../../queries/query-manipulation";
+import { exportMarkdown } from "../../queries/query-manipulation";
 import { QueryResult } from "../../queries/queries";
+import { flatten, Result } from "../../queries/combined-query";
 
 export type Integration = {
   url: string;
@@ -18,7 +19,7 @@ export const useIntegrations = () => {
 export const useRunIntegration = () => {
   const write = useWrite();
 
-  return useCallback(async (url: string, result: QueryResult) => {
+  return useCallback(async (url: string, result: Result) => {
     const content = {
       context: exportMarkdown(result, { lineNumbers: true, selectedPath: [] }),
     };
