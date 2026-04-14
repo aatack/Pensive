@@ -41,10 +41,7 @@ export const prune = (
     .map((child) => ({ key: child.key, result: child.result }));
 
   return {
-    result: {
-      ...result,
-      children,
-    },
+    result: { ...result, children },
     hasAny: children.length > 0 || predicate(result.entity),
   };
 };

@@ -62,12 +62,36 @@ const populateQuery = (
     item.parent.complete = false;
   }
 
-  // Prune the tree
-  const fixedResult = null;
-
   // Populate any pivoted entities
   for (const item of pivotQueue) {
     item.result.pivot = item.query;
     populateQuery(item.result, item.query, getEntity, pivots);
   }
+
+  // Prune the result
+  return prune(
+    result,
+    () => true,
+    (result) => result.pivot != null,
+  );
+};
+
+export const prune = (
+  result: Result,
+  predicate: (entity: EntityState) => boolean,
+  stop?: (result: Result) => boolean,
+): { result: Result; hasAny: boolean } => {
+  if (stop?.(result)) {
+    return { result, hasAny: true };
+  }
+
+  const children = result.children
+    .map((child) => prune(child, predicate, stop))
+    .filter((child) => child.hasAny)
+    .map((child) => child.result);
+
+  return {
+    result: { ...result, children },
+    hasAny: children.length > 0 || predicate(result.entity),
+  };
 };
