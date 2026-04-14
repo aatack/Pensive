@@ -28,7 +28,7 @@ import {
 import React from "react";
 import { CreateEntity } from "./tool/tool-placeholders";
 import { IntegrationsRunner } from "./settings/integrations-runner";
-import { FlattenedResult, QueryFunction } from "../queries/types";
+import { FlattenedResult, Query } from "../queries/types";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 
@@ -212,7 +212,7 @@ const Entity = ({
   data: FlattenedResult;
   selected: boolean;
   editing: boolean;
-  pivot?: QueryFunction;
+  pivot?: Query;
 }) => {
   const entity = data.entity;
 

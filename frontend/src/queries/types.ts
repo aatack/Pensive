@@ -1,13 +1,15 @@
 import { EntityState } from "../components/entity/entity";
 
-export type Query = {
-  type: "links";
-  links: "outbound" | "inbound";
-};
+export type Query =
+  | {
+      type: "links";
+      links: "outbound" | "inbound";
+    }
+  | { type: "collapse" };
 
 export type QueryFunction = {
   children: (entity: EntityState) => string[];
-  pivot: (entity: EntityState) => QueryFunction | null;
+  pivot: (entity: EntityState) => Query | null;
   type: string;
 };
 
@@ -17,7 +19,7 @@ export type QueryResult = {
 
   children: QueryResult[];
 
-  pivot: QueryFunction | null;
+  pivot: Query | null;
   complete: boolean;
 };
 

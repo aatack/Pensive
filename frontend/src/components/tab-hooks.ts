@@ -3,10 +3,7 @@ import { Atom, cursor } from "../helpers/atoms";
 import { useProvided } from "../providers/use-provided";
 import { EntityLinkKey } from "./entity/entity";
 import { useCallback, useMemo } from "react";
-import {
-  buildQueryFunction,
-  usePopulatedQuery,
-} from "../queries/resolution";
+import { usePopulatedQuery } from "../queries/resolution";
 import { FlattenedResult, QueryResult } from "../queries/types";
 import { flatten } from "../queries/helpers";
 
@@ -112,20 +109,19 @@ export const getFocusedEntityId = (tab: TabState) =>
 export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
   const { result, ids: queriedEntities } = usePopulatedQuery(
     frame.value.entityId,
-    useMemo(() => buildQueryFunction({ type: "link", links: "outbound" }), []),
+    useMemo(() => ({ type: "links", links: "outbound" }), []),
     useMemo(
       () => ({
         ...Object.fromEntries(
-          Object.entries(frame.value.pivots ?? {}).map(
-            ([id, link]) =>
-              [
-                id,
-                buildQueryFunction({ type: "link", links: link ?? undefined }),
-              ] as const,
-          ),
+          Object.entries(frame.value.pivots ?? {})
+            .filter(([, link]) => link != null)
+            .map(
+              ([id, link]) =>
+                [id, { type: "links", links: link ?? "outbound" }] as const,
+            ),
         ),
         ...Object.fromEntries(
-          collapsed.map((id) => [id, buildQueryFunction({ type: "collapse" })]),
+          collapsed.map((id) => [id, { type: "collapse" }]),
         ),
       }),
       [collapsed, frame.value.pivots],

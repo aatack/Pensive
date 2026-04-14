@@ -1,23 +1,25 @@
 import { useMemo } from "react";
-import { EntityLinkKey, EntityState } from "../components/entity/entity";
+import { EntityState } from "../components/entity/entity";
 import { usePensive } from "../components/pensive";
 import { mappingGet } from "../helpers/mapping";
-import { QueryFunction, QueryResult } from "./types";
+import { Query, QueryFunction, QueryResult } from "./types";
 import { prune } from "./helpers";
 
 const populateQuery = (
   result: QueryResult,
-  query: QueryFunction,
+  query: Query,
   getEntity: (entityId: string) => EntityState,
-  pivots: { [entityId: string]: QueryFunction },
+  pivots: { [entityId: string]: Query },
 ) => {
   // Note: reference equality is important in this function, as the pivots are
   // stored as references and populated in-place later
 
-  const queue: { entityId: string; parent: QueryResult }[] = query
+  const queryFunction = buildQueryFunction(query);
+
+  const queue: { entityId: string; parent: QueryResult }[] = queryFunction
     .children(result.entity)
     .map((entityId) => ({ entityId, parent: result }));
-  const pivotQueue: { result: QueryResult; query: QueryFunction }[] = [];
+  const pivotQueue: { result: QueryResult; query: Query }[] = [];
   let budget = 200;
 
   // Explore initially
@@ -37,9 +39,10 @@ const populateQuery = (
     };
     item.parent.children.push(child);
 
-    const pivot = pivots[child.entityId] ?? query.pivot(child.entity) ?? null;
+    const pivot =
+      pivots[child.entityId] ?? queryFunction.pivot(child.entity) ?? null;
     if (pivot == null) {
-      for (const childId of query.children(child.entity)) {
+      for (const childId of queryFunction.children(child.entity)) {
         queue.push({ entityId: childId, parent: child });
       }
     } else {
@@ -68,8 +71,8 @@ const populateQuery = (
 
 export const usePopulatedQuery = (
   rootId: string,
-  query: QueryFunction,
-  pivots: { [entityId: string]: QueryFunction },
+  query: Query,
+  pivots: { [entityId: string]: Query },
   prunePredicate: (entity: EntityState) => boolean,
 ): { result: QueryResult; ids: Set<string> } => {
   const pensive = usePensive();
@@ -95,11 +98,9 @@ export const usePopulatedQuery = (
   }, [pensive.value.entities, rootId, query, pivots, prunePredicate]);
 };
 
-export const buildQueryFunction = (
-  query: { type: "link"; links: EntityLinkKey } | { type: "collapse" },
-): QueryFunction => {
+const buildQueryFunction = (query: Query): QueryFunction => {
   switch (query.type) {
-    case "link": {
+    case "links": {
       return {
         children: (entity) => entity[query.links ?? "outbound"] ?? [],
         pivot: () => null,
