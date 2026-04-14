@@ -1,18 +1,13 @@
 import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
 import { useProvided } from "../providers/use-provided";
-import { EntityLinkKey, EntityState } from "./entity/entity";
+import { EntityLinkKey } from "./entity/entity";
 import { useCallback, useMemo } from "react";
-import { usePensive } from "./pensive";
-import { QueryResult, runQuery } from "../queries/queries";
-import { mappingGet } from "../helpers/mapping";
-import {
-  flatten,
-  FlattenedQueryResult,
-  prune,
-} from "../queries/query-manipulation";
 import {
   buildQueryFunction,
+  flatten,
+  FlattenedResult,
+  Result,
   usePopulatedQuery,
 } from "../queries/combined-query";
 
@@ -47,8 +42,8 @@ export type FrameState = {
 };
 
 export type TabData = {
-  result: QueryResult;
-  flattenedResult: FlattenedQueryResult[];
+  result: Result;
+  flattenedResult: FlattenedResult[];
   queriedEntities: Set<string>;
   select: (path: string[] | null) => void;
   selectParent: () => void;

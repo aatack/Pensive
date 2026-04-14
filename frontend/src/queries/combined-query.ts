@@ -3,7 +3,7 @@ import { EntityLinkKey, EntityState } from "../components/entity/entity";
 import { usePensive } from "../components/pensive";
 import { mappingGet } from "../helpers/mapping";
 
-type Result = {
+export type Result = {
   entityId: string;
   entity: EntityState;
 
@@ -12,6 +12,8 @@ type Result = {
   pivot: QueryFunction | null;
   complete: boolean;
 };
+
+export type FlattenedResult = Omit<Result, "children"> & { path: string[] };
 
 type QueryFunction = {
   children: (entity: EntityState) => string[];
@@ -97,6 +99,26 @@ export const prune = (
     result: { ...result, children },
     hasAny: children.length > 0 || predicate(result.entity),
   };
+};
+
+export const flatten = <T = never>(
+  result: Result,
+  path: string[],
+  marker?: (path: string[]) => [T] | null,
+): (FlattenedResult | T)[] => {
+  return [
+    {
+      entityId: result.entityId,
+      entity: result.entity,
+      pivot: result.pivot,
+      complete: result.complete,
+      path: path ?? [],
+    },
+    ...result.children.flatMap((child) =>
+      flatten(child, [...(path ?? []), child.entityId], marker),
+    ),
+    ...(marker?.(path ?? []) ?? []),
+  ];
 };
 
 export const usePopulatedQuery = (
