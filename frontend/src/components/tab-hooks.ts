@@ -34,6 +34,9 @@ export type FrameState = {
   pivots?: {
     [entityId: string]: LinkType | null;
   };
+  nestedQueries?: {
+    [entityId: string]: string[]
+  }
 };
 
 export type TabData = {

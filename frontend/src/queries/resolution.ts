@@ -104,11 +104,23 @@ const buildQueryFunction = (query: Query): QueryFunction => {
       return {
         children: (entity) => entity[query.linkType ?? "outbound"] ?? [],
         pivot: () => null,
-        type: "link",
       };
     }
     case "collapse": {
-      return { children: () => [], pivot: () => null, type: "collapse" };
+      return { children: () => [], pivot: () => null };
+    }
+    case "nested": {
+      const segment = query.segments[0]?.toLowerCase() ?? "";
+
+      return {
+        children: (entity) => entity.outbound ?? [],
+        pivot: (entity) => {
+          return segment.length > 0 &&
+            (entity.text ?? "").toLowerCase().includes(segment)
+            ? { type: "nested", segments: query.segments.slice(1) }
+            : null;
+        },
+      };
     }
   }
 };

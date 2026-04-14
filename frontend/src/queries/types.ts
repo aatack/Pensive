@@ -2,7 +2,8 @@ import { EntityState } from "../components/entity/entity";
 
 export type Query =
   | { type: "links"; linkType: LinkType }
-  | { type: "collapse" };
+  | { type: "collapse" }
+  | { type: "nested"; segments: string[] };
 
 export type LinkType = NonNullable<
   {
@@ -15,7 +16,6 @@ export type LinkType = NonNullable<
 export type QueryFunction = {
   children: (entity: EntityState) => string[];
   pivot: (entity: EntityState) => Query | null;
-  type: string;
 };
 
 export type QueryResult = {
