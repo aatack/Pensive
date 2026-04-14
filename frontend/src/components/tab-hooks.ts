@@ -186,8 +186,6 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
     frame.value.highlight,
   ]);
 
-  console.log(x.ids.size, queriedEntities.size);
-
   const flattenedResult = useMemo(() => flatten(result, []), [result]);
 
   // Everything is joined with double underscores because you can't use arrays
