@@ -35,8 +35,8 @@ export type FrameState = {
     [entityId: string]: LinkType | null;
   };
   nestedQueries?: {
-    [entityId: string]: string[]
-  }
+    [entityId: string]: string[];
+  };
 };
 
 export type TabData = {
@@ -121,6 +121,11 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
               ([id, link]) =>
                 [id, { type: "links", linkType: link ?? "outbound" }] as const,
             ),
+        ),
+        ...Object.fromEntries(
+          Object.entries(frame.value.nestedQueries ?? {}).map(
+            ([id, segments]) => [id, { type: "nested", segments }],
+          ),
         ),
         ...Object.fromEntries(
           collapsed.map((id) => [id, { type: "collapse" }]),
