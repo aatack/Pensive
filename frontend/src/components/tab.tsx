@@ -22,10 +22,7 @@ import { font } from "../constants";
 import { HoverClickable } from "./common/hover-clickable";
 import { useOpenEntityInNewTab } from "./entity/entity-hooks";
 import { useToolState } from "./tool/tool";
-import {
-  exportMarkdown,
-} from "../queries/helpers";
-import React from "react";
+import { exportMarkdown } from "../queries/helpers";
 import { CreateEntity } from "./tool/tool-placeholders";
 import { IntegrationsRunner } from "./settings/integrations-runner";
 import { FlattenedResult, Query } from "../queries/types";
@@ -277,14 +274,14 @@ const TabContext = ({ tab }: { tab: TabState }) => {
         alignItems="center"
       >
         {entityIds.map((entityId, index) => (
-          <React.Fragment key={`${index}-${entityId}`}>
+          <Fragment key={`${index}-${entityId}`}>
             {index !== 0 && (
               <Typography style={{ ...font, fontWeight: 600 }}>
                 {"/"}
               </Typography>
             )}
             <TabContextEntity entityId={entityId} />
-          </React.Fragment>
+          </Fragment>
         ))}
       </Stack>
       <Divider sx={{ mb: 1, mt: 0.5 }} />
