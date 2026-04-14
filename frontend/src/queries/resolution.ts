@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { EntityLinkKey, EntityState } from "../components/entity/entity";
 import { usePensive } from "../components/pensive";
 import { mappingGet } from "../helpers/mapping";
-import { FlattenedResult, QueryFunction, QueryResult } from "./types";
+import { QueryFunction, QueryResult } from "./types";
+import { prune } from "./helpers";
 
 const populateQuery = (
   result: QueryResult,
@@ -63,46 +64,6 @@ const populateQuery = (
     () => true,
     (result) => result.pivot != null,
   );
-};
-
-export const prune = (
-  result: QueryResult,
-  predicate: (entity: EntityState) => boolean,
-  stop?: (result: QueryResult) => boolean,
-): { result: QueryResult; hasAny: boolean } => {
-  if (stop?.(result)) {
-    return { result, hasAny: true };
-  }
-
-  const children = result.children
-    .map((child) => prune(child, predicate, stop))
-    .filter((child) => child.hasAny)
-    .map((child) => child.result);
-
-  return {
-    result: { ...result, children },
-    hasAny: children.length > 0 || predicate(result.entity),
-  };
-};
-
-export const flatten = <T = never>(
-  result: QueryResult,
-  path: string[],
-  marker?: (path: string[]) => [T] | null,
-): (FlattenedResult | T)[] => {
-  return [
-    {
-      entityId: result.entityId,
-      entity: result.entity,
-      pivot: result.pivot,
-      complete: result.complete,
-      path: path ?? [],
-    },
-    ...result.children.flatMap((child) =>
-      flatten(child, [...(path ?? []), child.entityId], marker),
-    ),
-    ...(marker?.(path ?? []) ?? []),
-  ];
 };
 
 export const usePopulatedQuery = (

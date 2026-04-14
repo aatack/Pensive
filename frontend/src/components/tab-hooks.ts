@@ -5,10 +5,10 @@ import { EntityLinkKey } from "./entity/entity";
 import { useCallback, useMemo } from "react";
 import {
   buildQueryFunction,
-  flatten,
   usePopulatedQuery,
-} from "../queries/combined-query";
+} from "../queries/resolution";
 import { FlattenedResult, QueryResult } from "../queries/types";
+import { flatten } from "../queries/helpers";
 
 export type TabState = {
   uuid: string;

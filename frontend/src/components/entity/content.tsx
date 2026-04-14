@@ -15,8 +15,8 @@ import { useTabState } from "../tab-hooks";
 import { EntityState } from "./entity";
 import equal from "fast-deep-equal";
 import { useOpenEntityInNewTab } from "./entity-hooks";
-import { RenderedQuery } from "../../queries/rendered-query";
-import { QueryFunction } from "../../queries/combined-query";
+import { RenderedQuery } from "../../queries/renderers";
+import { QueryFunction } from "../../queries/resolution";
 
 const background = (path: string[] | null, selected: boolean, ai: boolean) => ({
   backgroundColor: selected ? invertColour("lightblue") : undefined,

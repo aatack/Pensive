@@ -24,7 +24,7 @@ import { useOpenEntityInNewTab } from "./entity/entity-hooks";
 import { useToolState } from "./tool/tool";
 import {
   exportMarkdown,
-} from "../queries/query-manipulation";
+} from "../queries/helpers";
 import React from "react";
 import { CreateEntity } from "./tool/tool-placeholders";
 import { IntegrationsRunner } from "./settings/integrations-runner";
