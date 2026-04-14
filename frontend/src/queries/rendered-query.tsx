@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { font } from "../constants";
-import { QueryFunction } from "./combined-query";
+import { QueryFunction } from "./types";
 
 export const RenderedQuery = ({ query }: { query: QueryFunction }) => {
   switch (query.type) {

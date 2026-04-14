@@ -2,27 +2,10 @@ import { useMemo } from "react";
 import { EntityLinkKey, EntityState } from "../components/entity/entity";
 import { usePensive } from "../components/pensive";
 import { mappingGet } from "../helpers/mapping";
-
-export type Result = {
-  entityId: string;
-  entity: EntityState;
-
-  children: Result[];
-
-  pivot: QueryFunction | null;
-  complete: boolean;
-};
-
-export type FlattenedResult = Omit<Result, "children"> & { path: string[] };
-
-export type QueryFunction = {
-  children: (entity: EntityState) => string[];
-  pivot: (entity: EntityState) => QueryFunction | null;
-  type: string;
-};
+import { FlattenedResult, QueryFunction, QueryResult } from "./types";
 
 const populateQuery = (
-  result: Result,
+  result: QueryResult,
   query: QueryFunction,
   getEntity: (entityId: string) => EntityState,
   pivots: { [entityId: string]: QueryFunction },
@@ -30,10 +13,10 @@ const populateQuery = (
   // Note: reference equality is important in this function, as the pivots are
   // stored as references and populated in-place later
 
-  const queue: { entityId: string; parent: Result }[] = query
+  const queue: { entityId: string; parent: QueryResult }[] = query
     .children(result.entity)
     .map((entityId) => ({ entityId, parent: result }));
-  const pivotQueue: { result: Result; query: QueryFunction }[] = [];
+  const pivotQueue: { result: QueryResult; query: QueryFunction }[] = [];
   let budget = 200;
 
   // Explore initially
@@ -44,7 +27,7 @@ const populateQuery = (
       break;
     }
 
-    const child: Result = {
+    const child: QueryResult = {
       entityId: item.entityId,
       entity: getEntity(item.entityId),
       children: [],
@@ -83,10 +66,10 @@ const populateQuery = (
 };
 
 export const prune = (
-  result: Result,
+  result: QueryResult,
   predicate: (entity: EntityState) => boolean,
-  stop?: (result: Result) => boolean,
-): { result: Result; hasAny: boolean } => {
+  stop?: (result: QueryResult) => boolean,
+): { result: QueryResult; hasAny: boolean } => {
   if (stop?.(result)) {
     return { result, hasAny: true };
   }
@@ -103,7 +86,7 @@ export const prune = (
 };
 
 export const flatten = <T = never>(
-  result: Result,
+  result: QueryResult,
   path: string[],
   marker?: (path: string[]) => [T] | null,
 ): (FlattenedResult | T)[] => {
@@ -127,7 +110,7 @@ export const usePopulatedQuery = (
   query: QueryFunction,
   pivots: { [entityId: string]: QueryFunction },
   prunePredicate: (entity: EntityState) => boolean,
-): { result: Result; ids: Set<string> } => {
+): { result: QueryResult; ids: Set<string> } => {
   const pensive = usePensive();
 
   return useMemo(() => {
@@ -137,7 +120,7 @@ export const usePopulatedQuery = (
       return mappingGet(pensive.value.entities, entityId);
     };
 
-    const result: Result = {
+    const result: QueryResult = {
       entityId: rootId,
       entity: getEntity(rootId),
       children: [],

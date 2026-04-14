@@ -6,10 +6,9 @@ import { useCallback, useMemo } from "react";
 import {
   buildQueryFunction,
   flatten,
-  FlattenedResult,
-  Result,
   usePopulatedQuery,
 } from "../queries/combined-query";
+import { FlattenedResult, QueryResult } from "../queries/types";
 
 export type TabState = {
   uuid: string;
@@ -42,7 +41,7 @@ export type FrameState = {
 };
 
 export type TabData = {
-  result: Result;
+  result: QueryResult;
   flattenedResult: FlattenedResult[];
   queriedEntities: Set<string>;
   select: (path: string[] | null) => void;

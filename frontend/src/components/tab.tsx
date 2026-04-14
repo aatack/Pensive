@@ -24,13 +24,11 @@ import { useOpenEntityInNewTab } from "./entity/entity-hooks";
 import { useToolState } from "./tool/tool";
 import {
   exportMarkdown,
-  FlattenedQueryResult,
 } from "../queries/query-manipulation";
 import React from "react";
 import { CreateEntity } from "./tool/tool-placeholders";
 import { IntegrationsRunner } from "./settings/integrations-runner";
-import { Query } from "../queries/queries";
-import { FlattenedResult, QueryFunction } from "../queries/combined-query";
+import { FlattenedResult, QueryFunction } from "../queries/types";
 
 const iconStyle = { fontSize: 14, opacity: 0.5, margin: 0.5 };
 

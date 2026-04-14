@@ -1,9 +1,10 @@
-import { flatten, Result } from "./combined-query";
+import { flatten } from "./combined-query";
+import { QueryResult } from "./types";
 
 const REDACTED = "<<< Redacted >>>";
 
 export const exportMarkdown = (
-  result: Result,
+  result: QueryResult,
   options?:
     | { lineNumbers: false }
     | { lineNumbers: true; selectedPath?: string[] },
@@ -50,7 +51,7 @@ export const exportMarkdown = (
     .trimEnd();
 };
 
-export const leaves = (result: Result): Result[] => {
+export const leaves = (result: QueryResult): QueryResult[] => {
   return result.children.length === 0
     ? [result]
     : result.children.flatMap((child) => leaves(child));

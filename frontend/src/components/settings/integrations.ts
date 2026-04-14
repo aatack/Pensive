@@ -2,10 +2,9 @@ import { usePersistentAtom } from "../../helpers/atoms";
 import { useCallback } from "react";
 import { useWrite } from "../../context/hooks";
 import { generateUuid } from "@pensive/common/src";
-import { last } from "../../helpers/arrays";
 import { exportMarkdown } from "../../queries/query-manipulation";
-import { QueryResult } from "../../queries/queries";
-import { flatten, Result } from "../../queries/combined-query";
+import { flatten } from "../../queries/combined-query";
+import { QueryResult } from "../../queries/types";
 
 export type Integration = {
   url: string;
@@ -19,7 +18,7 @@ export const useIntegrations = () => {
 export const useRunIntegration = () => {
   const write = useWrite();
 
-  return useCallback(async (url: string, result: Result) => {
+  return useCallback(async (url: string, result: QueryResult) => {
     const content = {
       context: exportMarkdown(result, { lineNumbers: true, selectedPath: [] }),
     };
