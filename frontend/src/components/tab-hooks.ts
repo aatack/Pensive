@@ -131,7 +131,7 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
           collapsed.map((id) => [id, { type: "collapse" }]),
         ),
       }),
-      [collapsed, frame.value.pivots],
+      [collapsed, frame.value.pivots, frame.value.nestedQueries],
     ),
     useCallback(
       (entity) =>
