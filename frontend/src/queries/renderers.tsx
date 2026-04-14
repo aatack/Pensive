@@ -7,7 +7,7 @@ export const RenderedQuery = ({ query }: { query: Query }) => {
     case "links":
       return (
         <Typography sx={{ ...font, fontSize: 12, fontWeight: 800 }}>
-          {"-->"} {query.links}
+          {"-->"} {query.linkType}
         </Typography>
       );
     case "collapse":

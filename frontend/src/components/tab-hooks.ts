@@ -1,10 +1,9 @@
 import { butLast, last } from "../helpers/arrays";
 import { Atom, cursor } from "../helpers/atoms";
 import { useProvided } from "../providers/use-provided";
-import { EntityLinkKey } from "./entity/entity";
 import { useCallback, useMemo } from "react";
 import { usePopulatedQuery } from "../queries/resolution";
-import { FlattenedResult, QueryResult } from "../queries/types";
+import { FlattenedResult, LinkType, QueryResult } from "../queries/types";
 import { flatten } from "../queries/helpers";
 
 export type TabState = {
@@ -33,7 +32,7 @@ export type FrameState = {
   };
 
   pivots?: {
-    [entityId: string]: EntityLinkKey | null;
+    [entityId: string]: LinkType | null;
   };
 };
 
@@ -109,7 +108,7 @@ export const getFocusedEntityId = (tab: TabState) =>
 export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
   const { result, ids: queriedEntities } = usePopulatedQuery(
     frame.value.entityId,
-    useMemo(() => ({ type: "links", links: "outbound" }), []),
+    useMemo(() => ({ type: "links", linkType: "outbound" }), []),
     useMemo(
       () => ({
         ...Object.fromEntries(
@@ -117,7 +116,7 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
             .filter(([, link]) => link != null)
             .map(
               ([id, link]) =>
-                [id, { type: "links", links: link ?? "outbound" }] as const,
+                [id, { type: "links", linkType: link ?? "outbound" }] as const,
             ),
         ),
         ...Object.fromEntries(

@@ -102,7 +102,7 @@ const buildQueryFunction = (query: Query): QueryFunction => {
   switch (query.type) {
     case "links": {
       return {
-        children: (entity) => entity[query.links ?? "outbound"] ?? [],
+        children: (entity) => entity[query.linkType ?? "outbound"] ?? [],
         pivot: () => null,
         type: "link",
       };

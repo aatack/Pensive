@@ -18,10 +18,4 @@ export type EntityState = Partial<{
   ai: boolean | null;
 }>;
 
-export type EntityLinkKey = {
-  [K in keyof EntityState]: NonNullable<EntityState[K]> extends string[]
-    ? K
-    : never;
-}[keyof EntityState];
-
 export type EntityId = string;

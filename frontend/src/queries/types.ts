@@ -1,11 +1,16 @@
 import { EntityState } from "../components/entity/entity";
 
 export type Query =
-  | {
-      type: "links";
-      links: "outbound" | "inbound";
-    }
+  | { type: "links"; linkType: LinkType }
   | { type: "collapse" };
+
+export type LinkType = NonNullable<
+  {
+    [K in keyof EntityState]: NonNullable<EntityState[K]> extends string[]
+      ? K
+      : never;
+  }[keyof EntityState]
+>;
 
 export type QueryFunction = {
   children: (entity: EntityState) => string[];
