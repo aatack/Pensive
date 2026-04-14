@@ -1,11 +1,12 @@
 import { EntityState } from "../components/entity/entity";
 
 type Result = {
-  pivot: QueryFunction | null;
   entityId: string;
   entity: EntityState;
 
   children: Result[];
+
+  pivot: QueryFunction | null;
   complete: boolean;
 };
 
@@ -38,10 +39,10 @@ const populateQuery = (
     }
 
     const child: Result = {
-      pivot: null,
       entityId: item.entityId,
       entity: getEntity(item.entityId),
       children: [],
+      pivot: null,
       complete: true,
     };
     item.parent.children.push(child);
