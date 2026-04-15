@@ -2,8 +2,7 @@ import { usePersistentAtom } from "../../helpers/atoms";
 import { useCallback } from "react";
 import { useWrite } from "../../context/hooks";
 import { generateUuid } from "@pensive/common/src";
-import { exportMarkdown } from "../../queries/helpers";
-import { flatten } from "../../queries/resolution";
+import { exportMarkdown, flatten } from "../../queries/helpers";
 import { QueryResult } from "../../queries/types";
 
 export type Integration = {
