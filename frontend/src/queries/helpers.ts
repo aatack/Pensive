@@ -12,6 +12,8 @@ export const flatten = <T = never>(
       entity: result.entity,
       pivot: result.pivot,
       complete: result.complete,
+      framePath: result.framePath,
+      pivotPath: result.pivotPath,
       path: path ?? [],
     },
     ...result.children.flatMap((child) =>

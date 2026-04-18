@@ -42,8 +42,8 @@ const resolveQuery = (
         children: [],
         pivot: null,
         complete: true,
-        globalPath: [...(item.parent?.globalPath ?? path), item.entityId],
-        localPath: [...(item.parent?.localPath ?? []), item.entityId],
+        framePath: [...(item.parent?.framePath ?? path), item.entityId],
+        pivotPath: [...(item.parent?.pivotPath ?? []), item.entityId],
       };
 
       if (item.parent == null) {
@@ -62,7 +62,7 @@ const resolveQuery = (
           pivot,
           getEntity,
           pivots,
-          item.parent?.globalPath ?? [],
+          item.parent?.framePath ?? [],
         ),
         pivot,
       };
