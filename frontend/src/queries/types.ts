@@ -16,6 +16,7 @@ export type LinkType = NonNullable<
 export type QueryFunction = {
   children: (entity: EntityState) => string[];
   pivot: (entity: EntityState) => Query | null;
+  prune?: (entity: EntityState) => boolean;
 };
 
 export type QueryResult = {

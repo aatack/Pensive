@@ -80,9 +80,9 @@ const resolveQuery = (
   // Prune the result
   return prune(
     result,
-    () => true,
+    queryFunction.prune ?? (() => true),
     // Don't prune the results of pivoted queries based on the current query
-    (node) => node.pivot == null,
+    (node) => node.pivot != null,
   ).result;
 };
 
@@ -133,6 +133,7 @@ const buildQueryFunction = (query: Query): QueryFunction => {
             ? { type: "nested", segments: query.segments.slice(1) }
             : null;
         },
+        prune: () => false,
       };
     }
   }
