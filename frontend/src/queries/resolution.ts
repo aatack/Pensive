@@ -26,13 +26,18 @@ const resolveQuery = (
       break;
     }
 
+    const entity = getEntity(item.entityId);
+
     // Don't pivot for the root entity, since it will already have been pivoted
-    const pivot = item.parent == null ? null : (pivots[item.entityId] ?? null);
+    const pivot =
+      item.parent == null
+        ? null
+        : (pivots[item.entityId] ?? queryFunction.pivot(entity) ?? null);
 
     if (pivot == null) {
       const itemResult: QueryResult = {
         entityId: item.entityId,
-        entity: getEntity(item.entityId),
+        entity,
         children: [],
         pivot: null,
         complete: true,
@@ -48,7 +53,10 @@ const resolveQuery = (
         queue.push({ entityId: childId, parent: itemResult });
       }
     } else {
-      const itemResult = resolveQuery(item.entityId, pivot, getEntity, pivots);
+      const itemResult = {
+        ...resolveQuery(item.entityId, pivot, getEntity, pivots),
+        pivot,
+      };
 
       if (item.parent == null) {
         result = itemResult;
