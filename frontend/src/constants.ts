@@ -2,7 +2,7 @@ import { Hotkeys } from "./providers/use-hotkey";
 
 export const server = "http://localhost:2998";
 
-const DARK_MODE = false;
+const DARK_MODE = true;
 
 export type Json =
   | string

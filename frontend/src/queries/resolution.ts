@@ -10,6 +10,7 @@ const resolveQuery = (
   query: Query,
   getEntity: (entityId: string) => EntityState,
   pivots: { [entityId: string]: Query },
+  path: string[],
 ): QueryResult => {
   const queryFunction = buildQueryFunction(query);
 
@@ -41,6 +42,8 @@ const resolveQuery = (
         children: [],
         pivot: null,
         complete: true,
+        globalPath: [...(item.parent?.globalPath ?? path), item.entityId],
+        localPath: [...(item.parent?.localPath ?? []), item.entityId],
       };
 
       if (item.parent == null) {
@@ -54,7 +57,13 @@ const resolveQuery = (
       }
     } else {
       const itemResult = {
-        ...resolveQuery(item.entityId, pivot, getEntity, pivots),
+        ...resolveQuery(
+          item.entityId,
+          pivot,
+          getEntity,
+          pivots,
+          item.parent?.globalPath ?? [],
+        ),
         pivot,
       };
 
@@ -103,7 +112,7 @@ export const usePopulatedQuery = (
 
     return {
       result: prune(
-        resolveQuery(rootId, query, getEntity, pivots),
+        resolveQuery(rootId, query, getEntity, pivots, []),
         prunePredicate,
       ).result,
       ids,

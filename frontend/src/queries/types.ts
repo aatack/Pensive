@@ -27,6 +27,9 @@ export type QueryResult = {
 
   pivot: Query | null;
   complete: boolean;
+
+  globalPath: string[];
+  localPath: string[];
 };
 
 export type FlattenedResult = Omit<QueryResult, "children"> & {
