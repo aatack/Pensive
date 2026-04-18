@@ -5,6 +5,79 @@ import { mappingGet } from "../helpers/mapping";
 import { Query, QueryFunction, QueryResult } from "./types";
 import { prune } from "./helpers";
 
+const resolveQuery = (
+  rootId: string,
+  query: Query,
+  getEntity: (entityId: string) => EntityState,
+  pivots: { [entityId: string]: Query },
+): QueryResult => {
+  const queryFunction = buildQueryFunction(query);
+
+  let result: QueryResult | null = null;
+  let budget = 200;
+  const queue: { entityId: string; parent: QueryResult | null }[] = [
+    { entityId: rootId, parent: null },
+  ];
+
+  while (budget > 0) {
+    budget -= 1;
+    const item = queue.shift();
+    if (item == null) {
+      break;
+    }
+
+    // Don't pivot for the root entity, since it will already have been pivoted
+    const pivot = item.parent == null ? null : (pivots[item.entityId] ?? null);
+
+    if (pivot == null) {
+      const itemResult: QueryResult = {
+        entityId: item.entityId,
+        entity: getEntity(item.entityId),
+        children: [],
+        pivot: null,
+        complete: true,
+      };
+
+      if (item.parent == null) {
+        result = itemResult;
+      } else {
+        item.parent.children.push(itemResult);
+      }
+
+      for (const childId of queryFunction.children(itemResult.entity)) {
+        queue.push({ entityId: childId, parent: itemResult });
+      }
+    } else {
+      const itemResult = resolveQuery(item.entityId, pivot, getEntity, pivots);
+
+      if (item.parent == null) {
+        result = itemResult;
+      } else {
+        item.parent.children.push(itemResult);
+      }
+    }
+  }
+
+  // Mark any unexplored items as incomplete
+  for (const item of queue) {
+    if (item.parent != null) {
+      item.parent.complete = false;
+    }
+  }
+
+  if (result == null) {
+    throw new Error("Qeury resolution failed");
+  }
+
+  // Prune the result
+  return prune(
+    result,
+    () => true,
+    // Don't prune the results of pivoted queries based on the current query
+    (node) => node.pivot == null,
+  ).result;
+};
+
 const populateQuery = (
   result: QueryResult,
   query: Query,
