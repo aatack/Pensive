@@ -30,6 +30,7 @@ const resolveQuery = (
     const entity = getEntity(item.entityId);
 
     // Don't pivot for the root entity, since it will already have been pivoted
+    // [ ] Change this to simply exclude the current path from the pivot lookup
     const pivot =
       item.parent == null
         ? null
@@ -51,6 +52,8 @@ const resolveQuery = (
       } else {
         item.parent.children.push(itemResult);
       }
+
+      // [ ] Check that the child has not appeared in this frame before
 
       for (const childId of queryFunction.children(itemResult.entity)) {
         queue.push({ entityId: childId, parent: itemResult });
