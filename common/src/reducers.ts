@@ -29,7 +29,9 @@ export const array: Reducer = (current, update) => {
   if (operation === "+" && !present) {
     return [...current, text];
   } else if (operation === "-" && present) {
-    const items = current.filter((item: string) => item !== text);
+    const items = current.filter(
+      (item) => typeof item === "string" && item !== text,
+    );
     return items.length === 0 ? null : items;
   } else if (operation === ">" && present) {
     const index = current.indexOf(text);
