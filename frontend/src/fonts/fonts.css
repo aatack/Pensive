@@ -7,3 +7,8 @@
     font-family: 'Fira Code';
     src: url('FiraCode-VariableFont_wght.ttf') format('truetype');
 }
+
+@font-face {
+    font-family: 'PT Serif';
+    src: url('PTSerif-Regular.ttf') format('truetype');
+}

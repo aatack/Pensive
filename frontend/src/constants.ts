@@ -58,9 +58,9 @@ export const colours = {
 };
 
 export const font = {
-  fontWeight: 400,
-  fontFamily: "SourceSans3",
-  fontSize: 14.5,
+  fontWeight: 300,
+  fontFamily: "PT Serif",
+  fontSize: 14.0,
 };
 export const fontMonospace = {
   fontSize: 12,
