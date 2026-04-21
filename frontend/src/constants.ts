@@ -61,6 +61,7 @@ export const font = {
   fontWeight: 300,
   fontFamily: "PT Serif",
   fontSize: 14.0,
+  color: "#292929"
 };
 export const fontMonospace = {
   fontSize: 12,
