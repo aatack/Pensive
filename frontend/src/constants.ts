@@ -58,10 +58,10 @@ export const colours = {
 };
 
 export const font = {
-  fontWeight: 300,
-  fontFamily: "PT Serif",
+  fontWeight: 450,
+  fontFamily: "Lora",
   fontSize: 14.0,
-  color: "#292929"
+  color: "#292929",
 };
 export const fontMonospace = {
   fontSize: 12,
