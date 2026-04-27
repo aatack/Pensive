@@ -250,7 +250,7 @@ export const EntityIndent = ({
         <CheckBoxOutlineBlankIcon sx={iconStyle} />
       ) : entity.open === false ? (
         <DoneIcon sx={iconStyle} />
-      ) : entity.section ? null : (
+      ) : (
         <KeyboardArrowRightIcon sx={iconStyle} />
       )}
 
