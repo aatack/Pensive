@@ -131,7 +131,8 @@ export const useQuery = (frame: Atom<FrameState>, collapsed: string[]) => {
         (entity.text ?? "")
           .toLowerCase()
           .includes(frame.value.highlight.text?.toLowerCase() ?? "") &&
-        (frame.value.highlight.section ? Boolean(entity.section) : true),
+        (frame.value.highlight.section ? Boolean(entity.section) : true) &&
+        (entity.snoozed == null || new Date(entity.snoozed) < new Date()),
       [frame.value.highlight],
     ),
   );
