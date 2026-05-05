@@ -1,4 +1,4 @@
-import { Box, Divider, Stack, Typography } from "@mui/material";
+import { Box, Divider, Stack } from "@mui/material";
 import { useEntity, useSwapEntity, useWrite } from "../context/hooks";
 import { last } from "../helpers/arrays";
 import { Atom } from "../helpers/atoms";
@@ -18,7 +18,6 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import LockIcon from "@mui/icons-material/Lock";
 import { EntityState } from "./entity/entity";
 import { EntityPill } from "./entity/entity-pill";
-import { font } from "../constants";
 import { HoverClickable } from "./common/hover-clickable";
 import { useOpenEntityInNewTab } from "./entity/entity-hooks";
 import { useToolState } from "./tool/tool";
@@ -275,11 +274,6 @@ const TabContext = ({ tab }: { tab: TabState }) => {
       >
         {entityIds.map((entityId, index) => (
           <Fragment key={`${index}-${entityId}`}>
-            {index !== 0 && (
-              <Typography style={{ ...font, fontWeight: 600 }}>
-                {"/"}
-              </Typography>
-            )}
             <TabContextEntity entityId={entityId} />
           </Fragment>
         ))}
