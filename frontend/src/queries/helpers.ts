@@ -80,7 +80,7 @@ export const exportMarkdown = (
 
       return (
         (options?.lineNumbers ? lineNumber : "") +
-        "  ".repeat(line.path.length).toString() +
+        "    ".repeat(line.path.length).toString() +
         " - " +
         section +
         open +
